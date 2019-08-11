@@ -1,3 +1,72 @@
+
+<!-- TOC -->
+
+- [数据类型](#数据类型)
+    - [基本数据类型](#基本数据类型)
+        - [拆箱与装箱](#拆箱与装箱)
+    - [引用类型](#引用类型)
+- [== 与 equal](#-与-equal)
+- [面向对象三大特性](#面向对象三大特性)
+    - [继承](#继承)
+    - [封装](#封装)
+    - [多态](#多态)
+        - [三种实现方式](#三种实现方式)
+- [基类与派生类](#基类与派生类)
+    - [定义](#定义)
+    - [默认调无参](#默认调无参)
+    - [有参用super](#有参用super)
+    - [基类private属性](#基类private属性)
+    - [派生类的覆盖](#派生类的覆盖)
+- [重写与重载](#重写与重载)
+    - [重写(Override)](#重写override)
+        - [编译时与运行时细节](#编译时与运行时细节)
+        - [重写规则](#重写规则)
+        - [super关键字](#super关键字)
+    - [重载(Overload)](#重载overload)
+        - [重载规则:](#重载规则)
+        - [重载和重写的区别](#重载和重写的区别)
+    - [重写的向上向下转型](#重写的向上向下转型)
+        - [向上转型(子类向上转成父类来用)](#向上转型子类向上转成父类来用)
+        - [向下转型](#向下转型)
+    - [静态分派和动态分派](#静态分派和动态分派)
+    - [重载匹配优先级](#重载匹配优先级)
+- [泛型](#泛型)
+
+<!-- /TOC -->
+##数据类型
+
+
+### 基本数据类型
+
+int 32位 4字节  
+short 16位
+float 32位
+double 64位
+long 64位
+char 16位
+byte 8位
+boolean 1位
+自动拆箱和装箱的意思就是，计算数值时，integer会自动转为int进行计算。
+而当int传入类型为integer的引用时，int数值又会被包装为integer。在一个类里面,基本数据类型的属性尽量使用包装类.
+####  拆箱与装箱
+
+
+### 引用类型
+在java里面除去基本数据类型的其它类型都是引用数据类型，自己定义的class类都是引用类型，可以像基本类型一样使用。
+
+基本数据类型在往方法传值的时候,传递的是值
+
+引用类型在往方法传值的时候,传递的是引用地址(String类型,类类型都是引用类型)
+## == 与 equal
+
+==比较的是引用的内存地址
+
+equal看类的equal实现情况
+
+String,Integer,Double等基本类型的包装类实现了equal方法,比较的是内容(先比较地址,若地址相同则返回true,否则比较内容)
+
+StringBuilder,StringBuffer没有实现equal方法,比较的仍然是地址
+
 ## 面向对象三大特性
 ### 继承
 Java中的继承只能单继承，但是可以通过内部类继承其他类来实现多继承。
@@ -50,12 +119,23 @@ protected : 对同一包内的类和所有子类可见。使用对象：变量�
 ### 多态
 同一个方法或者类具有不同的功能或者表现形式
 
+#### 三种实现方式
+1. 重写与重载
+
+从jvm实现的角度来看，重写又叫运行时多态，编译时看不出子类调用的是哪个方法，但是运行时操作数栈会先根据子类的引用去子类的类信息中查找方法，找不到的话再到父类的类信息中查找方法。
+
+而重载则是编译时多态，因为编译期就可以确定传入的参数组合，决定调用的具体方法是哪一个了。
+
+
+2. 接口
+3. 抽象类与抽象方法
+
 ## 基类与派生类
+### 定义
 派生类具有和基类相同的属性,方法;还可以自己增加一些额外的属性和方法
 
+### 默认调无参
 派生类的构造器会必须调用基类的构造器,如果不指定,则默认调用无参构造器(所以基类中推荐要有无参构造器)
-
-###   在无参构造器时， java会自动在派生类的构造器中插入对基类的构造器的调用
 
 ```java
 public class test {
@@ -83,10 +163,8 @@ class Student extends Humans{
 我是人
 我是学生
 ```
-### 构造器有参数时，那就必须使用关键字super现实地编写调用基类构造器的代码，并且匹配适当的参数列表。(要注意的是，super必须在构造器的最前面，不然会报错。
-
-
-)
+### 有参用super
+构造器有参数时，那就必须使用关键字super现实地编写调用基类构造器的代码，并且匹配适当的参数列表。(要注意的是，super必须在构造器的最前面，不然会报错。)
 
 ```java 
 
@@ -127,7 +205,8 @@ class Student extends Humans{
 
 **原因是，如果基类有一个无参的构造器，就算派生类不用super显示调用基类的构造函数，编译器也会自动去调用基类的无参构造函数。**
 
-### 如果派生类使用了访问修饰符,则派生类要想访问基类里面被private和default修饰的属性,需要用getter和setter
+### 基类private属性
+**如果派生类使用了访问修饰符,则派生类要想访问基类里面被private和default修饰的属性,需要用getter和setter**
 
 ```java
 public class Humans {
@@ -186,7 +265,8 @@ System.out.println(s.getName());
 zhangsan
 10 
 ```
-### 如果派生类定义了和基类一样的属性或方法，将覆盖基类的属性和方法。
+### 派生类的覆盖
+如果派生类定义了和基类一样的属性或方法，将覆盖基类的属性和方法。
 
 如将student改为如下代码：
 ```java
@@ -224,4 +304,347 @@ null
 ```
 因为只有基类的属性在构造时赋值了，派生类的没有，当访问这些属性时，访问的是派生类的属性，所以全为null或者0。
 
+## 重写与重载
+### 重写(Override)  
+重写是子类对父类的允许访问的方法的实现过程进行重新编写, 返回值和形参都不能改变
+
+重写方法不能抛出新的检查异常或者比被重写方法申明更加宽泛的异常。例如： 父类的一个方法申明了一个检查异常 IOException，但是在重写这个方法的时候不能抛出 Exception 异常，因为 Exception 是 IOException 的父类，只能抛出 IOException 的子类异常。
+
+
+#### 编译时与运行时细节
+```java
+class Animal{
+   public void move(){
+      System.out.println("动物可以移动");
+   }
+}
  
+class Dog extends Animal{
+   public void move(){
+      System.out.println("狗可以跑和走");
+   }
+}
+ 
+public class TestDog{
+   public static void main(String args[]){
+      Animal a = new Animal(); // Animal 对象
+      Animal b = new Dog(); // Dog 对象
+ 
+      a.move();// 执行 Animal 类的方法
+ 
+      b.move();//执行 Dog 类的方法
+   }
+}
+```
+输出结果为:
+
+```
+动物可以移动
+狗可以跑和走
+```
+尽管b属于Animal类型，但是它运行的是Dog类的move方法。
+这是由于在编译阶段，只是检查参数的引用类型。( Animal引用类型 b参数 = new Dog() 实体类/对象 )
+
+然而在运行时，Java虚拟机(JVM)指定对象的类型并且运行该对象的方法。
+
+因此在上面的例子中，之所以能编译成功，是因为Animal类中存在move方法，然而运行时，运行的是特定对象的方法。
+
+```java
+class Animal{
+   public void move(){
+      System.out.println("动物可以移动");
+   }
+}
+ 
+class Dog extends Animal{
+   public void move(){
+      System.out.println("狗可以跑和走");
+   }
+   public void bark(){
+      System.out.println("狗可以吠叫");
+   }
+}
+ 
+public class TestDog{
+   public static void main(String args[]){
+      Animal a = new Animal(); // Animal 对象
+      Animal b = new Dog(); // Dog 对象
+ 
+      a.move();// 执行 Animal 类的方法
+      b.move();//执行 Dog 类的方法
+      b.bark();
+   }
+}
+```
+编译结果:
+
+```
+TestDog.java:30: cannot find symbol
+symbol  : method bark()
+location: class Animal
+                b.bark();
+                 ^
+```
+该程序将抛出一个编译错误，因为b的引用类型Animal没有bark方法。
+
+#### 重写规则
+重写的方法能够抛出任何非强制异常，无论被重写的方法是否抛出异常。但是，重写的方法不能抛出新的强制性异常，或者比被重写方法声明的更广泛的强制性异常，反之则可以。
+
+构造方法不能被重写。
+
+参数列表必须完全与被重写方法的相同。
+
+返回类型与被重写方法的返回类型可以不相同，但是必须是父类返回值的派生类（java5 及更早版本返回类型要一样，java7 及更高版本可以不同）。
+
+访问权限不能比父类中被重写的方法的访问权限更低。例如：如果父类的一个方法被声明为 public，那么在子类中重写该方法就不能声明为 protected。
+
+声明为 final 的方法不能被重写。
+
+声明为 static 的方法不能被重写，但是能够被再次声明。
+
+子类和父类在同一个包中，那么子类可以重写父类所有方法，除了声明为 private 和 final 的方法。
+
+子类和父类不在同一个包中，那么子类只能够重写父类的声明为 public 和 protected 的非 final 方法。
+
+
+如果不能继承一个方法，则不能重写这个方法。
+
+
+#### super关键字
+
+当需要在子类中调用父类的被重写方法时，要使用 super 关键字。
+
+```java
+class Animal{
+   public void move(){
+      System.out.println("动物可以移动");
+   }
+}
+ 
+class Dog extends Animal{
+   public void move(){
+      super.move(); // 应用super类的方法
+      System.out.println("狗可以跑和走");
+   }
+}
+ 
+public class TestDog{
+   public static void main(String args[]){
+ 
+      Animal b = new Dog(); // Dog 对象
+      b.move(); //执行 Dog类的方法
+ 
+   }
+}
+
+```
+
+
+### 重载(Overload)
+
+重载(overloading) 是在一个类里面，方法名字相同，而参数不同。返回类型可以相同也可以不同。
+
+每个重载的方法（或者构造函数）都必须有一个独一无二的参数类型列表。
+
+最常用的地方就是构造器的重载。
+
+#### 重载规则:
+
+被重载的方法必须改变参数列表(参数个数或类型不一样)；
+
+被重载的方法可以改变返回类型；
+
+被重载的方法可以改变访问修饰符；
+
+被重载的方法可以声明新的或更广的检查异常；
+
+方法能够在同一个类中或者在一个子类中被重载。
+
+无法以返回值类型作为重载函数的区分标准。
+
+#### 重载和重写的区别
+方法重载是一个类的多态性表现,而方法重写是子类与父类的一种多态性表现。
+
+<div align="center"> <img src="pictures\java-core\Snipaste_2019-08-11_19-55-46.jpg" width="600"/> </div><br>
+
+### 重写的向上向下转型
+#### 向上转型(子类向上转成父类来用)
+
+子类以丢失掉父类中没有的方法为代价,但使用的是子类重写的方法,变成一个父类的实例来用
+
+```java
+package com.sheepmu;
+ class Animal
+ {
+	public void eat()
+	{
+		System.out.println("父类的 eating...");
+	}
+}
+class Bird extends Animal
+{	
+	@Override
+	public void eat()
+	{
+		System.out.println("子类重写的父类的  eatting...");
+	}	
+	public void fly()
+	{
+		System.out.println("子类新方法  flying...");
+	}
+}
+
+public class Sys
+{
+	public static void main(String[] args) 
+	{
+		Animal b=new Bird(); //向上转型
+		b.eat(); 
+		//  b.fly(); b虽指向子类对象，但此时子类作为向上的代价丢失和父类不同的fly()方法
+	
+	}
+}
+
+```
+
+输出:
+```
+子类重写的父类的  eatting...
+
+
+Animal b=new Bird(); //向上转型  
+b.eat(); // 调用的是子类的eat()方法  
+b.fly(); // 报错!!!!!-------b虽指向子类对象，但此时子类作为向上转型的代价丢失和父类不同的fly()方法------
+```
+
+
+向上转型的好处:为何不直接Bird b=new Bird();b.eat() 呢？
+
+降低了代码的可扩展性.若是不用向上转型，那么有多少个子类就得在这儿写多少种不同的Bird,Dog,Cat...的加工方法
+
+#### 向下转型
+
+```java
+package com.sheepmu;
+ class Fruit
+  {
+	public void myName()
+	{
+		System.out.println("我是父类  水果...");
+	}
+}
+ 
+class Apple extends Fruit
+{ 
+	@Override
+	public void myName() 
+	{ 
+		System.out.println("我是子类  苹果...");
+	}
+	public void myMore()
+	{
+		System.out.println("我是你的小呀小苹果~~~~~~");
+	}
+}
+ 
+public class Sys{ 
+	public static void main(String[] args) { 
+		Fruit a=new Apple(); //向上转型
+		a.myName();
+		
+		Apple aa=(Apple)a; //向下转型,编译和运行皆不会出错(正确的)
+		aa.myName();//向下转型时调用的是子类的
+		aa.myMore();;
+		  
+		Fruit f=new Fruit();
+        Apple aaa=(Apple)f; //-不安全的---向下转型,编译无错但会运行会出错
+  		aaa.myName();
+  		aaa.myMore(); 
+	}
+}
+
+
+输出:
+我是子类  苹果...
+我是子类  苹果...
+我是你的小呀小苹果~~~~~~
+Exception in thread "main" java.lang.ClassCastException: com.sheepmu.Fruit cannot be cast to com.sheepmu.Apple
+at com.sheepmu.Sys.main(Sys.java:30)
+
+
+详解：
+
+1.正确的向下转型    
+
+                    Fruit a=new Apple(); //向上转型
+                    a.myName(); 
+                    Apple aa=(Apple)a; //向下转型,编译和运行皆不会出错(正确的)
+                    aa.myName();
+                    aa.myMore();
+a指向子类的对象，所以子类的实例aa也可以指向a啊~~
+
+向下转型后因为都是指向子类对象，所以调用的当然全是子类的方法~~
+
+2.不安全的向下转型
+
+               Fruit f=new Fruit();
+               Apple aaa=(Apple)f; //-不安全的---向下转型,编译无错但会运行会出错
+               aaa.myName();
+                aaa.myMore(); 
+
+f是父类对象，子类的实例aaa指向强转的父类,在编译时不报错,但运行时因为父类没有子类的方法,会导致aaa调用子类的方法出错
+
+3.Java为了解决不安全的向下转型问题，引入泛型的概念
+
+4.为了安全的类型转换，最好先用 if(A instanceof  B) 判断一下下~~
+
+```
+### 静态分派和动态分派
+
+TODO
+
+### 重载匹配优先级
+```java
+public static void main(String[] args) {
+        方法重载优先级匹配 a = new 方法重载优先级匹配();
+        //普通的重载一般就是同名方法不同参数。
+        //这里我们来讨论当同名方法只有一个参数时的情况。
+        //此时会调用char参数的方法。
+        //当没有char参数的方法。会调用int类型的方法，如果没有int就调用long
+        //即存在一个调用顺序char -> int -> long ->double -> ..。
+        //当没有基本类型对应的方法时，先自动装箱，调用包装类方法。
+        //如果没有包装类方法，则调用包装类实现的接口的方法。
+        //最后再调用持有多个参数的char...方法。
+        a.eat('a');
+        a.eat('a','c','b');
+    }
+    public void eat(short i) {
+        System.out.println("short");
+    }
+    public void eat(int i) {
+        System.out.println("int");
+    }
+    public void eat(double i) {
+        System.out.println("double");
+    }
+    public void eat(long i) {
+        System.out.println("long");
+    }
+    public void eat(Character c) {
+        System.out.println("Character");
+    }
+    public void eat(Comparable c) {
+        System.out.println("Comparable");
+    }
+    public void eat(char ... c) {
+        System.out.println(Arrays.toString(c));
+        System.out.println("...");
+    }
+
+//    public void eat(char i) {
+//        System.out.println("char");
+//    }
+
+```
+## 泛型
+
