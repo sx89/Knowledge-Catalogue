@@ -4,6 +4,8 @@
 - [数据类型](#数据类型)
     - [基本数据类型](#基本数据类型)
         - [拆箱与装箱](#拆箱与装箱)
+    - [String ,StringBuffer,StringBuilder的区别](#string-stringbufferstringbuilder的区别)
+        - [StrinBuffer和StringBuilder的常用方法](#strinbuffer和stringbuilder的常用方法)
     - [引用类型](#引用类型)
 - [== 与 equal](#-与-equal)
 - [面向对象三大特性](#面向对象三大特性)
@@ -33,24 +35,156 @@
 - [泛型](#泛型)
 
 <!-- /TOC -->
-##数据类型
-
+## 数据类型
 
 ### 基本数据类型
 
-int 32位 4字节  
-short 16位
-float 32位
-double 64位
-long 64位
-char 16位
-byte 8位
-boolean 1位
+int 32位 4字节    
+short 16位  
+float 32位  
+double 64位  
+long 64位  
+char 16位  
+byte 8位  
+boolean 1位  
 自动拆箱和装箱的意思就是，计算数值时，integer会自动转为int进行计算。
 而当int传入类型为integer的引用时，int数值又会被包装为integer。在一个类里面,基本数据类型的属性尽量使用包装类.
 ####  拆箱与装箱
 
+### String ,StringBuffer,StringBuilder的区别
+StringBuffer、StringBuilder和String一样，也用来代表字符串。
 
+String类是不可变类，任何对String的改变都 会引发新的String对象的生成；
+
+StringBuffer和StringBuilder则是可变类，任何对它所指代的字符串的改变都不会产生新的对象。
+
+StringBufferd支持并发操作，线性安全的，适 合多线程中使用。StringBuilder不支持并发操作，线性不安全的，不适合多线程中使用。新引入的StringBuilder类不是线程安全的，但其在单线程中的性能比StringBuffer高。
+
+在字符串操作频繁的情况下,String的效率远低于其他两个:
+```java
+public class StringTest {
+ 
+	public static String BASEINFO = "Mr.Y";
+	public static final int COUNT = 2000000;
+ 
+	/**
+	 * 执行一项String赋值测试
+	 */
+	public static void doStringTest() {
+ 
+		String str = new String(BASEINFO);
+		long starttime = System.currentTimeMillis();
+		for (int i = 0; i < COUNT / 100; i++) {
+			str = str + "miss";
+		}
+		long endtime = System.currentTimeMillis();
+		System.out.println((endtime - starttime)
+				+ " millis has costed when used String.");
+	}
+ 
+	/**
+	 * 执行一项StringBuffer赋值测试
+	 */
+	public static void doStringBufferTest() {
+ 
+		StringBuffer sb = new StringBuffer(BASEINFO);
+		long starttime = System.currentTimeMillis();
+		for (int i = 0; i < COUNT; i++) {
+			sb = sb.append("miss");
+		}
+		long endtime = System.currentTimeMillis();
+		System.out.println((endtime - starttime)
+				+ " millis has costed when used StringBuffer.");
+	}
+ 
+	/**
+	 * 执行一项StringBuilder赋值测试
+	 */
+	public static void doStringBuilderTest() {
+ 
+		StringBuilder sb = new StringBuilder(BASEINFO);
+		long starttime = System.currentTimeMillis();
+		for (int i = 0; i < COUNT; i++) {
+			sb = sb.append("miss");
+		}
+		long endtime = System.currentTimeMillis();
+		System.out.println((endtime - starttime)
+				+ " millis has costed when used StringBuilder.");
+	}
+ 
+	/**
+	 * 测试StringBuffer遍历赋值结果
+	 * 
+	 * @param mlist
+	 */
+	public static void doStringBufferListTest(List<String> mlist) {
+		StringBuffer sb = new StringBuffer();
+		long starttime = System.currentTimeMillis();
+		for (String string : mlist) {
+			sb.append(string);
+		}
+		long endtime = System.currentTimeMillis();
+		System.out.println(sb.toString() + "buffer cost:"
+				+ (endtime - starttime) + " millis");
+	}
+ 
+	/**
+	 * 测试StringBuilder迭代赋值结果
+	 * 
+	 * @param mlist
+	 */
+	public static void doStringBuilderListTest(List<String> mlist) {
+		StringBuilder sb = new StringBuilder();
+		long starttime = System.currentTimeMillis();
+		for (Iterator<String> iterator = mlist.iterator(); iterator.hasNext();) {
+			sb.append(iterator.next());
+		}
+ 
+		long endtime = System.currentTimeMillis();
+		System.out.println(sb.toString() + "builder cost:"
+				+ (endtime - starttime) + " millis");
+	}
+ 
+	public static void main(String[] args) {
+		doStringTest();
+		doStringBufferTest();
+		doStringBuilderTest();
+ 
+		List<String> list = new ArrayList<String>();
+		list.add(" I ");
+		list.add(" like ");
+		list.add(" BeiJing ");
+		list.add(" tian ");
+		list.add(" an ");
+		list.add(" men ");
+		list.add(" . ");
+ 
+		doStringBufferListTest(list);
+		doStringBuilderListTest(list);
+	}
+ 
+}
+
+
+输出结果
+
+2711 millis has costed when used String.
+211 millis has costed when used StringBuffer.
+141 millis has costed when used StringBuilder.
+ I  like  BeiJing  tian  an  men  . buffer cost:1 millis
+ I  like  BeiJing  tian  an  men  . builder cost:0 millis
+
+```
+####StrinBuffer和StringBuilder的常用方法
+都继承自AbstractStringBuilder,主要的存储是 chars[] value,和 capicity
+
+StringBuffer s = new StringBuffer();  
+capicity=16
+
+StringBuffer sb2=new StringBuffer(“how are you?”)  
+初始化的时候,capicity=传入字符串的长度+16 即为内部chars[] value的长度
+
+扩容大小 尝试将新容量扩为大小变成2倍+2
 ### 引用类型
 在java里面除去基本数据类型的其它类型都是引用数据类型，自己定义的class类都是引用类型，可以像基本类型一样使用。
 
