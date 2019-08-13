@@ -44,6 +44,7 @@
 
 ### 基本数据类型
 
+short 16位  
 int 32位 4字节    
 short 16位  
 float 32位  

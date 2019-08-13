@@ -1,3 +1,41 @@
+
+
+
+# 内存泄漏与内存溢出
+## 内存泄漏
+
+java的对象空间在堆中,每分配一个对象堆指针就是加一;所以java的堆内存的分配效率可以与c++媲美;但是堆的内存会逐渐充满碎片,这时候需要gc来回收
+
+当引用被分配新的值或者赋值为null的时候,原来的对象空间应该在适当时间被gc回收;
+
+gc清理的时候采用引用计数法,引用连接至新对象,计数加一,引用减少则计数减一,引用为0时进行删除
+
+内存泄漏就是对象被分配的内存没有被回收; 长生命周期的对象有一个短生命周期的内存,会导致内存泄漏
+例子有:容器的内存泄漏,各种连接的close忘记,单例模式引用了其他短声明周期对象
+```java
+1.	public class Simple {  
+2.	   
+3.	    Object object;  
+4.	   
+5.	    public void method1(){  
+6.	        object = new Object();  
+7.	    //...其他代码  
+8.	    }  
+9.	}  
+
+```
+这里的object实例，其实我们期望它只作用于method1()方法中，且其他地方不会再用到它，但是，当method1()方法执行完成后，object对象所分配的内存不会马上被认为是可以被释放的对象，只有在Simple类创建的对象被释放后才会被释放，严格的说，这就是一种内存泄露。
+
+所以java内存中,一块内存所有的引用都没了没关系,但如果一个长周期对象一直占着一块内存,是很浪费资源的
+
+应对的办法是;减小对象的作用域,或者及时对对象复制为null
+各种连接需要close也是这个道理,长周期对象短周期引用
+
+## 内存溢出
+
+
+
+
 # JVM类生命周期概述：加载时机与加载过程
 原文链接：https://blog.csdn.net/justloveyou_/article/details/72466105
 
@@ -6,6 +44,20 @@
 虚拟机把描述类的数据从Class文件**加载到内存**，并对数据进行校验，转换解析和**初始化**，最终形成可以被虚拟机直接使用的Java类型的过程就是虚拟机的**类加载机制**。
 
 JVM类加载机制主要包括两个问题：类加载的时机与步骤 和 类加载的方式。
+
+
+## 类的生命周期
+
+包括以下 7 个阶段：
+
+-  **加载（Loading）** 
+-  **验证（Verification）** 
+-  **准备（Preparation）** 
+-  **解析（Resolution）** 
+-  **初始化（Initialization）** 
+- 使用（Using）
+- 卸载（Unloading）
+
 
 ## 类加载的时机与步骤
 **运行时动态链接**  
@@ -900,4 +952,125 @@ public class StaticTest {
  ```
  参考博文: https://blog.csdn.net/justloveyou_/article/details/72466416
 
+ # 强引用,软引用,弱引用,虚引用
+
+ <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-08-13_14-42-54.jpg" width="420px"/> </div><br>
+
+ ## 强引用
+当内存空间不足时，Java虚拟机宁愿抛出OutOfMemoryError错误，使程序异常终止，也不会靠随意回收具有强引用的对象来解决内存不足的问题。
+
+如果强引用对象不使用时，需要弱化从而使GC能够回收，如下：
+```java
+    strongReference = null;
+```
+显式地设置**strongReference对象为null**，或**让其超出对象的生命周期范围**，则gc认为该对象不存在引用，这时就可以回收这个对象。具体什么时候收集这要取决于GC算法。
+
+所谓超出对象生命周期范围:  
+在test方法的内部有一个强引用，这个引用保存在Java栈中，而真正的引用内容(Object)保存在Java堆中。 当这个方法运行完成后，就会退出方法栈，则引用对象的引用数为0，这个对象会被回收。
+
+```java
+  public void test() {
+        Object strongReference = new Object();
+        // 省略其他操作
+    }
+```
+
+
+但是如果这个strongReference是全局变量时，就需要在不用这个对象时赋值为null，因为强引用不会被垃圾回收。
+
+### 数组的取消强引用
+
+<div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-08-13_14-51-40.jpg" width="420px"/> </div><br>
+
+在ArrayList类中定义了一个elementData数组，在调用clear方法清空数组时，每个数组元素被赋值为null。
+不同于elementData=null，强引用仍然存在，避免在后续调用add()等方法添加元素时进行内存的重新分配。
+使用如clear()方法内存数组中存放的引用类型进行内存释放特别适用，这样就可以及时释放内存。
+
+
+ ## 软引用
+应用场景: 软引用可用来实现内存敏感的高速缓存。
+
+被软引用关联的对象只有在内存不够的情况下才会被回收。
+
+使用 SoftReference 类来创建软引用。
+
+```java
+Object obj = new Object();
+SoftReference<Object> sf = new SoftReference<Object>(obj);
+obj = null;  // 使对象只被软引用关联
+```
+
+应用场景：
+
+浏览器的后退按钮。按后退时，这个后退时显示的网页内容是重新进行请求还是从缓存中取出呢？这就要看具体的实现策略了。
+
+```java
+    // 获取浏览器对象进行浏览
+    Browser browser = new Browser();
+    // 从后台程序加载浏览页面
+    BrowserPage page = browser.getPage();
+    // 将浏览完毕的页面置为软引用
+    SoftReference softReference = new SoftReference(page);
+
+    // 回退或者再次浏览此页面时
+    if(softReference.get() != null) {
+        // 内存充足，还没有被回收器回收，直接获取缓存
+        page = softReference.get();
+    } else {
+        // 内存不足，软引用的对象已经回收
+        page = browser.getPage();
+        // 重新构建软引用
+        softReference = new SoftReference(page);
+    }
+
+```
+
+
+ ## 弱引用
+
+ 被弱引用关联的对象一定会被回收，也就是说它只能存活到下一次垃圾回收发生之前。由于垃圾回收器是一个优先级很低的线程，因此不一定会很快发现那些只具有弱引用的对象。
+
+
+使用 WeakReference 类来创建弱引用。
+
+```java
+Object obj = new Object();
+WeakReference<Object> wf = new WeakReference<Object>(obj);
+obj = null;
+```
+
+下面的代码会让一个弱引用再次变为一个强引用：
+通过用一个新的引用来指向 弱引用返回的对象
+```java
+    String str = new String("abc");
+    WeakReference<String> weakReference = new WeakReference<>(str);
+    // 弱引用转强引用
+    String strongReference = weakReference.get();
+```
+
+
+ ## 虚引用
+
+
  
+又称为幽灵引用或者幻影引用，一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象。
+
+为一个对象设置虚引用的唯一目的是能在这个对象被回收时收到一个系统通知。
+
+使用 PhantomReference 来创建虚引用。
+
+```java
+Object obj = new Object();
+PhantomReference<Object> pf = new PhantomReference<Object>(obj, null);
+obj = null;
+```
+
+ ## 引用队列
+
+ 当gc（垃圾回收线程）准备回收一个对象时，如果发现它还仅有软引用(或弱引用，或虚引用)指向它，就会在回收该对象之前，把这个软引用（或弱引用，或虚引用）加入到与之关联的引用队列（ReferenceQueue）中。
+
+
+当软引用（或弱引用，或虚引用）对象所指向的对象被回收了，那么这个引用对象本身就没有价值了，如果程序中存在大量的这类对象（注意，我们创建的软引用、弱引用、虚引用对象本身是个强引用，不会自动被gc回收），就会浪费内存。因此我们这就可以手动回收位于引用队列中的引用对象本身。
+
+ # 对象的生命周期
+
