@@ -22,3 +22,7 @@ ArrayList 实现了Cloneable接口，即覆盖了函数clone()，能被克隆。
 ArrayList 实现java.io.Serializable接口，这意味着ArrayList支持序列化，能通过序列化去传输。
 
 ArrayList中的操作不是线程安全的,所以，建议在单线程中才使用ArrayList，而在多线程中可以选择CopyOnWriteArrayList。
+
+如果通过无参构造的话，初始数组容量为0，当真正对数组进行添加时，才真正分配容量。每次按照1.5倍（位运算）的比率通过copeOf的方式扩容。
+
+## CopyOnWriteList
