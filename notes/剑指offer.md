@@ -1,4 +1,64 @@
+>借鉴CyC大佬复习框架,**代码原创,思路更新**
 
+# 3. 数组中重复的数字
+
+[NowCoder](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+在一个长度为 n 的数组里的所有数字都在 0 到 n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字是重复的，也不知道每个数字重复几次。请找出数组中任意一个重复的数字。
+
+```html
+Input:
+{2, 3, 1, 0, 2, 5}
+
+Output:
+2
+```
+
+## 解题思路
+
+要求时间复杂度 O(N)，空间复杂度 O(1)。因此不能使用排序的方法，也不能使用额外的标记数组。
+
+对于这种数组元素在 [0, n-1] 范围内的问题，可以将值为 i 的元素调整到第 i 个位置上进行求解。
+
+以 (2, 3, 1, 0, 2, 5) 为例，遍历到位置 4 时，该位置上的数为 2，但是第 2 个位置上已经有一个 2 的值了，因此可以知道 2 重复：
+
+
+```java
+  public class Solution {
+            // Parameters:
+            //    numbers:     an array of integers
+            //    length:      the length of array numbers
+            //    duplication: (Output) the duplicated number in the array number,length of duplication array is 1,so using duplication[0] = ? in implementation;
+            //                  Here duplication like pointor in C/C++, duplication[0] equal *duplication in C/C++
+            //    这里要特别注意~返回任意重复的一个，赋值duplication[0]
+            // Return value:       true if the input is valid, and there are some duplications in the array number
+            //                     otherwise false
+            public boolean duplicate(int numbers[], int length, int[] duplication) {
+                if (numbers == null || length < 0) {
+                    return false;
+                }
+                for (int i = 0; i < length; i++) {
+                    while (i != numbers[i]) {
+                        if (numbers[i] == numbers[numbers[i]]) {
+                            duplication[0] = numbers[i];
+                            return true;
+                        }
+                        swap(i, numbers[i], numbers);
+                    }
+
+                }
+                return false;
+            }
+
+            private void swap(int index1, int index2, int[] numbers) {
+                int c = numbers[index1];
+                numbers[index1] = numbers[index2];
+                numbers[index2] = c;
+            }
+        }
+```
 # 4. 二维数组中的查找
 
 [NowCoder](https://www.nowcoder.com/practice/abc3fe2ce8e146608e868a70efebf62e?tpId=13&tqId=11154&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -88,6 +148,8 @@ public class Solution {
 
 时间O(n) 空间O(1)
 
+**提前遍历一遍字符串,可以确定里面空格的个数,复杂度依然保持O(n)**
+
 在字符串尾部填充任意字符，使得字符串的长度等于替换之后的长度。因为一个空格要替换成三个字符（%20），因此当遍历到一个空格时，需要在尾部填充两个任意字符。
 
 令 P1 指向字符串原来的末尾位置，P2 指向字符串现在的末尾位置。P1 和 P2 从后向前遍历，当 P1 遍历到一个空格时，就需要令 P2 指向的位置依次填充 02%（注意是逆序的），否则就填充上 P1 指向字符的值。
@@ -124,6 +186,9 @@ public String replaceSpace(StringBuffer str) {
 ## 题目描述
 
 从尾到头反过来打印出每个结点的值。
+
+时间复杂度一般是O(n),空间复杂度可以是O(1)或者O(n),另外还要注意是否可以改变输入的数据结构
+
 
 ## 解题思路
 
@@ -226,3 +291,98 @@ public class Solution {
     }
 }
 ```
+
+
+
+
+# 7. 重建二叉树
+
+[NowCoder](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&tqId=11157&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+根据二叉树的前序遍历和中序遍历的结果，重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
+
+
+## 解题思路
+数组的长度用length而不是size  
+
+本题treenode的构造器没有无参构造器,注意报错  
+
+HashMap<integer,integer> = new HashMap<integer,integer>();等号两遍泛型都填好,防止歧义;注意要导入包`import java.util.HashMap`
+
+
+前序遍历的第一个值为根节点的值，使用这个值将中序遍历结果分成两部分，左部分为树的左子树中序遍历结果，右部分为树的右子树中序遍历的结果。
+```java
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+import java.util.HashMap;
+public class Solution {
+    HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
+    public TreeNode reConstructBinaryTree(int [] pre,int [] in) {
+        if(pre==null||in==null){
+            return null;
+        }
+        for(int i = 0;i<in.length;i++){
+            map.put(in[i],i);
+        }
+        return reConstructBinaryTree(pre,0,pre.length-1,0);
+    }
+    public TreeNode reConstructBinaryTree(int [] pre,int preL,int preR,int inL){
+        if(preL>preR){
+            return null;
+        }
+        int rootVal = pre[preL];
+        TreeNode tree = new TreeNode(rootVal);
+        int inIndex = map.get(rootVal);
+        int leftSize = inIndex-inL;
+        tree.left = reConstructBinaryTree(pre,preL+1,preL+leftSize,inL);
+        tree.right = reConstructBinaryTree(pre,preL+leftSize+1,preR,inIndex+1);
+        return tree;
+    }
+}
+```
+
+
+# 9. 用两个栈实现队列
+
+[NowCoder](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+用两个栈来实现一个队列，完成队列的 Push 和 Pop 操作。
+
+## 解题思路
+
+in 栈用来处理入栈（push）操作，out 栈用来处理出栈（pop）操作。一个元素进入 in 栈之后，出栈的顺序被反转。当元素要出栈时，需要先进入 out 栈，此时元素出栈顺序再一次被反转，因此出栈顺序就和最开始入栈顺序是相同的，先进入的元素先退出，这就是队列的顺序。
+
+
+```java
+Stack<Integer> in = new Stack<Integer>();
+Stack<Integer> out = new Stack<Integer>();
+
+public void push(int node) {
+    in.push(node);
+}
+
+public int pop() throws Exception {
+    //要等stack2空了在往里面添加元素,stack1里面的元素会压在
+    //stack2内部的元素上面,破坏了先进先出规则
+    if (out.isEmpty())
+        while (!in.isEmpty())
+            out.push(in.pop());
+
+    if (out.isEmpty())
+        throw new Exception("queue is empty");
+
+    return out.pop();
+}
+```
+
