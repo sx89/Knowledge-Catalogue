@@ -350,6 +350,60 @@ public class Solution {
 }
 ```
 
+# 8. 二叉树的下一个结点
+
+[NowCoder](https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?tpId=13&tqId=11210&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+
+## 解题思路
+
+① 如果一个节点的右子树不为空，那么该节点的下一个节点是右子树的最左节点；
+
+<div align="center"> <img src="pics/b0611f89-1e5f-4494-a795-3544bf65042a.gif" width="220px"/> </div><br>
+
+② 否则，向上找第一个左链接指向的树包含该节点的祖先节点。
+
+```java
+public class Solution {
+    public TreeLinkNode GetNext(TreeLinkNode pNode) {
+        if (pNode == null) {
+            return null;
+        }
+        if (pNode.right != null) {
+            TreeLinkNode node = pNode.right;
+            while (node.left != null) {
+                node = node.left;
+            }
+            return node;
+        } else {
+            while (pNode.next != null) {
+                TreeLinkNode parent = pNode.next;
+                if (parent.left == pNode) {
+                    return parent;
+                }
+                pNode = pNode.next;
+
+            }
+        }
+        return null;
+    }
+}
+
+class TreeLinkNode {
+    int val;
+    TreeLinkNode left = null;
+    TreeLinkNode right = null;
+    TreeLinkNode next = null;
+
+    TreeLinkNode(int val) {
+        this.val = val;
+    }
+}
+```
+
 
 # 9. 用两个栈实现队列
 
@@ -386,3 +440,285 @@ public int pop() throws Exception {
 }
 ```
 
+
+# 10.1 斐波那契数列
+
+[NowCoder](https://www.nowcoder.com/practice/c6c7742f5ba7442aada113136ddea0c3?tpId=13&tqId=11160&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+求斐波那契数列的第 n 项，n <= 39。
+
+<div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}0&&{n=0}\\1&&{n=1}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br>
+
+
+## 解题思路
+
+如果使用递归求解，会重复计算一些子问题。例如，计算 f(4) 需要计算 f(3) 和 f(2)，计算 f(3) 需要计算 f(2) 和 f(1)，可以看到 f(2) 被重复计算了。
+<div align="center"> <img src="pics/c13e2a3d-b01c-4a08-a69b-db2c4e821e09.png" width="350px"/> </div><br>
+
+
+递归是将一个问题划分成多个子问题求解，动态规划也是如此，但是动态规划会把子问题的解缓存起来，从而避免重复求解子问题。
+
+```java
+ public int Fibonacci(int n) {
+        int[] fibs = calFib();
+        return fibs[n];
+    }
+
+    //把之前计算的fib数列存储起来,既可以防止重复计算,
+    //又可以在取值的时候迅速拿到值
+    private int[] calFib() {
+        int[] fibs = new int[40];
+        fibs[1] = 1;
+        for (int i = 2; i < 40; i++) {
+            fibs[i] = fibs[i - 1] + fibs[i - 2];
+        }
+        return fibs;
+    }
+```
+
+# 10.2 矩形覆盖
+
+[NowCoder](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&tqId=11163&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+我们可以用 2\*1 的小矩形横着或者竖着去覆盖更大的矩形。请问用 n 个 2\*1 的小矩形无重叠地覆盖一个 2\*n 的大矩形，总共有多少种方法？
+
+<div align="center"> <img src="pics/b903fda8-07d0-46a7-91a7-e803892895cf.gif" width="100px"> </div><br>
+
+## 解题思路
+
+当 n 为 1 时，只有一种覆盖方法：
+
+<div align="center"> <img src="pics/f6e146f1-57ad-411b-beb3-770a142164ef.png" width="100px"> </div><br>
+
+当 n 为 2 时，有两种覆盖方法：
+
+<div align="center"> <img src="pics/fb3b8f7a-4293-4a38-aae1-62284db979a3.png" width="200px"> </div><br>
+
+要覆盖 2\*n 的大矩形，可以先覆盖 2\*1 的矩形，再覆盖 2\*(n-1) 的矩形；或者先覆盖 2\*2 的矩形，再覆盖 2\*(n-2) 的矩形。
+
+**2\*2有两种覆盖方法,但其中一种和2\*1重合**
+
+而覆盖 2\*(n-1) 和 2\*(n-2) 的矩形可以看成子问题。该问题的递推公式如下：
+
+<!-- <div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}1&&{n=1}\\2&&{n=2}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br> -->
+
+<div align="center"> <img src="pics/508c6e52-9f93-44ed-b6b9-e69050e14807.jpg" width="350px"> </div><br>
+
+非递归写法:
+```java
+  public int RectCover(int target) {
+        int pre1 = 1;
+        int pre2 = 2;
+        if (target <= 2) {
+            return target;
+        }
+        int result = -1;
+        for (int i = 3; i <= target; i++) {
+            result = pre1 + pre2;
+            pre1 = pre2;
+            pre2 = result;
+        }
+        return result;
+    }
+```
+递归写法:
+```java
+public int RectCover2(int target) {
+        if (target < 1) {
+            return 0;
+        } else if (target == 1 || target == 2) {
+            return target;
+        } else {
+            return RectCover(target-1) + RectCover(target-2);
+        }
+    }
+```
+
+# 10.3 跳台阶
+
+[NowCoder](https://www.nowcoder.com/practice/8c82a5b80378478f9484d87d1c5f12a4?tpId=13&tqId=11161&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+
+<div align="center"> <img src="pics/9dae7475-934f-42e5-b3b3-12724337170a.png" width="380px"> </div><br>
+
+## 解题思路
+
+当 n = 1 时，只有一种跳法：
+
+<div align="center"> <img src="pics/72aac98a-d5df-4bfa-a71a-4bb16a87474c.png" width="250px"> </div><br>
+
+当 n = 2 时，有两种跳法：
+
+<div align="center"> <img src="pics/1b80288d-1b35-4cd3-aa17-7e27ab9a2389.png" width="300px"> </div><br>
+
+跳 n 阶台阶，可以先跳 1 阶台阶，再跳 n-1 阶台阶；或者先跳 2 阶台阶，再跳 n-2 阶台阶。而 n-1 和 n-2 阶台阶的跳法可以看成子问题，该问题的递推公式为：
+
+<div align="center"> <img src="pics/508c6e52-9f93-44ed-b6b9-e69050e14807.jpg" width="350px"> </div><br>
+
+
+递归写法:
+```java
+ public int JumpFloor(int target) {
+        if (target == 0) {
+            return 0;
+        } else if (target == 1 || target == 2) {
+            return target;
+        } else {
+            return JumpFloor(target - 1) + JumpFloor(target - 2);
+        }
+    }
+    ```
+非递归写法
+```java
+public int JumpFloor(int target) {
+        if (target <= 2) {
+            return target;
+        } else {
+            int pre1 = 1;
+            int pre2 = 2;
+            int result = 0;
+            for (int i = 3; i <= target; i++) {
+                result = pre1 + pre2;
+                pre1 = pre2;
+                pre2 = result;
+            }
+            return result;
+        }
+    }
+```
+
+
+# 10.4 变态跳台阶
+
+[NowCoder](https://www.nowcoder.com/practice/22243d016f6b47f2a6928b4313c85387?tpId=13&tqId=11162&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级... 它也可以跳上 n 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+
+<div align="center"> <img src="pics/cd411a94-3786-4c94-9e08-f28320e010d5.png" width="380px"> </div><br>
+
+## 解题思路
+
+### 动态规划
+
+```java
+public int JumpFloorII(int target) {
+        if (target <= 0) {
+            return 0;
+        }
+        if (target <= 2) {
+            return target;
+        }
+        int[] array = new int[target + 1];
+        array[1] = 1;
+        array[2] = 2;
+
+        for (int i = 3; i <= target; i++) {
+            for (int j = 1; j < i; j++) {
+                array[i] = array[i] + array[j];
+            }
+            array[i] = array[i] + 1;
+        }
+        return array[target];
+    }
+```
+### 数学推导
+
+跳上 n-1 级台阶，可以从 n-2 级跳 1 级上去，也可以从 n-3 级跳 2 级上去...，那么
+
+```
+f(n-1) = f(n-2) + f(n-3) + ... + f(0)
+```
+
+同样，跳上 n 级台阶，可以从 n-1 级跳 1 级上去，也可以从 n-2 级跳 2 级上去... ，那么
+
+```
+f(n) = f(n-1) + f(n-2) + ... + f(0)
+```
+
+综上可得
+
+```
+f(n) - f(n-1) = f(n-1)
+```
+
+即
+
+```
+f(n) = 2*f(n-1)
+```
+
+所以 f(n) 是一个等比数列
+
+```java
+public int JumpFloorII(int target) {
+    //返回值强转,底数与指数,不用导包
+    return (int) Math.pow(2, target - 1);
+}
+```
+
+
+
+# 11. 旋转数组的最小数字
+
+[NowCoder](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个非递减排序的数组的一个旋转，输出旋转数组的最小元素。
+
+
+## 解题思路
+
+将旋转数组对半分可以得到一个包含最小元素的新旋转数组，以及一个非递减排序的数组。新的旋转数组的数组元素是原数组的一半，从而将问题规模减少了一半，这种折半性质的算法的时间复杂度为 O(logN)（为了方便，这里将 log<sub>2</sub>N 写为 logN）。
+
+
+此时问题的关键在于确定对半分得到的两个数组哪一个是旋转数组，哪一个是非递减数组。我们很容易知道非递减数组的第一个元素一定小于等于最后一个元素。
+
+通过修改二分查找算法进行求解（l 代表 low，m 代表 mid，h 代表 high）：
+
+- 当 nums[m] <= nums[h] 时，表示 [m, h] 区间内的数组是非递减数组，[l, m] 区间内的数组是旋转数组，此时令 h = m；
+- 否则 [m + 1, h] 区间内的数组是旋转数组，令 l = m + 1。
+
+```java
+    public int minNumberInRotateArray(int[] array) {
+
+        if (array.length <= 0) {
+            return 0;
+        }
+        int l = 0;
+        int h = array.length - 1;
+        while (l < h) {
+            int m = l + (h - l) / 2;
+            if (array[l] == array[m] && array[m] == array[h]) {
+                return orderFind(array, l, h);
+            } else if (array[m] <= array[h]) {
+                h = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return array[l];
+    }
+
+    private int orderFind(int[] array, int l, int h) {
+        if (array.length <= 0) {
+            return 0;
+        }
+        for (int i = l; i < h; i++) {
+            if (array[i] > array[i + 1]) {
+                return array[i + 1];
+            }
+        }
+        return array[l];
+    }
+}
+```
