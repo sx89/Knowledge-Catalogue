@@ -1,4 +1,4 @@
-package java.jichu;
+package javacode.jichu;
 
 import java.util.ArrayList;
 import java.util.Iterator;
