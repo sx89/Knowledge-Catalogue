@@ -1679,7 +1679,8 @@ InstantiationException  当应用程序试图使用Class类中的newInstance()�
 # 泛型
 ## 定义
 
-泛型就是把传入的类型参数化
+泛型就是把   类型   参数化,使类型可以灵活变动
+
 ```java
 public class Box<T> {
     // T stands for "Type"
@@ -1690,57 +1691,217 @@ public class Box<T> {
 ```
 泛型只在编译阶段有效。在编译之后程序会采取去泛型化的措施。
 
-## 经典问题
-　1. Java中的泛型是什么 ? 使用泛型的好处是什么?
+## 好处
 
-　　这是在各种Java泛型面试中，一开场你就会被问到的问题中的一个，主要集中在初级和中级面试中。那些拥有Java1.4或更早版本的开发背景的人都知道，在集合中存储对象并在使用前进行类型转换是多么的不方便。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
+- 提高了代码的复用性
+- 约束了代码中的类型,提高了安全性
 
-　　2. Java的泛型是如何工作的 ? 什么是类型擦除 ?
+## 泛型类
+基本写法
+```java
+class 类名称 <泛型标识：可以随便写任意标识号，标识指定的泛型的类型>{
+  private 泛型标识 /*（成员变量类型）*/ var; 
+  .....
 
-　　这是一道更好的泛型面试题。泛型是通过类型擦除来实现的，编译器在编译时擦除了所有类型相关的信息，所以在运行时不存在任何类型相关的信息。例如List<String>在运行时仅用一个List来表示。这样做的目的，是确保能和Java 5之前的版本开发二进制类库进行兼容。你无法在运行时访问到类型参数，因为编译器已经把泛型类型转换成了原始类型。根据你对这个泛型问题的回答情况，你会得到一些后续提问，比如为什么泛型是由类型擦除来实现的或者给你展示一些会导致编译器出错的错误泛型代码。请阅读我的Java中泛型是如何工作的来了解更多信息。
+  }
+}
+```
+举例
+```java
+//此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型
+//在实例化泛型类时，必须指定T的具体类型
+public class Generic<T>{ 
+    //key这个成员变量的类型为T,T的类型由外部指定  
+    private T key;
 
-　　3. 什么是泛型中的限定通配符和非限定通配符 ?
+    public Generic(T key) { //泛型构造方法形参key的类型也为T，T的类型由外部指定
+        this.key = key;
+    }
 
-　　这是另一个非常流行的Java泛型面试题。限定通配符对类型进行了限制。有两种限定通配符，一种是<? extends T>它通过确保类型必须是T的子类来设定类型的上界，另一种是<? super T>它通过确保类型必须是T的父类来设定类型的下界。泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。另一方面<?>表示了非限定通配符，因为<?>可以用任意类型来替代。更多信息请参阅我的文章泛型中限定通配符和非限定通配符之间的区别。
+    public T getKey(){ //泛型方法getKey的返回值类型为T，T的类型由外部指定
+        return key;
+    }
+}
+```
 
-　　4. List<? extends T>和List <? super T>之间有什么区别 ?
+## 泛型接口
+举例
+```java
+//定义一个泛型接口
+public interface Generator<T> {
+    public T next();
+}
+```
 
-　　这和上一个面试题有联系，有时面试官会用这个问题来评估你对泛型的理解，而不是直接问你什么是限定通配符和非限定通配符。这两个List的声明都是限定通配符的例子，List<? extends T>可以接受任何继承自T的类型的List，而List<? super T>可以接受任何T的父类构成的List。例如List<? extends Number>可以接受List<Integer>或List<Float>。在本段出现的连接中可以找到更多信息。
+实现泛型接口举例,未传入泛型实参时：
+```java
+/**
+ * 未传入泛型实参时，与泛型类的定义相同，在声明类的时候，需将泛型的声明也一起加到类中
+ * 即：class FruitGenerator<T> implements Generator<T>{
+ * 如果不声明泛型，如：class FruitGenerator implements Generator<T>，编译器会报错："Unknown class"
+ */
+class FruitGenerator<T> implements Generator<T>{
+    @Override
+    public T next() {
+        return null;
+    }
+}
+```
+当实现泛型接口的类，传入泛型实参时：
+```java
+/**
+ * 传入泛型实参时：
+ * 定义一个生产器实现这个接口,虽然我们只创建了一个泛型接口Generator<T>
+ * 但是我们可以为T传入无数个实参，形成无数种类型的Generator接口。
+ * 在实现类实现泛型接口时，如已将泛型类型传入实参类型，则所有使用泛型的地方都要替换成传入的实参类型
+ * 即：Generator<T>，public T next();中的的T都要替换成传入的String类型。
+ */
+public class FruitGenerator implements Generator<String> {
 
-　　5. 如何编写一个泛型方法，让它能接受泛型参数并返回泛型类型?
+    private String[] fruits = new String[]{"Apple", "Banana", "Pear"};
 
-　　编写泛型方法并不困难，你需要用泛型类型来替代原始类型，比如使用T, E or K,V等被广泛认可的类型占位符。泛型方法的例子请参阅Java集合类框架。最简单的情况下，一个泛型方法可能会像这样:
+    @Override
+    public String next() {
+        Random rand = new Random();
+        return fruits[rand.nextInt(3)];
+    }
+}
+```
 
-      public V put(K key, V value) {
 
-              return cache.put(key, value);
 
-      }
+## 泛型方法
+泛型方法的使用比 泛型接口和泛型类要复杂,好好看实例:
+```java
+/**
+ * 泛型方法的基本介绍
+ * @param tClass 传入的泛型实参
+ * @return T 返回值为T类型
+ * 说明：
+ *     1）public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法。
+ *     2）只有声明了<T>的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法。
+ *     3）<T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T。
+ *     4）与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型。
+ */
+public <T> T genericMethod(Class<T> tClass)throws InstantiationException ,
+  IllegalAccessException{
+        T instance = tClass.newInstance();
+        return instance;
+}
+```
 
-　  6. Java中如何使用泛型编写带有参数的类?
 
-　　这是上一道面试题的延伸。面试官可能会要求你用泛型编写一个类型安全的类，而不是编写一个泛型方法。关键仍然是使用泛型类型来代替原始类型，而且要使用JDK中采用的标准占位符。
+## 泛型通配符
+### 通配符介绍
 
-　　7. 编写一段泛型程序来实现LRU缓存?
+类型通配符用?表示,它跟其他传入的integer,string一样**是一个类型实参,而不是类型形参.**可以把它看成是所有类型的父类.
 
-　　对于喜欢Java编程的人来说这相当于是一次练习。给你个提示，LinkedHashMap可以用来实现固定大小的LRU缓存，当LRU缓存已经满了的时候，它会把最老的键值对移出缓存。LinkedHashMap提供了一个称为removeEldestEntry()的方法，该方法会被put()和putAll()调用来删除最老的键值对。当然，如果你已经编写了一个可运行的JUnit测试，你也可以随意编写你自己的实现代码。
+之所以有泛型统配符是因为在使用T做泛型时:
+```java
+//泛型类
+class FruitGenerator<T> implements Generator<T>{
+    @Override
+    public T next() {
+        return null;
+    }
+}
+//为泛型Number准备的方法,不能给Integer使用
+public void showKeyValue1(Generic<Number> obj){
+    Log.d("泛型测试","key value is " + obj.getKey());
+}
 
-　　8. 你可以把List<String>传递给一个接受List<Object>参数的方法吗？
 
-　　对任何一个不太熟悉泛型的人来说，这个Java泛型题目看起来令人疑惑，因为乍看起来String是一种Object，所以List<String>应当可以用在需要List<Object>的地方，但是事实并非如此。真这样做的话会导致编译错误。如果你再深一步考虑，你会发现Java这样做是有意义的，因为List<Object>可以存储任何类型的对象包括String, Integer等等，而List<String>却只能用来存储Strings。　
+//验证如下:
+Generic<Integer> gInteger = new Generic<Integer>(123);
+Generic<Number> gNumber = new Generic<Number>(456);
 
-       List<Object> objectList;
-       List<String> stringList;
-       objectList = stringList;  //compilation error incompatible types
- 　9. Array中可以用泛型吗?
+showKeyValue(gNumber);
+//即使Number是Integer的父类,为Number准备的方法"showKeyValue"并不能给
+//Integer泛型的方法使用
+// showKeyValue这个方法编译器会为我们报错：Generic<java.lang.Integer> 
+// cannot be applied to Generic<java.lang.Number>
+// showKeyValue(gInteger);
+```
+即使Number是Integer的父类,为Number准备的方法"showKeyValue"并不能给Integer泛型的方法使用
 
-　　这可能是Java泛型面试题中最简单的一个了，当然前提是你要知道Array事实上并不支持泛型，这也是为什么Joshua Bloch在Effective Java一书中建议使用List来代替Array，因为List可以提供编译期的类型安全保证，而Array却不能。
 
-　　10. 如何阻止Java中的类型未检查的警告?
+改成通配符,就可以把这个方法给Integer和Number来使用了
+```java
+public void showKeyValue1(Generic<?> obj){
+    Log.d("泛型测试","key value is " + obj.getKey());
+}
+```
 
-　　如果你把泛型和原始类型混合起来使用，例如下列代码，Java 5的javac编译器会产生类型未检查的警告，例如　　
+### 通配符的上下边界
+**Plate<？ extends Fruit>**
+一个能放水果以及一切是水果派生类(香蕉,苹果)的盘子。
 
-       List<String> rawList = new ArrayList()
+
+**Plate<？ super Fruit>**
+一个能放水果以及一切是水果基类(食物类,Object类)的盘子。
+
+**PECS原则**  
+最后看一下什么是PECS（Producer Extends Consumer Super）原则，已经很好理解了：  
+频繁往外读取内容的，适合用上界Extends。  
+因为保证了粒度最大也用有Fruit的信息,所以读取出来能保留Fruit的一些特性.但如果是存的话,就要分门别类的存,很麻烦.
+
+经常往里插入的，适合用下界Super。  
+因为保证了最小粒度是Fruit,所以存Food类,Object类都是可以存储的.但是取的时候如果取出来的是Object类不转型,就会丢失很多信息.
+
+## 泛型擦除
+
+泛型在编译的时候,会被具体的类型替换掉,所以在装入jvm之后,我们能拿到的本来是泛型类型信息T,变成了Object(如果规定了泛型下界,比如 T extends String ,那么拿到的就是下界String)
+
+举例:
+```java
+List<String> l1 = new ArrayList<String>();
+List<Integer> l2 = new ArrayList<Integer>();
+		
+System.out.println(l1.getClass() == l2.getClass());
+
+打印的结果为 true 是因为 List<String>和 List<Integer>在 jvm 中的 Class 都是 List.class。
+
+反编译的结果如下
+public class GenericEraseTest {
+	public static void main(String[] args){
+		ArrayList stringList = new ArrayList();
+		ArrayList intList = new ArrayList();
+		
+		System.out.println(stringList.getClass() == intList.getClass());
+	}
+}
+
+```
+在C++或者C#中，泛型无论是在源码，还是在编译的中间代码，亦或者是在运行期中，泛型都是真实存在的，我们都可以正常的使用它，List<String>和List<Integer>就是两个不同的类，但是在java中并不是这样的。
+
+### 泛型擦除的优缺点
+优点  
+提高编译速度,List<String>和List<Integer>将生成两个不同的类，这样很容易导致类膨胀的问题，使得代码编译的速度降低。
+
+缺点  
+无法在运行的代码中获取到泛型的类型信息,所以不能再创建实例
+
+### java中没有泛型数组的原因
+
+
+java中数组的缺陷:
+Object[]数组可以是任何数组的父类，或者说，任何一个数组都可以向上转型成它在定义时指定元素类型的父类的数组，这个时候如果我们往里面放不同于原始数据类型 但是满足后来使用的父类类型的话，编译不会有问题，但是在运行时会检查加入数组的对象的类型，于是会抛ArrayStoreException：
+
+```java
+//创建了一个String数组
+String[] strArray = new String[20];
+//把数组转成了Object类型
+Object[] objArray = strArray;
+//再往数组中添加一个Integer类型,编译时不会报错,运行时会报错
+objArray[0] = new Integer(1); // throws ArrayStoreException at runtime
+
+```
+因为java的泛型会在运行时擦除类型信息,上面数组至少在运行时可以被检查出错误,而泛型数组由于类型信息被擦除,往mapArray中存放map<String,String>运行时也不能检查出错误,直到系统崩溃
+```java
+Map<Integer, String>[] mapArray = new Map<Integer, String>[20];
+```
+
+
        
 # 特性
 ## Java 各版本的新特性
