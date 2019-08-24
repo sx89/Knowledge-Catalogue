@@ -1969,6 +1969,209 @@ CLASS：注解在class文件中可用，但会被VM丢弃（该类型的注解�
 
 RUNTIME：注解信息将在运行期(JVM)也保留，因此可以通过反射机制读取注解的信息（源码、class文件和执行的时候都有注解的信息），如SpringMvc中的@Controller、@Autowired、@RequestMapping等。
 
+# 内部类
+## 定义
+内部类是指在一个外部类的内部再定义一个类。内部类作为外部类的一个成员，并且依附于外部类而存在的。内部类可为静态，可用protected和private修饰（而外部类只能使用public和缺省的包访问权限）。内部类主要有以下几类：成员内部类、局部内部类、静态内部类、匿名内部类
+## 特点
+(1)内部类仍然是一个独立的类，在编译之后内部类会被编译成独立的.class文件，但是前面冠以外部类的类名和$符号 。
+
+(2)内部类不能用普通的方式访问。
+
+(3)内部类声明成静态的，就不能随便的访问外部类的成员变量了，此时内部类只能访问外部类的静态成员变量   。
+
+(4)外部类不能直接访问内部类的的成员，但可以通过内部类对象来访问
+
+(5)内部类是外部类的一个成员，因此内部类可以自由地访问外部类的成员变量，无论是否是private的。
+
+## 作用
+内部类能够独立继承一个接口,抽象类的实现,无论外部类是否已经继承了这个接口,使得多重继承的解决方案变得更加完整。
+
+## 内部类的分类
+内部类是个编译时的概念，一旦编译成功后，它就与外围类属于两个完全不同的类（当然他们之间还是有联系的）。对于一个名为OuterClass的外围类和一个名为InnerClass的内部类，在编译成功后，会出现这样两个class文件：OuterClass.class和OuterClass$InnerClass.class
+
+内部类可以无限制的访问外部类的变量和方法,
+
+
+### 成员内部类  
+成员内部类也是最普通的内部类，它是外围类的一个成员，所以他是可以无限制的访问外围类的所有 成员属性和方法，尽管是private的，但是外围类要访问内部类的成员属性和方法则需要通过内部类实例来访问。
+
+在成员内部类中要注意两点，第一：成员内部类中不能存在任何static的变量和方法；第二：成员内部类是依附于外围类的，所以只有先创建了外围类才能够创建内部类。
+ 
+### 局部内部类  
+
+局部内部类作用域方法和属性
+
+定义在方法里
+```java
+public class Parcel5 {
+    public Destionation destionation(String str){
+        class PDestionation implements Destionation{
+            private String label;
+            private PDestionation(String whereTo){
+                label = whereTo;
+            }
+            public String readLabel(){
+                return label;
+            }
+        }
+        return new PDestionation(str);
+    }
+    
+    public static void main(String[] args) {
+        Parcel5 parcel5 = new Parcel5();
+        Destionation d = parcel5.destionation("chenssy");
+    }
+}
+```
+
+定义在作用域里
+
+```java
+public class Parcel6 {
+    private void internalTracking(boolean b){
+        if(b){
+            class TrackingSlip{
+                private String id;
+                TrackingSlip(String s) {
+                    id = s;
+                }
+                String getSlip(){
+                    return id;
+                }
+            }
+            TrackingSlip ts = new TrackingSlip("chenssy");
+            String string = ts.getSlip();
+        }
+    }
+    
+    public void track(){
+        internalTracking(true);
+    }
+    
+    public static void main(String[] args) {
+        Parcel6 parcel6 = new Parcel6();
+        parcel6.track();
+    }
+}
+```
+
+### 静态内部类
+
+1、 它的创建是不需要依赖于外围类的。
+
+2、 它不能使用任何外围类的非static成员变量和方法。
+
+### 匿名内部类  
+
+匿名内部类只能使用一次,下次使用要重新创建
+
+匿名内部类不能存在构造函数,可以使用构造代码块来进行初始化
+
+匿名内部类不能是抽象的，它必须要实现继承的类或者实现的接口的所有抽象方法。
+
+匿名内部类中不能存在任何的静态成员变量和静态方法。
+
+
+举例:
+```java
+public abstract class Bird {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public abstract int fly();
+}
+
+public class Test {
+    
+    public void test(Bird bird){
+        System.out.println(bird.getName() + "能够飞 " + bird.fly() + "米");
+    }
+    
+    public static void main(String[] args) {
+        Test test = new Test();
+        test.test(new Bird() {
+            
+            public int fly() {
+                return 10000;
+            }
+            
+            public String getName() {
+                return "大雁";
+            }
+        });
+    }
+}
+------------------
+Output：
+大雁能够飞 10000米
+```
+
+这段匿名内部类代码可以拆解成为以下形式
+
+```java
+public class WildGoose extends Bird{
+    public int fly() {
+        return 10000;
+    }
+    
+    public String getName() {
+        return "大雁";
+    }
+}
+
+WildGoose wildGoose = new WildGoose();
+test.test(wildGoose);
+```
+### 匿名内部类的形参要使用final
+
+匿名内部类在编译成功后,与外围类是两个独立的.class文件,匿名内部类并没有直接引用外围类传给匿名内部类的参数,而是在自己的.class文件里面又创建了一份.所以为了保证外围类中传给内部类的形参的值  与  内部类自己内部的形参的值保持一致,所以要使用final;
+
+举例:
+```java
+
+首先我们知道在内部类编译成功后，它会产生一个class文件，
+该class文件与外部类并不是同一class文件，仅仅只保留对
+外部类的引用。当外部类传入的参数需要被内部类调用时，
+从java程序的角度来看是直接被调用：
+
+
+public class OuterClass {
+    public void display(final String name,String age){
+        class InnerClass{
+            void display(){
+                System.out.println(name);
+            }
+        }
+    }
+}
+
+从上面代码中看好像name参数应该是被内部类直接调用？
+其实不然，在java编译之后内部类的情况如下：
+
+public class OuterClass$InnerClass { 
+
+    public InnerClass(String name,String age){
+        this.InnerClass$name = name;
+        this.InnerClass$age = age;
+    }
+    public void display(){
+        System.out.println(this.InnerClass$name + "----" + this.InnerClass$age );
+    }
+
+    
+}
+```
+所以从上面代码来看，内部类内部方法调用的实际上时自己的属性而不是外部方法传递进来的参数。
+
+直到这里还没有解释为什么是final？在内部类中的属性和外部方法的参数两者从外表上看是同一个东西，但实际上却不是，所以他们两者是可以任意变化的，也就是说在内部类中我对属性的改变并不会影响到外部的形参，而然这从程序员的角度来看这是不可行的，毕竟站在程序的角度来看这两个根本就是同一个，如果内部类该变了，而外部方法的形参却没有改变这是难以理解和不可接受的，所以为了保持参数的一致性，就规定使用final来避免形参的不改变。
+
 
 # 特性
 ## Java 各版本的新特性
