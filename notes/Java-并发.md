@@ -19,8 +19,9 @@
   - [sleep()](#sleep)
   - [yield()](#yield)
 - [四、中断](#%e5%9b%9b%e4%b8%ad%e6%96%ad)
-  - [InterruptedException](#interruptedexception)
-  - [interrupted()](#interrupted)
+  - [Interrupt()](#interrupt)
+  - [interrupted()与isInterrupted()](#interrupted%e4%b8%8eisinterrupted)
+    - [区别](#%e5%8c%ba%e5%88%ab)
   - [Executor 的中断操作](#executor-%e7%9a%84%e4%b8%ad%e6%96%ad%e6%93%8d%e4%bd%9c)
 - [五、互斥同步](#%e4%ba%94%e4%ba%92%e6%96%a5%e5%90%8c%e6%ad%a5)
   - [synchronized](#synchronized)
@@ -244,7 +245,7 @@ public void run() {
 
 一个线程执行完毕之后会自动结束，如果在运行过程中发生异常也会提前结束。
 
-## InterruptedException
+## Interrupt()
 
 通过调用一个线程的 interrupt() 来中断该线程，如果该线程处于阻塞、限期等待或者无限期等待状态，那么就会抛出 InterruptedException，从而提前结束该线程。但是不能中断 I/O 阻塞和 synchronized 锁阻塞。如果处于运行状态没有处于阻塞或者等待状态,则只会让interrupted()函数返回true,不会提前结束抛出异常.
 
@@ -285,11 +286,12 @@ java.lang.InterruptedException: sleep interrupted
     at java.lang.Thread.run(Thread.java:745)
 ```
 
-## interrupted()
+## interrupted()与isInterrupted()
 
 如果一个线程的 run() 方法执行一个无限循环，并且没有执行 sleep() 等会抛出 InterruptedException 的操作，那么调用线程的 interrupt() 方法就无法使线程提前结束。(如上一节代码所示,先运行完"main run"才执行异常)
 
-但是调用 interrupt() 方法会设置线程的中断标记，此时调用 interrupted() 方法会返回 true。因此可以在循环体中使用 interrupted() 方法来判断线程是否处于中断状态，从而提前结束线程。
+但是调用 interrupt() 方法会设置线程的中断标记，此时调用 interrupted()与 isInterrupted() 方法会返回 true。因此可以在循环体中使用 interrupted() 与isInterrupted()方法来判断线程是否处于中断状态，从而提前结束线程。
+
 
 ```java
 public class InterruptExample {
@@ -318,6 +320,25 @@ public static void main(String[] args) throws InterruptedException {
 Thread end
 没有异常抛出,是因为thread2本身没有睡眠或者阻塞,所以interrupt()只能把interrupted()的返回值置位true,却不能让线程停止并抛出异常
 ```
+### 区别
+
+```java
+public static boolean interrupted() {
+    return currentThread().isInterrupted(true);
+}
+
+public boolean isInterrupted() {
+    return isInterrupted(false);
+}
+
+private native boolean isInterrupted(boolean ClearInterrupted);
+```
+
+interrupted()是静态方法而isInterrupted()是实例方法，他们的实现都是调用同一个native方法。主要的区别是他们的形参ClearInterrupted传的不一样。
+
+interrupted()在返回中断标志位后会清除标志位，isInterrupted()则不清除中断标志位。
+
+
 
 ## Executor 的中断操作
 
