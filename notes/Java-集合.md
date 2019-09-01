@@ -772,6 +772,13 @@ static final int tableSizeFor(int cap) {
 - HashMap 的迭代器是 fail-fast 迭代器。
 - HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
 
+## hashmap不支持并发的原因
+
+并发的hashmap在rehash时候会导致环形链表的错误:  
+put一个key,value对到hashmap中的时候,先计算hash值,然后计算索引位置,如果key存在则替换掉旧value,不存在则增加一个新的entry,增加entry的时候检查entry的数量是否超出了capicity*容量因子(即threshold);超出的话就会把旧的hash表的数据迁移到新的hash表中,其中,在迁移的过程中,entry下的链表部分会在迁移的时候,因为并发线程的挂起产生循环链表,报出HashMap Infinite Loop错误
+
+[参考博客](https://coolshell.cn/articles/9606.html)
+
 ## ConcurrentHashMap
 
 ### 1. 存储结构
@@ -787,7 +794,7 @@ static final class HashEntry<K,V> {
 
 ConcurrentHashMap 和 HashMap 实现上类似，最主要的差别是 ConcurrentHashMap 采用了分段锁（Segment），每个分段锁维护着几个桶（HashEntry），多个线程可以同时访问不同分段锁上的桶，从而使其并发度更高（并发度就是 Segment 的个数）。
 
-Segment 继承自 ReentrantLock。
+Segment 继承自 ReentrantLock,使得每一个segment可以充当锁的角色
 
 ```java
 static final class Segment<K,V> extends ReentrantLock implements Serializable {
@@ -821,9 +828,17 @@ static final int DEFAULT_CONCURRENCY_LEVEL = 16;
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/db808eff-31d7-4229-a4ad-b8ae71870a3a.png" width="550px"> </div><br>
 
-### 2. size 操作
+### hashentry
+图中淡蓝色的部分就是两个hashentry,在HashEntry类中，key，hash和next域都被声明为final的，value域被volatile所修饰(所以其可以确保被读线程读到最新的值)，因此HashEntry对象几乎是不可变的，这是ConcurrentHashmap读操作并不需要加锁的重要原因。 next域被声明为final本身就意味着我们不能从hash链的中间或尾部添加或删除节点，因为这需要修改next引用值，因此所有的节点的修改只能从头部开始。remove的时候需要全部重新new一遍
 
-每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。
+
+### 2. size 操作
+size操作用来返回map的键值对个数
+
+每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。维护一个modCount变量来统计每个segment内部的操作次数,这个值只增不减.
+
+size操作就是遍历了两次所有的Segments，每次记录Segment的modCount值，然后将两次的modCount进行比较，如果modCount相同，则表示期间没有发生过写入操作，就将原先遍历的count的求和结果返回，如果modCount求和不相同，则把这个过程再重复做一次;如果modCount求和再不相同，则就需要将所有的Segment都锁住，然后一个一个遍历了,求出segment的求和并返回.
+
 
 ```java
 /**
@@ -902,15 +917,6 @@ JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败�
 
 并且 JDK 1.8 的实现也在链表过长时会转换为红黑树。
 
-
-### 3. JDK 1.8 的改动
-
-JDK 1.7 使用分段锁机制来实现并发更新操作，核心类为 Segment，它继承自重入锁 ReentrantLock，并发度与 Segment 数量相等。
-
-JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。
-
-并且 JDK 1.8 的实现也在链表过长时会转换为红黑树。
-
 ## LinkedHashMap
 
 ### 存储结构
@@ -921,9 +927,19 @@ JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败�
 public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V>
 ```
 
-内部维护了一个双向链表，用来维护插入顺序或者 LRU 顺序。
+通过每一个entry内部增加before和after,内部维护了一个双向链表，用来维护插入顺序或者 LRU(Least Recently Used) 顺序。
+
 
 ```java
+新Entry的所有成员变量:
+
+K key
+V value
+Entry<K, V> next
+int hash
+Entry<K, V> before
+Entry<K, V> after
+
 /**
  * The head (eldest) of the doubly linked list.
  */
@@ -935,7 +951,7 @@ transient LinkedHashMap.Entry<K,V> head;
 transient LinkedHashMap.Entry<K,V> tail;
 ```
 
-accessOrder 决定了顺序，默认为 false，此时维护的是插入顺序。
+accessOrder 决定了顺序，默认为 false，此时维护的是插入顺序。为true的时候,将会维护最近访问顺序(get的entry放在链表末尾)
 
 ```java
 final boolean accessOrder;
@@ -979,7 +995,7 @@ void afterNodeAccess(Node<K,V> e) { // move node to last
 }
 ```
 
-### afterNodeInsertion()
+### afterNodeInsertion()  (保证缓存空间大小合适)
 
 在 put 等操作之后执行，当 removeEldestEntry() 方法返回 true 时会移除最晚的节点，也就是链表首部节点 first。
 
@@ -1003,6 +1019,105 @@ protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
 }
 ```
 
+
+### LRU 缓存
+
+以下是使用 LinkedHashMap 实现的一个 LRU 缓存：
+
+- 设定最大缓存空间 MAX_ENTRIES  为 3；
+- 使用 LinkedHashMap 的构造函数将 accessOrder 设置为 true，开启 LRU 顺序；
+- 覆盖 removeEldestEntry() 方法实现，在节点多于 MAX_ENTRIES 就会将最近最久未使用的数据移除。
+
+```java
+class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private static final int MAX_ENTRIES = 3;
+
+    protected boolean removeEldestEntry(Map.Entry eldest) {
+        return size() > MAX_ENTRIES;
+    }
+
+    LRUCache() {
+        super(MAX_ENTRIES, 0.75f, true);
+    }
+}
+```
+
+```java
+public static void main(String[] args) {
+    LRUCache<Integer, String> cache = new LRUCache<>();
+    cache.put(1, "a");
+    cache.put(2, "b");
+    cache.put(3, "c");
+    cache.get(1);
+    cache.put(4, "d");
+    System.out.println(cache.keySet());
+}
+```
+
+```html
+[3, 1, 4]
+```
+
+## WeakHashMap
+
+### 存储结构
+
+WeakHashMap 的 Entry 继承自 WeakReference(弱引用)，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。弱引用会在下次gc的时候被回收,软引用会在内存不够的时候回收.
+
+WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
+
+```java
+private static class Entry<K,V> extends WeakReference<Object> implements Map.Entry<K,V>
+```
+
+### ConcurrentCache
+
+Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
+
+ConcurrentCache 采取的是分代缓存：
+
+- 经常使用的对象放入 eden 中，eden 使用 ConcurrentHashMap 实现，不用担心会被回收（伊甸园）；
+- 不常用的对象放入 longterm，longterm 使用 WeakHashMap 实现，这些老对象会被垃圾收集器回收。
+- 当调用  get() 方法时，会先从 eden 区获取，如果没有找到的话再到 longterm 获取，当从 longterm 获取到就把对象放入 eden 中，从而保证经常被访问的节点不容易被回收。
+- 当调用 put() 方法时，如果 eden 的大小超过了 size，那么就将 eden 中的所有对象都放入 longterm 中，利用虚拟机回收掉一部分不经常使用的对象。
+
+```java
+public final class ConcurrentCache<K, V> {
+
+    private final int size;
+
+    private final Map<K, V> eden;
+
+    private final Map<K, V> longterm;
+
+    public ConcurrentCache(int size) {
+        this.size = size;
+        this.eden = new ConcurrentHashMap<>(size);
+        this.longterm = new WeakHashMap<>(size);
+    }
+
+    public V get(K k) {
+        V v = this.eden.get(k);
+        if (v == null) {
+            v = this.longterm.get(k);
+            if (v != null)
+                this.eden.put(k, v);
+        }
+        return v;
+    }
+
+    public void put(K k, V v) {
+        if (this.eden.size() >= size) {
+            //先把eden中的全部放入longterm
+            this.longterm.putAll(this.eden);
+            //然后清空eden
+            this.eden.clear();
+        }
+        //然后在清空的eden中放入要插入的k,v
+        this.eden.put(k, v);
+    }
+}
+```
 
 
 
