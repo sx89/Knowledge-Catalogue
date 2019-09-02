@@ -36,6 +36,15 @@
   - [CountDownLatch](#countdownlatch)
   - [CyclicBarrier](#cyclicbarrier)
   - [Semaphore](#semaphore)
+- [八、J.U.C - 其它组件](#%e5%85%abjuc---%e5%85%b6%e5%ae%83%e7%bb%84%e4%bb%b6)
+  - [FutureTask](#futuretask)
+  - [BlockingQueue](#blockingqueue)
+  - [ForkJoin](#forkjoin)
+- [九、线程不安全示例](#%e4%b9%9d%e7%ba%bf%e7%a8%8b%e4%b8%8d%e5%ae%89%e5%85%a8%e7%a4%ba%e4%be%8b)
+  - [非阻塞同步](#%e9%9d%9e%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
+    - [1. CAS](#1-cas)
+    - [2. AtomicInteger](#2-atomicinteger)
+    - [3. ABA](#3-aba)
 
 <!-- /TOC -->
 
@@ -681,7 +690,7 @@ after
 
 ## await() signal() signalAll()
 
-java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
+java.util.concurrent 类库中提供了 Condition 类(通过ReentrantLock来获取)来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
 
 相比于 wait() 这种等待方式，await() 可以指定等待的条件，因此更加灵活。
 
@@ -733,7 +742,7 @@ after
 
 # 七、J.U.C - AQS
 
-java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。
+java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。AbstractQueuedSynchronizer，即抽象队列同步器,是一个用来构建锁和同步器的框架.它底层用了 CAS 技术来保证操作的原子性，同时利用 FIFO 队列实现线程间的锁竞争，将基础的同步相关抽象细节放在 AQS，这也是 ReentrantLock、CountDownLatch 等同步工具实现同步的底层实现机制。
 
 ## CountDownLatch
 
@@ -853,3 +862,290 @@ public class SemaphoreExample {
 ```html
 2 1 2 2 2 2 2 1 2 2
 ```
+
+
+# 八、J.U.C - 其它组件
+
+## FutureTask
+
+在介绍 Callable 时我们知道它可以有返回值，返回值通过 Future<V> 进行封装。FutureTask 实现了 RunnableFuture 接口，该接口继承自 Runnable 和 Future<V> 接口，这使得 FutureTask 既可以当做一个任务执行，也可以有返回值。
+
+```java
+public class FutureTask<V> implements RunnableFuture<V>
+```
+
+```java
+public interface RunnableFuture<V> extends Runnable, Future<V>
+```
+
+FutureTask 可用于异步获取执行结果或取消执行任务的场景。当一个计算任务需要执行很长时间，那么就可以用 FutureTask 来封装这个任务，主线程在完成自己的任务之后再去获取结果。
+
+```java
+public class FutureTaskExample {
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        FutureTask<Integer> futureTask = new FutureTask<Integer>(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                int result = 0;
+                for (int i = 0; i < 100; i++) {
+                    Thread.sleep(10);
+                    result += i;
+                }
+                return result;
+            }
+        });
+
+        Thread computeThread = new Thread(futureTask);
+        computeThread.start();
+
+        Thread otherThread = new Thread(() -> {
+            System.out.println("other task is running...");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        otherThread.start();
+        System.out.println(futureTask.get());
+    }
+}
+```
+
+```html
+other task is running...
+4950
+```
+
+## BlockingQueue
+
+java.util.concurrent.BlockingQueue 接口有以下阻塞队列的实现：
+
+-  **FIFO 队列** ：LinkedBlockingQueue、ArrayBlockingQueue（固定长度）
+-  **优先级队列** ：PriorityBlockingQueue
+
+提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
+
+**使用 BlockingQueue 实现生产者消费者问题** 
+
+```java
+public class ProducerConsumer {
+
+    private static BlockingQueue<String> queue = new ArrayBlockingQueue<>(5);
+
+    private static class Producer extends Thread {
+        @Override
+        public void run() {
+            try {
+                queue.put("product");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.print("produce..");
+        }
+    }
+
+    private static class Consumer extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                String product = queue.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.print("consume..");
+        }
+    }
+}
+```
+
+```java
+public static void main(String[] args) {
+    for (int i = 0; i < 2; i++) {
+        Producer producer = new Producer();
+        producer.start();
+    }
+    for (int i = 0; i < 5; i++) {
+        Consumer consumer = new Consumer();
+        consumer.start();
+    }
+    for (int i = 0; i < 3; i++) {
+        Producer producer = new Producer();
+        producer.start();
+    }
+}
+```
+
+```html
+produce..produce..consume..consume..produce..consume..produce..consume..produce..consume..
+```
+
+## ForkJoin
+
+主要用于并行计算中，和 MapReduce 原理类似，都是把大的计算任务拆分成多个小任务并行计算。
+
+```java
+public class ForkJoinExample extends RecursiveTask<Integer> {
+
+    private final int threshold = 5;
+    private int first;
+    private int last;
+
+    public ForkJoinExample(int first, int last) {
+        this.first = first;
+        this.last = last;
+    }
+
+    @Override
+    protected Integer compute() {
+        int result = 0;
+        if (last - first <= threshold) {
+            // 任务足够小则直接计算
+            for (int i = first; i <= last; i++) {
+                result += i;
+            }
+        } else {
+            // 拆分成小任务
+            int middle = first + (last - first) / 2;
+            ForkJoinExample leftTask = new ForkJoinExample(first, middle);
+            ForkJoinExample rightTask = new ForkJoinExample(middle + 1, last);
+            leftTask.fork();
+            rightTask.fork();
+            result = leftTask.join() + rightTask.join();
+        }
+        return result;
+    }
+}
+```
+
+```java
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+    ForkJoinExample example = new ForkJoinExample(1, 10000);
+    ForkJoinPool forkJoinPool = new ForkJoinPool();
+    Future result = forkJoinPool.submit(example);
+    System.out.println(result.get());
+}
+```
+
+ForkJoin 使用 ForkJoinPool 来启动，它是一个特殊的线程池，线程数量取决于 CPU 核数。
+
+```java
+public class ForkJoinPool extends AbstractExecutorService
+```
+
+ForkJoinPool 实现了工作窃取算法来提高 CPU 的利用率。每个线程都维护了一个双端队列，用来存储需要执行的任务。工作窃取算法允许空闲的线程从其它线程的双端队列中窃取一个任务来执行。窃取的任务必须是最晚的任务，避免和队列所属线程发生竞争。例如下图中，Thread2 从 Thread1 的队列中拿出最晚的 Task1 任务，Thread1 会拿出 Task2 来执行，这样就避免发生竞争。但是如果队列中只有一个任务时还是会发生竞争。
+
+<div align="center"> <img src="pics/e42f188f-f4a9-4e6f-88fc-45f4682072fb.png" width="300px"> </div><br>
+
+# 九、线程不安全示例
+
+如果多个线程对同一个共享数据进行访问而不采取同步操作的话，那么操作的结果是不一致的。
+
+以下代码演示了 1000 个线程同时对 cnt 执行自增操作，操作结束之后它的值有可能小于 1000。
+
+```java
+public class ThreadUnsafeExample {
+
+    private int cnt = 0;
+
+    public void add() {
+        cnt++;
+    }
+
+    public int get() {
+        return cnt;
+    }
+}
+```
+
+```java
+public static void main(String[] args) throws InterruptedException {
+    final int threadSize = 1000;
+    ThreadUnsafeExample example = new ThreadUnsafeExample();
+    final CountDownLatch countDownLatch = new CountDownLatch(threadSize);
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    for (int i = 0; i < threadSize; i++) {
+        executorService.execute(() -> {
+            example.add();
+            countDownLatch.countDown();
+        });
+    }
+    countDownLatch.await();
+    executorService.shutdown();
+    System.out.println(example.get());
+}
+```
+
+```html
+997
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 非阻塞同步
+
+互斥同步最主要的问题就是线程阻塞和唤醒所带来的性能问题，因此这种同步也称为阻塞同步。
+
+互斥同步属于一种悲观的并发策略，总是认为只要不去做正确的同步措施，那就肯定会出现问题。无论共享数据是否真的会出现竞争，它都要进行加锁（这里讨论的是概念模型，实际上虚拟机会优化掉很大一部分不必要的加锁）、用户态核心态转换、维护锁计数器和检查是否有被阻塞的线程需要唤醒等操作。
+
+### 1. CAS
+
+随着硬件指令集的发展，我们可以使用基于冲突检测的乐观并发策略：先进行操作，如果没有其它线程争用共享数据，那操作就成功了，否则采取补偿措施（不断地重试，直到成功为止）。这种乐观的并发策略的许多实现都不需要将线程阻塞，因此这种同步操作称为非阻塞同步。
+
+乐观锁需要操作和冲突检测这两个步骤具备原子性，这里就不能再使用互斥同步来保证了，只能靠硬件来完成。硬件支持的原子性操作最典型的是：比较并交换（Compare-and-Swap，CAS）。CAS 指令需要有 3 个操作数，分别是内存地址 V、旧的预期值 A 和新值 B。当执行操作时，只有当 V 的值等于 A，才将 V 的值更新为 B。
+
+### 2. AtomicInteger
+
+J.U.C 包里面的整数原子类 AtomicInteger 的方法调用了 Unsafe 类的 CAS 操作。
+
+以下代码使用了 AtomicInteger 执行了自增的操作。
+
+```java
+private AtomicInteger cnt = new AtomicInteger();
+
+public void add() {
+    cnt.incrementAndGet();
+}
+```
+
+以下代码是 incrementAndGet() 的源码，它调用了 Unsafe 的 getAndAddInt() 。
+
+```java
+public final int incrementAndGet() {
+    return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
+}
+```
+
+以下代码是 getAndAddInt() 源码，var1 指示对象内存地址，var2 指示该字段相对对象内存地址的偏移，var4 指示操作需要加的数值，这里为 1。通过 getIntVolatile(var1, var2) 得到旧的预期值，通过调用 compareAndSwapInt() 来进行 CAS 比较，如果该字段内存地址中的值等于 var5，那么就更新内存地址为 var1+var2 的变量为 var5+var4。
+
+可以看到 getAndAddInt() 在一个循环中进行，发生冲突的做法是不断的进行重试。
+
+```java
+public final int getAndAddInt(Object var1, long var2, int var4) {
+    int var5;
+    do {
+        var5 = this.getIntVolatile(var1, var2);
+    } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+
+    return var5;
+}
+```
+
+### 3. ABA
+
+如果一个变量初次读取的时候是 A 值，它的值被改成了 B，后来又被改回为 A，那 CAS 操作就会误认为它从来没有被改变过。
+
+J.U.C 包提供了一个带有标记的原子引用类 AtomicStampedReference 来解决这个问题，它可以通过控制变量值的版本来保证 CAS 的正确性。大部分情况下 ABA 问题不会影响程序并发的正确性，如果需要解决 ABA 问题，改用传统的互斥同步可能会比原子类更高效。
