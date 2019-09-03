@@ -1733,3 +1733,5 @@ private static void alloc() {
 其实在现有的虚拟机中，并没有真正的实现栈上分配，对象没有在堆上分配其实是标量替换实现的。
 
 [java逃逸分析参考博文](https://zhuanlan.zhihu.com/p/39604934)
+
+[栈上分配实验博文](http://www.hollischuang.com/archives/2398)
