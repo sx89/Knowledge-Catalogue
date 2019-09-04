@@ -1,84 +1,92 @@
 
 <!-- TOC -->
 
-- [一、线程状态转换](#%e4%b8%80%e7%ba%bf%e7%a8%8b%e7%8a%b6%e6%80%81%e8%bd%ac%e6%8d%a2)
-  - [新建（New）](#%e6%96%b0%e5%bb%banew)
-  - [可运行（Runnable）](#%e5%8f%af%e8%bf%90%e8%a1%8crunnable)
-  - [阻塞（Blocked）](#%e9%98%bb%e5%a1%9eblocked)
-  - [无限期等待（Waiting）](#%e6%97%a0%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85waiting)
-  - [限期等待（Timed Waiting）](#%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85timed-waiting)
-  - [死亡（Terminated）](#%e6%ad%bb%e4%ba%a1terminated)
-- [二、使用线程](#%e4%ba%8c%e4%bd%bf%e7%94%a8%e7%ba%bf%e7%a8%8b)
-  - [实现 Runnable 接口](#%e5%ae%9e%e7%8e%b0-runnable-%e6%8e%a5%e5%8f%a3)
-  - [实现 Callable 接口](#%e5%ae%9e%e7%8e%b0-callable-%e6%8e%a5%e5%8f%a3)
-  - [继承 Thread 类](#%e7%bb%a7%e6%89%bf-thread-%e7%b1%bb)
-  - [实现接口 VS 继承 Thread](#%e5%ae%9e%e7%8e%b0%e6%8e%a5%e5%8f%a3-vs-%e7%bb%a7%e6%89%bf-thread)
-- [三、基础线程机制](#%e4%b8%89%e5%9f%ba%e7%a1%80%e7%ba%bf%e7%a8%8b%e6%9c%ba%e5%88%b6)
-  - [Executor](#executor)
-  - [Daemon](#daemon)
-  - [sleep()](#sleep)
-  - [yield()](#yield)
-- [四、中断](#%e5%9b%9b%e4%b8%ad%e6%96%ad)
-  - [Interrupt()](#interrupt)
-  - [interrupted()与isInterrupted()](#interrupted%e4%b8%8eisinterrupted)
-    - [区别](#%e5%8c%ba%e5%88%ab)
-  - [Executor 的中断操作](#executor-%e7%9a%84%e4%b8%ad%e6%96%ad%e6%93%8d%e4%bd%9c)
-- [五、互斥同步](#%e4%ba%94%e4%ba%92%e6%96%a5%e5%90%8c%e6%ad%a5)
-  - [synchronized](#synchronized)
-  - [ReentrantLock](#reentrantlock)
-  - [比较](#%e6%af%94%e8%be%83)
-  - [使用选择](#%e4%bd%bf%e7%94%a8%e9%80%89%e6%8b%a9)
-- [六、线程之间的协作](#%e5%85%ad%e7%ba%bf%e7%a8%8b%e4%b9%8b%e9%97%b4%e7%9a%84%e5%8d%8f%e4%bd%9c)
-  - [join()](#join)
-  - [wait() notify() notifyAll()](#wait-notify-notifyall)
-  - [await() signal() signalAll()](#await-signal-signalall)
-- [七、J.U.C - AQS](#%e4%b8%83juc---aqs)
-  - [CountDownLatch](#countdownlatch)
-  - [CyclicBarrier](#cyclicbarrier)
-  - [Semaphore](#semaphore)
-- [八、J.U.C - 其它组件](#%e5%85%abjuc---%e5%85%b6%e5%ae%83%e7%bb%84%e4%bb%b6)
-  - [FutureTask](#futuretask)
-  - [BlockingQueue](#blockingqueue)
-  - [ForkJoin](#forkjoin)
-- [九、线程不安全示例](#%e4%b9%9d%e7%ba%bf%e7%a8%8b%e4%b8%8d%e5%ae%89%e5%85%a8%e7%a4%ba%e4%be%8b)
-- [十、Java 内存模型](#%e5%8d%81java-%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b)
-  - [主内存与工作内存](#%e4%b8%bb%e5%86%85%e5%ad%98%e4%b8%8e%e5%b7%a5%e4%bd%9c%e5%86%85%e5%ad%98)
-  - [内存间交互操作](#%e5%86%85%e5%ad%98%e9%97%b4%e4%ba%a4%e4%ba%92%e6%93%8d%e4%bd%9c)
-  - [内存模型三大特性](#%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b%e4%b8%89%e5%a4%a7%e7%89%b9%e6%80%a7)
-    - [1. 原子性](#1-%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-%e8%83%bd%e4%bf%9d%e8%af%81%e5%a4%9a%e4%b8%aa%e7%ba%bf%e7%a8%8b%e4%bf%ae%e6%94%b9%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [互斥锁保证操作的原子性](#%e4%ba%92%e6%96%a5%e9%94%81%e4%bf%9d%e8%af%81%e6%93%8d%e4%bd%9c%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [2. 可见性](#2-%e5%8f%af%e8%a7%81%e6%80%a7)
-    - [3. 有序性](#3-%e6%9c%89%e5%ba%8f%e6%80%a7)
-  - [先行发生原则](#%e5%85%88%e8%a1%8c%e5%8f%91%e7%94%9f%e5%8e%9f%e5%88%99)
-    - [1. 单一线程原则](#1-%e5%8d%95%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%8e%9f%e5%88%99)
-    - [2. 管程锁定规则](#2-%e7%ae%a1%e7%a8%8b%e9%94%81%e5%ae%9a%e8%a7%84%e5%88%99)
-    - [3. volatile 变量规则](#3-volatile-%e5%8f%98%e9%87%8f%e8%a7%84%e5%88%99)
-    - [4. 线程启动规则](#4-%e7%ba%bf%e7%a8%8b%e5%90%af%e5%8a%a8%e8%a7%84%e5%88%99)
-    - [5. 线程终止规则](#5-%e7%ba%bf%e7%a8%8b%e7%bb%88%e6%ad%a2%e8%a7%84%e5%88%99)
-    - [6. 线程中断规则](#6-%e7%ba%bf%e7%a8%8b%e4%b8%ad%e6%96%ad%e8%a7%84%e5%88%99)
-    - [7. 对象终结规则](#7-%e5%af%b9%e8%b1%a1%e7%bb%88%e7%bb%93%e8%a7%84%e5%88%99)
-    - [8. 传递性](#8-%e4%bc%a0%e9%80%92%e6%80%a7)
-- [十一、线程安全](#%e5%8d%81%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8)
-  - [不可变](#%e4%b8%8d%e5%8f%af%e5%8f%98)
-  - [互斥同步(阻塞同步)悲观锁](#%e4%ba%92%e6%96%a5%e5%90%8c%e6%ad%a5%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5%e6%82%b2%e8%a7%82%e9%94%81)
-    - [synchronized的底层原理](#synchronized%e7%9a%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86)
-    - [synchronized悲观锁的使用场景](#synchronized%e6%82%b2%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
-  - [乐观锁(非阻塞同步)](#%e4%b9%90%e8%a7%82%e9%94%81%e9%9d%9e%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
-    - [乐观锁的使用场景](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
-  - [乐观锁的两种实现方式](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%b8%a4%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f)
-    - [CAS(compareAndSwap)](#cascompareandswap)
-      - [定义](#%e5%ae%9a%e4%b9%89)
-      - [底层实现](#%e5%ba%95%e5%b1%82%e5%ae%9e%e7%8e%b0)
-      - [ABA问题](#aba%e9%97%ae%e9%a2%98)
-      - [循环时间开销大](#%e5%be%aa%e7%8e%af%e6%97%b6%e9%97%b4%e5%bc%80%e9%94%80%e5%a4%a7)
-      - [只能保证一个共享变量的原子操作](#%e5%8f%aa%e8%83%bd%e4%bf%9d%e8%af%81%e4%b8%80%e4%b8%aa%e5%85%b1%e4%ba%ab%e5%8f%98%e9%87%8f%e7%9a%84%e5%8e%9f%e5%ad%90%e6%93%8d%e4%bd%9c)
-      - [AtomicInteger](#atomicinteger)
-    - [版本号机制](#%e7%89%88%e6%9c%ac%e5%8f%b7%e6%9c%ba%e5%88%b6)
-  - [无同步方案](#%e6%97%a0%e5%90%8c%e6%ad%a5%e6%96%b9%e6%a1%88)
-    - [1. 栈封闭](#1-%e6%a0%88%e5%b0%81%e9%97%ad)
-    - [2. 线程本地存储（Thread Local Storage）](#2-%e7%ba%bf%e7%a8%8b%e6%9c%ac%e5%9c%b0%e5%ad%98%e5%82%a8thread-local-storage)
-    - [3. 可重入代码（Reentrant Code）](#3-%e5%8f%af%e9%87%8d%e5%85%a5%e4%bb%a3%e7%a0%81reentrant-code)
+- [一、线程状态转换](#一线程状态转换)
+    - [新建（New）](#新建new)
+    - [可运行（Runnable）](#可运行runnable)
+    - [阻塞（Blocked）](#阻塞blocked)
+    - [无限期等待（Waiting）](#无限期等待waiting)
+    - [限期等待（Timed Waiting）](#限期等待timed-waiting)
+    - [死亡（Terminated）](#死亡terminated)
+- [二、使用线程](#二使用线程)
+    - [实现 Runnable 接口](#实现-runnable-接口)
+    - [实现 Callable 接口](#实现-callable-接口)
+    - [继承 Thread 类](#继承-thread-类)
+    - [实现接口 VS 继承 Thread](#实现接口-vs-继承-thread)
+- [三、基础线程机制](#三基础线程机制)
+    - [Executor](#executor)
+    - [Daemon](#daemon)
+    - [sleep()](#sleep)
+    - [yield()](#yield)
+- [四、中断](#四中断)
+    - [Interrupt()](#interrupt)
+    - [interrupted()与isInterrupted()](#interrupted与isinterrupted)
+        - [区别](#区别)
+    - [Executor 的中断操作](#executor-的中断操作)
+- [五、互斥同步](#五互斥同步)
+    - [synchronized](#synchronized)
+    - [ReentrantLock](#reentrantlock)
+    - [比较](#比较)
+    - [使用选择](#使用选择)
+- [六、线程之间的协作](#六线程之间的协作)
+    - [join()](#join)
+    - [wait() notify() notifyAll()](#wait-notify-notifyall)
+    - [await() signal() signalAll()](#await-signal-signalall)
+- [七、J.U.C - AQS](#七juc---aqs)
+    - [CountDownLatch](#countdownlatch)
+    - [CyclicBarrier](#cyclicbarrier)
+    - [Semaphore](#semaphore)
+- [八、J.U.C - 其它组件](#八juc---其它组件)
+    - [FutureTask](#futuretask)
+    - [BlockingQueue](#blockingqueue)
+    - [ForkJoin](#forkjoin)
+- [九、线程不安全示例](#九线程不安全示例)
+- [十、Java 内存模型](#十java-内存模型)
+    - [主内存与工作内存](#主内存与工作内存)
+    - [内存间交互操作](#内存间交互操作)
+    - [内存模型三大特性](#内存模型三大特性)
+        - [1. 原子性](#1-原子性)
+        - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-能保证多个线程修改的原子性)
+        - [互斥锁保证操作的原子性](#互斥锁保证操作的原子性)
+        - [2. 可见性](#2-可见性)
+        - [3. 有序性](#3-有序性)
+    - [先行发生原则](#先行发生原则)
+        - [1. 单一线程原则](#1-单一线程原则)
+        - [2. 管程锁定规则](#2-管程锁定规则)
+        - [3. volatile 变量规则](#3-volatile-变量规则)
+        - [4. 线程启动规则](#4-线程启动规则)
+        - [5. 线程终止规则](#5-线程终止规则)
+        - [6. 线程中断规则](#6-线程中断规则)
+        - [7. 对象终结规则](#7-对象终结规则)
+        - [8. 传递性](#8-传递性)
+- [十一、线程安全](#十一线程安全)
+    - [不可变](#不可变)
+    - [悲观锁(阻塞同步)](#悲观锁阻塞同步)
+        - [synchronized的底层原理](#synchronized的底层原理)
+        - [synchronized悲观锁的使用场景](#synchronized悲观锁的使用场景)
+    - [乐观锁(非阻塞同步)](#乐观锁非阻塞同步)
+        - [乐观锁的使用场景](#乐观锁的使用场景)
+    - [乐观锁的两种实现方式](#乐观锁的两种实现方式)
+        - [CAS(compareAndSwap)](#cascompareandswap)
+            - [定义](#定义)
+            - [底层实现](#底层实现)
+            - [ABA问题](#aba问题)
+            - [循环时间开销大](#循环时间开销大)
+            - [只能保证一个共享变量的原子操作](#只能保证一个共享变量的原子操作)
+            - [AtomicInteger](#atomicinteger)
+        - [版本号机制](#版本号机制)
+    - [无同步方案](#无同步方案)
+        - [1. 栈封闭](#1-栈封闭)
+        - [2. 线程本地存储（Thread Local Storage）](#2-线程本地存储thread-local-storage)
+        - [3. 可重入代码（Reentrant Code）](#3-可重入代码reentrant-code)
+- [十二、锁优化](#十二锁优化)
+    - [阻塞的代价](#阻塞的代价)
+    - [自旋锁](#自旋锁)
+    - [锁消除](#锁消除)
+    - [锁粗化](#锁粗化)
+    - [轻量级锁](#轻量级锁)
+    - [偏向锁](#偏向锁)
+- [十三、多线程开发良好的实践](#十三多线程开发良好的实践)
 
 <!-- /TOC -->
 
@@ -1372,7 +1380,7 @@ public V put(K key, V value) {
 }
 ```
 
-## 互斥同步(阻塞同步)悲观锁
+## 悲观锁(阻塞同步)
 
 synchronized 和 ReentrantLock。
 
@@ -1632,3 +1640,113 @@ ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因�
 这种代码也叫做纯代码（Pure Code），可以在代码执行的任何时刻中断它，转而去执行另外一段代码（包括递归调用它本身），而在控制权返回后，原来的程序不会出现任何错误。
 
 可重入代码有一些共同的特征，例如不依赖存储在堆上的数据和公用的系统资源、用到的状态量都由参数中传入、不调用非可重入的方法等。
+
+
+
+# 十二、锁优化
+
+这里的锁优化主要是指 JVM 对 synchronized 的优化。
+
+
+## 阻塞的代价
+
+要阻塞或唤醒一个线程就需要操作系统介入，需要在户态与核心态之间切换，这种切换会消耗大量的系统资源，
+
+因为用户态与内核态都有各自专用的内存空间，专用的寄存器等，
+
+用户态切换至内核态需要传递给许多变量、参数给内核，
+
+内核也需要保护好用户态在切换时的一些寄存器值、变量等，以便内核态调用结束后切换回用户态继续工作。
+
+
+## 自旋锁
+轻量锁,自旋锁,偏向锁都是乐观锁  
+
+
+互斥同步进入阻塞状态的开销都很大，应该尽量避免。在许多应用中，共享数据的锁定状态只会持续很短的一段时间。自旋锁的思想是让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。
+
+自旋锁虽然能避免进入阻塞状态从而减少开销，但是它需要进行忙循环操作占用 CPU 时间，它只适用于共享数据的锁定状态很短的场景。
+
+在 JDK 1.6 中引入了自适应的自旋锁。自适应意味着自旋的次数不再固定了，而是由前一次在同一个锁上的自旋次数及锁的拥有者的状态来决定。
+
+## 锁消除
+
+锁消除是指对于被检测出不可能存在竞争的共享数据的锁进行消除。
+
+锁消除主要是通过逃逸分析来支持，如果堆上的共享数据不可能逃逸出去被其它线程访问到，那么就可以把它们当成私有数据对待，也就可以将它们的锁进行消除。
+
+对于一些看起来没有加锁的代码，其实隐式的加了很多锁。例如下面的字符串拼接代码就隐式加了锁：
+
+```java
+public static String concatString(String s1, String s2, String s3) {
+    return s1 + s2 + s3;
+}
+```
+
+String 是一个不可变的类，编译器会对 String 的拼接自动优化。在 JDK 1.5 之前，会转化为 StringBuffer 对象的连续 append() 操作：
+
+```java
+public static String concatString(String s1, String s2, String s3) {
+    StringBuffer sb = new StringBuffer();
+    sb.append(s1);
+    sb.append(s2);
+    sb.append(s3);
+    return sb.toString();
+}
+```
+
+每个 append() 方法中都有一个同步块。虚拟机观察变量 sb，很快就会发现它的动态作用域被限制在 concatString() 方法内部。也就是说，sb 的所有引用永远不会逃逸到 concatString() 方法之外，其他线程无法访问到它，因此可以进行消除。
+
+## 锁粗化
+
+如果一系列的连续操作都对同一个对象反复加锁和解锁，频繁的加锁操作就会导致性能损耗。
+
+上一节的示例代码中连续的 append() 方法就属于这类情况。如果虚拟机探测到由这样的一串零碎的操作都对同一个对象加锁，将会把加锁的范围扩展（粗化）到整个操作序列的外部。对于上一节的示例代码就是扩展到第一个 append() 操作之前直至最后一个 append() 操作之后，这样只需要加锁一次就可以了。
+
+## 轻量级锁
+
+JDK 1.6 引入了偏向锁和轻量级锁，从而让锁拥有了四个状态：无锁状态（unlocked）、偏向锁状态（biasble）、轻量级锁状态（lightweight locked）和重量级锁状态（inflated）。
+
+以下是 HotSpot 虚拟机对象头的内存布局，这些数据被称为 Mark Word。其中 tag bits 对应了五个状态，这些状态在右侧的 state 表格中给出。除了 marked for gc 状态，其它四个状态已经在前面介绍过了。
+
+<div align="center"> <img src="pics/bb6a49be-00f2-4f27-a0ce-4ed764bc605c.png" width="500"/> </div><br>
+
+下图左侧是一个线程的虚拟机栈，其中有一部分称为 Lock Record 的区域，这是在轻量级锁运行过程创建的，用于存放锁对象的 Mark Word。而右侧就是一个锁对象，包含了 Mark Word 和其它信息。
+
+<div align="center"> <img src="pics/051e436c-0e46-4c59-8f67-52d89d656182.png" width="500"/> </div><br>
+
+轻量级锁是相对于传统的重量级锁而言，它使用 CAS 操作来避免重量级锁使用互斥量的开销。对于绝大部分的锁，在整个同步周期内都是不存在竞争的，因此也就不需要都使用互斥量进行同步，可以先采用 CAS 操作进行同步，如果 CAS 失败了再改用互斥量进行同步。
+
+当尝试获取一个锁对象时，如果锁对象标记为 0 01，说明锁对象的锁未锁定（unlocked）状态。此时虚拟机在当前线程的虚拟机栈中创建 Lock Record，然后使用 CAS 操作将对象的 Mark Word 更新为 Lock Record 指针。如果 CAS 操作成功了，那么线程就获取了该对象上的锁，并且对象的 Mark Word 的锁标记变为 00，表示该对象处于轻量级锁状态。
+
+<div align="center"> <img src="pics/baaa681f-7c52-4198-a5ae-303b9386cf47.png" width="400"/> </div><br>
+
+如果 CAS 操作失败了，虚拟机首先会检查对象的 Mark Word 是否指向当前线程的虚拟机栈，如果是的话说明当前线程已经拥有了这个锁对象，那就可以直接进入同步块继续执行，否则说明这个锁对象已经被其他线程线程抢占了。如果有两条以上的线程争用同一个锁，那轻量级锁就不再有效，要膨胀为重量级锁。
+
+## 偏向锁
+
+偏向锁的思想是偏向于让第一个获取锁对象的线程，这个线程在之后获取该锁就不再需要进行同步操作，甚至连 CAS 操作也不再需要。
+
+当锁对象第一次被线程获得的时候，进入偏向状态，标记为 1 01。同时使用 CAS 操作将线程 ID 记录到 Mark Word 中，如果 CAS 操作成功，这个线程以后每次进入这个锁相关的同步块就不需要再进行任何同步操作。
+
+当有另外一个线程去尝试获取这个锁对象时，偏向状态就宣告结束，此时撤销偏向（Revoke Bias）后恢复到未锁定状态或者轻量级锁状态。
+
+<div align="center"> <img src="pics/390c913b-5f31-444f-bbdb-2b88b688e7ce.jpg" width="600"/> </div><br>
+
+# 十三、多线程开发良好的实践
+
+- 给线程起个有意义的名字，这样可以方便找 Bug。
+
+- 缩小同步范围，从而减少锁争用。例如对于 synchronized，应该尽量使用同步块而不是同步方法。
+
+- 多用同步工具少用 wait() 和 notify()。首先，CountDownLatch, CyclicBarrier, Semaphore 和 Exchanger 这些同步类简化了编码操作，而用 wait() 和 notify() 很难实现复杂控制流；其次，这些同步类是由最好的企业编写和维护，在后续的 JDK 中还会不断优化和完善。
+
+- 使用 BlockingQueue 实现生产者消费者问题。
+
+- 多用并发集合少用同步集合，例如应该使用 ConcurrentHashMap 而不是 Hashtable。
+
+- 使用本地变量和不可变类来保证线程安全。
+
+- 使用线程池而不是直接创建线程，这是因为创建线程代价很高，线程池可以有效地利用有限的线程来启动任务。
+
+
