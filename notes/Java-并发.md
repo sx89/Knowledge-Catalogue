@@ -74,7 +74,7 @@
             - [循环时间开销大](#循环时间开销大)
             - [只能保证一个共享变量的原子操作](#只能保证一个共享变量的原子操作)
             - [AtomicInteger](#atomicinteger)
-        - [版本号机制](#版本号机制)
+        - [版本号机制(解决ABA问题)](#版本号机制解决aba问题)
     - [无同步方案](#无同步方案)
         - [1. 栈封闭](#1-栈封闭)
         - [2. 线程本地存储（Thread Local Storage）](#2-线程本地存储thread-local-storage)
@@ -1429,6 +1429,8 @@ synchronized的底层实现主要依靠 Lock-Free 的队列，基本思路是 �
 
 JDK 1.5 以后的 AtomicStampedReference 类就提供了此种能力，其中的 compareAndSet 方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。
 
+**解决办法**
+针对这种情况，java并发包中提供了一个带有标记的原子引用类AtomicStampedReference，它可以通过控制变量值的版本来保证CAS的正确性。
 
 #### 循环时间开销大
 
@@ -1446,29 +1448,40 @@ CAS 只对单个共享变量有效，当操作涉及跨多个共享变量时 CAS
 
 ####  AtomicInteger
 
+[AtomicInteger中的cas应用](https://www.jianshu.com/p/fb6e91b013cc)
+
 J.U.C 包里面的整数原子类 AtomicInteger 的方法调用了 Unsafe 类的 CAS 操作。
 
 以下代码使用了 AtomicInteger 执行了自增的操作。
-
 ```java
-private AtomicInteger cnt = new AtomicInteger();
+public class AtomicInteger extends Number implements java.io.Serializable {
+    // setup to use Unsafe.compareAndSwapInt for updates
+    private static final Unsafe unsafe = Unsafe.getUnsafe();
+    private static final long valueOffset;
 
-public void add() {
-    cnt.incrementAndGet();
+    static {
+        try {
+            valueOffset = unsafe.objectFieldOffset
+                (AtomicInteger.class.getDeclaredField("value"));
+        } catch (Exception ex) { throw new Error(ex); }
+    }
+    //value的值为volatile,任何线程修改都可以被其他线程立马发现
+    private volatile int value;
+    public final int get() {return value;}
 }
-```
 
-以下代码是 incrementAndGet() 的源码，它调用了 Unsafe 的 getAndAddInt() 。
-
-```java
-public final int incrementAndGet() {
-    return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
+....
+//原子Integer的自增算法调用了unsafe的getAndAddInt方法
+public final int getAndAdd(int delta) {    
+    return unsafe.getAndAddInt(this, valueOffset, delta);
 }
+
 ```
 
 以下代码是 getAndAddInt() 源码，var1 指示对象内存地址，var2 指示该字段相对对象内存地址的偏移，var4 指示操作需要加的数值，这里为 1。通过 getIntVolatile(var1, var2) 得到旧的预期值，通过调用 compareAndSwapInt() 来进行 CAS 比较，如果该字段内存地址中的值等于 var5，那么就更新内存地址为 var1+var2 的变量为 var5+var4。
 
-可以看到 getAndAddInt() 在一个循环中进行，发生冲突的做法是不断的进行重试。
+如果不等于var5,代表其他线程修改了,由于AutomaticInteger的value是volatile修饰的,所以可以在do while循环里重新获取var5
+
 
 ```java
 public final int getAndAddInt(Object var1, long var2, int var4) {
@@ -1480,7 +1493,22 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
     return var5;
 }
 ```
-### 版本号机制
+compareAndSwapInt是一个本地方法,在unsafe.cpp里面,
+
+```java
+public final native boolean compareAndSwapInt(Object paramObject, long paramLong, int paramInt1, int paramInt2);
+```
+
+
+```cpp
+UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSwapInt(JNIEnv *env, jobject unsafe, jobject obj, jlong offset, jint e, jint x))
+  UnsafeWrapper("Unsafe_CompareAndSwapInt");
+  oop p = JNIHandles::resolve(obj);
+  jint* addr = (jint *) index_oop_from_field_offset_long(p, offset);
+  return (jint)(Atomic::cmpxchg(x, addr, e)) == e;
+UNSAFE_END
+```
+### 版本号机制(解决ABA问题)
 
 一般是在数据表中加上一个数据版本号version字段，表示数据被修改的次数，当数据被修改时，version值会加一。当线程A要更新数据值时，在读取数据的同时也会读取version值，在提交更新时，若刚才读取到的version值为当前数据库中的version值相等时才更新，否则重试更新操作，直到更新成功。
 举一个简单的例子：
