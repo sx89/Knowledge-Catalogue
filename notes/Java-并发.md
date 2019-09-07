@@ -1,92 +1,83 @@
 
 <!-- TOC -->
 
-- [一、线程状态转换](#一线程状态转换)
-    - [新建（New）](#新建new)
-    - [可运行（Runnable）](#可运行runnable)
-    - [阻塞（Blocked）](#阻塞blocked)
-    - [无限期等待（Waiting）](#无限期等待waiting)
-    - [限期等待（Timed Waiting）](#限期等待timed-waiting)
-    - [死亡（Terminated）](#死亡terminated)
-- [二、使用线程](#二使用线程)
-    - [实现 Runnable 接口](#实现-runnable-接口)
-    - [实现 Callable 接口](#实现-callable-接口)
-    - [继承 Thread 类](#继承-thread-类)
-    - [实现接口 VS 继承 Thread](#实现接口-vs-继承-thread)
-- [三、基础线程机制](#三基础线程机制)
-    - [Executor](#executor)
-    - [Daemon](#daemon)
-    - [sleep()](#sleep)
-    - [yield()](#yield)
-- [四、中断](#四中断)
-    - [Interrupt()](#interrupt)
-    - [interrupted()与isInterrupted()](#interrupted与isinterrupted)
-        - [区别](#区别)
-    - [Executor 的中断操作](#executor-的中断操作)
-- [五、互斥同步](#五互斥同步)
-    - [synchronized](#synchronized)
-    - [ReentrantLock](#reentrantlock)
-    - [比较](#比较)
-    - [使用选择](#使用选择)
-- [六、线程之间的协作](#六线程之间的协作)
-    - [join()](#join)
-    - [wait() notify() notifyAll()](#wait-notify-notifyall)
-    - [await() signal() signalAll()](#await-signal-signalall)
-- [七、J.U.C - AQS](#七juc---aqs)
-    - [CountDownLatch](#countdownlatch)
-    - [CyclicBarrier](#cyclicbarrier)
-    - [Semaphore](#semaphore)
-- [八、J.U.C - 其它组件](#八juc---其它组件)
-    - [FutureTask](#futuretask)
-    - [BlockingQueue](#blockingqueue)
-    - [ForkJoin](#forkjoin)
-- [九、线程不安全示例](#九线程不安全示例)
-- [十、Java 内存模型](#十java-内存模型)
-    - [主内存与工作内存](#主内存与工作内存)
-    - [内存间交互操作](#内存间交互操作)
-    - [内存模型三大特性](#内存模型三大特性)
-        - [1. 原子性](#1-原子性)
-        - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-能保证多个线程修改的原子性)
-        - [互斥锁保证操作的原子性](#互斥锁保证操作的原子性)
-        - [2. 可见性](#2-可见性)
-        - [3. 有序性](#3-有序性)
-    - [先行发生原则](#先行发生原则)
-        - [1. 单一线程原则](#1-单一线程原则)
-        - [2. 管程锁定规则](#2-管程锁定规则)
-        - [3. volatile 变量规则](#3-volatile-变量规则)
-        - [4. 线程启动规则](#4-线程启动规则)
-        - [5. 线程终止规则](#5-线程终止规则)
-        - [6. 线程中断规则](#6-线程中断规则)
-        - [7. 对象终结规则](#7-对象终结规则)
-        - [8. 传递性](#8-传递性)
-- [十一、线程安全](#十一线程安全)
-    - [不可变](#不可变)
-    - [悲观锁(阻塞同步)](#悲观锁阻塞同步)
-        - [synchronized的底层原理](#synchronized的底层原理)
-        - [synchronized悲观锁的使用场景](#synchronized悲观锁的使用场景)
-    - [乐观锁(非阻塞同步)](#乐观锁非阻塞同步)
-        - [乐观锁的使用场景](#乐观锁的使用场景)
-    - [乐观锁的两种实现方式](#乐观锁的两种实现方式)
-        - [CAS(compareAndSwap)](#cascompareandswap)
-            - [定义](#定义)
-            - [底层实现](#底层实现)
-            - [ABA问题](#aba问题)
-            - [循环时间开销大](#循环时间开销大)
-            - [只能保证一个共享变量的原子操作](#只能保证一个共享变量的原子操作)
-            - [AtomicInteger](#atomicinteger)
-        - [版本号机制(解决ABA问题)](#版本号机制解决aba问题)
-    - [无同步方案](#无同步方案)
-        - [1. 栈封闭](#1-栈封闭)
-        - [2. 线程本地存储（Thread Local Storage）](#2-线程本地存储thread-local-storage)
-        - [3. 可重入代码（Reentrant Code）](#3-可重入代码reentrant-code)
-- [十二、锁优化](#十二锁优化)
-    - [阻塞的代价](#阻塞的代价)
-    - [自旋锁](#自旋锁)
-    - [锁消除](#锁消除)
-    - [锁粗化](#锁粗化)
-    - [轻量级锁](#轻量级锁)
-    - [偏向锁](#偏向锁)
-- [十三、多线程开发良好的实践](#十三多线程开发良好的实践)
+- [一、线程状态转换](#%e4%b8%80%e7%ba%bf%e7%a8%8b%e7%8a%b6%e6%80%81%e8%bd%ac%e6%8d%a2)
+  - [新建（New）](#%e6%96%b0%e5%bb%banew)
+  - [可运行（Runnable）](#%e5%8f%af%e8%bf%90%e8%a1%8crunnable)
+  - [阻塞（Blocked）](#%e9%98%bb%e5%a1%9eblocked)
+  - [无限期等待（Waiting）](#%e6%97%a0%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85waiting)
+  - [限期等待（Timed Waiting）](#%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85timed-waiting)
+  - [死亡（Terminated）](#%e6%ad%bb%e4%ba%a1terminated)
+- [二、使用线程](#%e4%ba%8c%e4%bd%bf%e7%94%a8%e7%ba%bf%e7%a8%8b)
+  - [实现 Runnable 接口](#%e5%ae%9e%e7%8e%b0-runnable-%e6%8e%a5%e5%8f%a3)
+  - [实现 Callable 接口](#%e5%ae%9e%e7%8e%b0-callable-%e6%8e%a5%e5%8f%a3)
+  - [继承 Thread 类](#%e7%bb%a7%e6%89%bf-thread-%e7%b1%bb)
+  - [实现接口 VS 继承 Thread](#%e5%ae%9e%e7%8e%b0%e6%8e%a5%e5%8f%a3-vs-%e7%bb%a7%e6%89%bf-thread)
+- [三、基础线程机制](#%e4%b8%89%e5%9f%ba%e7%a1%80%e7%ba%bf%e7%a8%8b%e6%9c%ba%e5%88%b6)
+  - [Executor](#executor)
+  - [Daemon](#daemon)
+  - [sleep()](#sleep)
+  - [yield()](#yield)
+- [四、中断](#%e5%9b%9b%e4%b8%ad%e6%96%ad)
+  - [Interrupt()](#interrupt)
+  - [interrupted()与isInterrupted()](#interrupted%e4%b8%8eisinterrupted)
+    - [区别](#%e5%8c%ba%e5%88%ab)
+  - [Executor 的中断操作](#executor-%e7%9a%84%e4%b8%ad%e6%96%ad%e6%93%8d%e4%bd%9c)
+- [五、互斥同步](#%e4%ba%94%e4%ba%92%e6%96%a5%e5%90%8c%e6%ad%a5)
+  - [synchronized](#synchronized)
+  - [ReentrantLock](#reentrantlock)
+  - [比较](#%e6%af%94%e8%be%83)
+  - [使用选择](#%e4%bd%bf%e7%94%a8%e9%80%89%e6%8b%a9)
+- [六、线程之间的协作](#%e5%85%ad%e7%ba%bf%e7%a8%8b%e4%b9%8b%e9%97%b4%e7%9a%84%e5%8d%8f%e4%bd%9c)
+  - [join()](#join)
+  - [wait() notify() notifyAll()](#wait-notify-notifyall)
+  - [await() signal() signalAll()](#await-signal-signalall)
+- [七、J.U.C - AQS](#%e4%b8%83juc---aqs)
+  - [CountDownLatch](#countdownlatch)
+  - [CyclicBarrier](#cyclicbarrier)
+  - [Semaphore](#semaphore)
+- [八、J.U.C - 其它组件](#%e5%85%abjuc---%e5%85%b6%e5%ae%83%e7%bb%84%e4%bb%b6)
+  - [FutureTask](#futuretask)
+  - [BlockingQueue](#blockingqueue)
+  - [ForkJoin](#forkjoin)
+- [九、线程不安全示例](#%e4%b9%9d%e7%ba%bf%e7%a8%8b%e4%b8%8d%e5%ae%89%e5%85%a8%e7%a4%ba%e4%be%8b)
+- [十、Java 内存模型](#%e5%8d%81java-%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b)
+  - [主内存与工作内存](#%e4%b8%bb%e5%86%85%e5%ad%98%e4%b8%8e%e5%b7%a5%e4%bd%9c%e5%86%85%e5%ad%98)
+  - [内存间交互操作](#%e5%86%85%e5%ad%98%e9%97%b4%e4%ba%a4%e4%ba%92%e6%93%8d%e4%bd%9c)
+  - [内存模型三大特性](#%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b%e4%b8%89%e5%a4%a7%e7%89%b9%e6%80%a7)
+    - [1. 原子性](#1-%e5%8e%9f%e5%ad%90%e6%80%a7)
+    - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-%e8%83%bd%e4%bf%9d%e8%af%81%e5%a4%9a%e4%b8%aa%e7%ba%bf%e7%a8%8b%e4%bf%ae%e6%94%b9%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
+    - [互斥锁保证操作的原子性](#%e4%ba%92%e6%96%a5%e9%94%81%e4%bf%9d%e8%af%81%e6%93%8d%e4%bd%9c%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
+    - [2. 可见性](#2-%e5%8f%af%e8%a7%81%e6%80%a7)
+    - [3. 有序性](#3-%e6%9c%89%e5%ba%8f%e6%80%a7)
+  - [先行发生原则](#%e5%85%88%e8%a1%8c%e5%8f%91%e7%94%9f%e5%8e%9f%e5%88%99)
+    - [1. 单一线程原则](#1-%e5%8d%95%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%8e%9f%e5%88%99)
+    - [2. 管程锁定规则](#2-%e7%ae%a1%e7%a8%8b%e9%94%81%e5%ae%9a%e8%a7%84%e5%88%99)
+    - [3. volatile 变量规则](#3-volatile-%e5%8f%98%e9%87%8f%e8%a7%84%e5%88%99)
+    - [4. 线程启动规则](#4-%e7%ba%bf%e7%a8%8b%e5%90%af%e5%8a%a8%e8%a7%84%e5%88%99)
+    - [5. 线程终止规则](#5-%e7%ba%bf%e7%a8%8b%e7%bb%88%e6%ad%a2%e8%a7%84%e5%88%99)
+    - [6. 线程中断规则](#6-%e7%ba%bf%e7%a8%8b%e4%b8%ad%e6%96%ad%e8%a7%84%e5%88%99)
+    - [7. 对象终结规则](#7-%e5%af%b9%e8%b1%a1%e7%bb%88%e7%bb%93%e8%a7%84%e5%88%99)
+    - [8. 传递性](#8-%e4%bc%a0%e9%80%92%e6%80%a7)
+- [十一、线程安全](#%e5%8d%81%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8)
+  - [不可变](#%e4%b8%8d%e5%8f%af%e5%8f%98)
+  - [悲观锁(阻塞同步)](#%e6%82%b2%e8%a7%82%e9%94%81%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
+    - [synchronized的底层原理](#synchronized%e7%9a%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86)
+    - [synchronized悲观锁的使用场景](#synchronized%e6%82%b2%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
+  - [乐观锁(非阻塞同步)](#%e4%b9%90%e8%a7%82%e9%94%81%e9%9d%9e%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
+    - [乐观锁的使用场景](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
+  - [乐观锁的两种实现方式](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%b8%a4%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f)
+    - [CAS(compareAndSwap)](#cascompareandswap)
+      - [定义](#%e5%ae%9a%e4%b9%89)
+      - [底层实现](#%e5%ba%95%e5%b1%82%e5%ae%9e%e7%8e%b0)
+      - [ABA问题](#aba%e9%97%ae%e9%a2%98)
+      - [循环时间开销大](#%e5%be%aa%e7%8e%af%e6%97%b6%e9%97%b4%e5%bc%80%e9%94%80%e5%a4%a7)
+      - [只能保证一个共享变量的原子操作](#%e5%8f%aa%e8%83%bd%e4%bf%9d%e8%af%81%e4%b8%80%e4%b8%aa%e5%85%b1%e4%ba%ab%e5%8f%98%e9%87%8f%e7%9a%84%e5%8e%9f%e5%ad%90%e6%93%8d%e4%bd%9c)
+      - [AtomicInteger](#atomicinteger)
+    - [版本号机制(解决ABA问题)](#%e7%89%88%e6%9c%ac%e5%8f%b7%e6%9c%ba%e5%88%b6%e8%a7%a3%e5%86%b3aba%e9%97%ae%e9%a2%98)
+  - [无同步方案](#%e6%97%a0%e5%90%8c%e6%ad%a5%e6%96%b9%e6%a1%88)
+    - [1. 栈封闭](#1-%e6%a0%88%e5%b0%81%e9%97%ad)
+    - [2. 线程本地存储（Thread Local Storage）](#2-%e7%ba%bf%e7%a8%8b%e6%9c%ac%e5%9c%b0%e5%ad%98%e5%82%a8thread-local-storage)
 
 <!-- /TOC -->
 
@@ -1615,6 +1606,7 @@ public class ThreadLocalExample1 {
     }
 }
 ```
+```java
 
 它所对应的底层结构图为：
 
@@ -1777,4 +1769,90 @@ JDK 1.6 引入了偏向锁和轻量级锁，从而让锁拥有了四个状态：
 
 - 使用线程池而不是直接创建线程，这是因为创建线程代价很高，线程池可以有效地利用有限的线程来启动任务。
 
+# 其他
 
+## 回调
+
+用于异步非阻塞的情况,实现callable接口里的call方法.比如:线程a告知b要做什么任务,之后a继续做自己的事情,b完成之后会通知a.而不是a要时刻监视b是否完成.
+举例:
+老师类
+```java
+    //老师类实例化回调接口，即学生写完题目之后通过老师的提供的方法进行回调。
+    //那么学生如何调用到老师的方法呢，只要在学生类的方法中传入老师的引用即可。
+    //而老师需要指定学生答题，所以也要传入学生的实例。
+public class Teacher implements CallBack{
+    private Student student;
+
+    Teacher(Student student) {
+        this.student = student;
+    }
+
+    void askProblem (Student student, Teacher teacher) {
+        //main方法是主线程运行，为了实现异步回调，这里开启一个线程来操作
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                student.resolveProblem(teacher);
+            }
+        }).start();
+        //老师让学生做题以后，等待学生回答的这段时间，可以做别的事，比如玩手机.\
+        //而不需要同步等待，这就是回调的好处。
+        //当然你可以说开启一个线程让学生做题就行了，但是这样无法让学生通知老师。
+        //需要另外的机制去实现通知过程。
+        // 当然，多线程中的future和callable也可以实现数据获取的功能。
+        for (int i = 1;i < 4;i ++) {
+            System.out.println("等学生回答问题的时候老师玩了 " + i + "秒的手机");
+        }
+    }
+
+    @Override
+    public void tellAnswer(int res) {
+        System.out.println("the answer is " + res);
+    }
+}
+
+```
+学生接口
+```java
+    //学生的接口，解决问题的方法中要传入老师的引用，否则无法完成对具体实例的回调。
+    //写为接口的好处就是，很多个学生都可以实现这个接口，并且老师在提问题时可以通过
+    //传入List<Student>来聚合学生，十分方便。
+public interface Student {
+    void resolveProblem (Teacher teacher);
+}
+
+```
+学生tom
+```java
+public class Tom implements Student{
+
+    @Override
+    public void resolveProblem(Teacher teacher) {
+        try {
+            //学生思考了3秒后得到了答案，通过老师提供的回调方法告诉老师。
+            Thread.sleep(3000);
+            System.out.println("work out");
+            teacher.tellAnswer(111);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+```
+测试类
+```java
+public class Test {
+    public static void main(String[] args) {
+        //测试
+        Student tom = new Tom();
+        Teacher lee = new Teacher(tom);
+        lee.askProblem(tom, lee);
+        //结果
+//        等学生回答问题的时候老师玩了 1秒的手机
+//        等学生回答问题的时候老师玩了 2秒的手机
+//        等学生回答问题的时候老师玩了 3秒的手机
+//        work out
+//        the answer is 111
+    }
+}
+```
