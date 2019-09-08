@@ -131,15 +131,15 @@ InnoDB 存储引擎在 MySQL 5.6.4 版本中也开始支持全文索引。
 
 倒排索引(反向索引) 与 正向索引对应,正向索引是以文档id为主键,文档里面有哪些关键单词为内容,如图:
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_14-30-26.jpg" width="350px"> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-30-26.jpg" width="350px"> </div><br>
 
 而反向索引是以word为主键,word所在的多个docId为关键内容的索引,如图:
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_14-32-30.jpg" width="350px"> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-32-30.jpg" width="350px"> </div><br>
 
 **实例如下**
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_14-33-41.jpg" width="350px"> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-33-41.jpg" width="350px"> </div><br>
 
 关键单词作为索引,倒排列表中记录该单词在哪些文档中出现以及出现的位置在哪
 <div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_14-35-45.jpg" width="350px"> </div><br>
@@ -202,7 +202,7 @@ customer_id_selectivity: 0.0373
 
 
 实例:
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_15-15-58.jpg" width="650px"> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_15-15-58.jpg" width="650px"> </div><br>
 
 
 ### 5. 覆盖索引
@@ -478,3 +478,92 @@ MySQL 提供了 FROM_UNIXTIME() 函数把 UNIX 时间戳转换为日期，并提
 读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave-proxy.png" width=""> </div><br>
+
+
+
+
+
+# 事务隔离机制
+
+## 四种事务隔离机制
+未提交读(Read Uncommitted)：允许脏读，也就是可能读取到其他会话中未提交事务修改的数据
+
+提交读(Read Committed)：只能读取到已经提交的数据。Oracle等多数数据库默认都是该级别 (不重复读)
+
+可重复读(Repeated Read)：可重复读。在同一个事务内的查询都是事务开始时刻一致的，InnoDB默认级别。在SQL标准中，该隔离级别消除了不可重复读，但是还存在幻象读
+
+串行读(Serializable)：完全串行化的读，每次读都需要获得表级共享锁，读写相互都会阻塞
+
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-31-29.jpg" width=""/> </div><br>
+
+## 事务的定义
+
+事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。例如，银行转账工作：从一个账号扣款并使另一个账号增款，这两个操作要么都执行，要么都不执行。所以，应该把它们看成一个事务。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保 持数据一致性。
+
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-04-15.jpg" width=""/> </div><br>
+
+## 读未提交
+
+该隔离级别，所有事务都可以看到其他未提交事务的执行结果。通俗地讲就是，在一个事务中可以读取到另一个事务中新增或修改但未提交的数据。
+
+该隔离级别可能导致的问题是脏读。因为另一个事务可能回滚，所以在第一个事务中读取到的数据很可能是无效的脏数据，造成脏读现象
+
+```
+> set tx_isolation='READ-UNCOMMITTED';
+```
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-28-31.jpg" width=""/> </div><br>
+
+
+## 读提交
+
+这是大多数数据库系统的默认隔离级别（但不是mysql默认的） 
+
+一个事务只能看见已经提交事务所做的修改。换句话说，一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。  
+
+该隔离级别可能导致的问题是不可重复读。因为两次执行同样的查询，可能会得到不一样的结果。  
+
+notes\pictures\mysql\Snipaste_2019-09-08_10-29-01.jpg
+
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-29-01.jpg
+" width=""/> </div><br>
+
+## Repeatable read 重复读
+
+这是MySQL的默认事务隔离级别
+
+它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。通俗来讲，可重复读在一个事务里读取数据,怎么读都不会变，除非提交了该事务，再次进行读取才会发现其他事务修改了数据。
+
+该隔离级别存在的问题是幻读
+
+
+当隔离级别设置为Repeatable read 时，可以避免不可重复读。当singo拿着工资卡去消费时，一旦系统开始读取工资卡信息（即事务开始），singo的老婆就不可能对该记录进行修改，也就是singo的老婆不能在此时转账。
+
+
+
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-30-05.jpg" width=""/> </div><br>
+
+虽然Repeatable read避免了不可重复读，但还有可能出现幻读 。
+
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-30-41.jpg" width=""/> </div><br>
+
+## Serializable 串行化
+这是最高的隔离级别
+
+它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。通俗地讲就是，假如两个事务都操作到同一数据行，那么这个数据行就会被锁定，只允许先读取/操作到数据行的事务优先操作，只有当事务提交了，数据行才会解锁，后一个事务才能成功操作这个数据行，否则只能一直等待
+
+该隔离级别可能导致大量的超时现象和锁竞争。
+
+
+## 脏读：
+脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据。
+
+
+## 不可重复读：
+是指**在一个事务内，多次读同一数据**。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。（即不能读到相同的数据内容）
+例如，一个编辑人员两次读取同一文档，但在两次读取之间，作者重写了该文档。当编辑人员第二次读取文档时，文档已更改。原始读取不可重复。如果只有在作者全部完成编写后编辑人员才可以读取文档，则可以避免该问题。
+
+
+## 幻读:
+是指当**事务不是独立执行**时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象
+发生了幻觉一样。
+例如，一个编辑人员更改作者提交的文档，但当生产部门将其更改内容合并到该文档的主复本时，发现作者已将未编辑的新材料添加到该文档中。如果在编辑人员和生产部门完成对原始文档的处理之前，任何人都不能将新材料添加到文档中，则可以避免该问题。
