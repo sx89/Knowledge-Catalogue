@@ -826,11 +826,11 @@ commit;
 ```
 此时数据库中的表如下:
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-09_14-47-19.jpg" width="650"/> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-47-19.jpg" width="650"/> </div><br>
 
 接着执行事务ID为2的事务(2),根据SELECT 检索条件可以知道,它会检索创建时间(创建事务的ID)小于当前事务ID的行和删除时间(删除事务的ID)大于当前事务的行,而id=4的行上面已经说过,而id=1的行由于删除时间(删除事务的ID)大于当前事务的ID,所以事务2的(2)select * from yang也会把id=1的数据检索出来.所以,事务2中的两条select 语句检索出来的数据都如下:
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-09_14-47-44.jpg" width="650"/> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-47-44.jpg" width="650"/> </div><br>
 
 #### update
 InnoDB执行UPDATE，实际上是新插入了一行记录，并保存其创建时间为当前事务的ID，同时保存当前事务ID到要UPDATE的行的删除时间.
@@ -848,11 +848,11 @@ update yang set name='Long' where id=2;
 commit;
 ```
 根据update的更新原则:会生成新的一行,并在原来要修改的列的删除时间列上添加本事务ID,得到表如下:
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-09_14-50-12.jpg" width="650"/> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-50-12.jpg" width="650"/> </div><br>
 
 继续执行事务2的(2),根据select 语句的检索条件,得到下表:
 
-<div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-09_14-50-36.jpg" width="650"/> </div><br>
+<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-50-36.jpg" width="650"/> </div><br>
 
 还是和事务2中(1)select 得到相同的结果.
 
