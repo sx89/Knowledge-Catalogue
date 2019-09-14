@@ -15,7 +15,7 @@
     - [概览](#概览)
     - [不可变的好处](#不可变的好处)
     - [构造函数](#构造函数)
-- [String ,StringBuffer,StringBuilder的区别](#string-stringbufferstringbuilder的区别)
+- [String,StringBuffer,StringBuilder的区别](#stringstringbufferstringbuilder的区别)
     - [StrinBuffer和StringBuilder的常用方法](#strinbuffer和stringbuilder的常用方法)
     - [String Pool](#string-pool)
     - [new String("abc")创建两个对象](#new-stringabc创建两个对象)
@@ -217,7 +217,7 @@ public String(String original) {
 ```
 
 
-# String ,StringBuffer,StringBuilder的区别
+# String,StringBuffer,StringBuilder的区别
 
 **1. 可变性** 
 
