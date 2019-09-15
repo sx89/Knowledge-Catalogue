@@ -1,50 +1,52 @@
 # Java-notes
 计算机基础+Java核心知识+分布式核心知识
 
-
-## 算法
-
-- [剑指 Offer 题解]()
-- [Leetcode 题解]()
-- [算法]()
-
-##  操作系统
-
-- [计算机操作系统]()
-
-## 计算机网络 
-
-- [计算机网络]()
-- [HTTP]()
-- [Socket]()
-
-## Linux 
-
-- [Linux]()
+状态:已完成/在编写/未开始
 ##  Java
 
-- [Java 基础]()
-- [Java 集合]()
-- [Java 虚拟机]()
-- [Java 并发]()
-- [Java I/O]()
-- [Java 设计模式]()
-
+- [Java 基础](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E5%9F%BA%E7%A1%80.md)(已完成)
+- [Java 集合](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E9%9B%86%E5%90%88.md)(已完成)
+- [Java 虚拟机](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA.md)(已完成)
+- [Java 并发](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E5%B9%B6%E5%8F%91.md)(已完成)
+- [Java I/O](https://github.com/sx89/Java-notes/blob/master/notes/Java-IO.md)(已完成)
+- [Java 设计模式](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)(在编写)
+- [设计模式](https://github.com/sx89/Java-notes/blob/master/notes/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)(在编写)
+- [面向对象思想](https://github.com/sx89/Java-notes/blob/master/notes/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%80%9D%E6%83%B3.md)(在编写)
 ##  MySQL数据库
 
-- [数据库系统原理]()
-- [SQL语句]()
-- [MySQL]()
+- [SQL语句]()(未开始)
+- [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(已完成)
 
 ##  分布式基础 
 
-- [系统设计基础]()
-- [分布式]()
-- [开发框架-SpringBoot]()
-- [高速缓存-Redis]()
-- [消息队列-RocketMQ]()
-- [网络编程-Netty]()
-- [容器技术-Docker]()
+- [系统设计基础]()(未开始)
+- [分布式]()(未开始)
+- [开发框架-SpringBoot](https://github.com/sx89/summary-of-all-my-repositories)(在编写)
+- [高速缓存-Redis](https://github.com/sx89/Java-notes/blob/master/notes/redis.md)(已完成)
+- [消息队列-RocketMQ](https://github.com/sx89/rocketmq4.0-code)(在编写)
+- [网络编程-Netty](https://github.com/sx89/network_and_protocol)(在编写)
+- [容器技术-Docker](https://github.com/sx89/docker-note)(在编写)
+
+## 算法
+
+- [剑指 Offer 题解](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
+- [Leetcode 题解]()(在编写)
+- [算法](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
+
+##  操作系统
+
+- [计算机操作系统](https://github.com/sx89/Java-notes/blob/master/notes/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.md)(在编写)
+
+## 计算机网络 
+
+- [计算机网络](https://github.com/sx89/Java-notes/blob/master/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C.md)(在编写)
+- [HTTP]()(未开始)
+- [Socket]()(未开始)
+
+## Linux 
+
+- [Linux]()(未开始)
+
 
 
 
