@@ -1,3 +1,18 @@
+<!-- TOC -->
+
+- [切面编程，Aspect Oriented Programming](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8baspect-oriented-programming)
+  - [spring定义](#spring%e5%ae%9a%e4%b9%89)
+  - [AOP例子](#aop%e4%be%8b%e5%ad%90)
+- [依赖注入与控制反转](#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e4%b8%8e%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac)
+  - [控制反转介绍](#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac%e4%bb%8b%e7%bb%8d)
+  - [IoC能做什么](#ioc%e8%83%bd%e5%81%9a%e4%bb%80%e4%b9%88)
+  - [依赖注入（DI，DI—Dependency Injection）](#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5dididependency-injection)
+  - [控制反转与依赖注入的理解](#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac%e4%b8%8e%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e7%9a%84%e7%90%86%e8%a7%a3)
+- [切面编程与动态代理的关系](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8b%e4%b8%8e%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e7%9a%84%e5%85%b3%e7%b3%bb)
+
+<!-- /TOC -->
+
+
 # 切面编程，Aspect Oriented Programming
 
 ## spring定义
