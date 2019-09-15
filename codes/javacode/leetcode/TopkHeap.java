@@ -1,6 +1,8 @@
 package javacode.leetcode;
 
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Stack;
 
 /**
  * @author sunxu93@163.com

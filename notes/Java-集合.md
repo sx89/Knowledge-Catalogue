@@ -79,9 +79,11 @@
 
 ### 3. Queue
 
-- LinkedList：可以用它来实现双向队列。
+- LinkedList：可以用它来实现双向队列。LinkedList类实现了Queue接口，因此我们可以把LinkedList当成Queue来用。
 
-- PriorityQueue：基于堆结构实现，可以用它来实现优先队列。
+- PriorityQueue：基于堆结构实现，可以用它来实现优先队列和大顶堆小顶堆(见LeetCode的topK问题).PriorityQueue的逻辑结构是一棵完全二叉树，存储结构其实是一个数组。逻辑结构层次遍历的结果刚好是一个数组。
+
+
 
 ## Map
 
