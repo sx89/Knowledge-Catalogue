@@ -617,6 +617,13 @@ vitess（谷歌开发的数据库中间件）
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave.png" width=""> </div><br>
 
+
+主从同步事件有3种形式:statement、row、mixed。
+
+statement：会将对数据库操作的sql语句写入到binlog中。
+row：会将每一条数据的变化写入到binlog中。
+mixed：statement与row的混合。Mysql决定什么时候写statement格式的，什么时候写row格式的binlog
+
 ## 读写分离
 
 主服务器处理写操作以及实时性要求比较高的读操作，而从服务器处理读操作。
@@ -630,9 +637,6 @@ vitess（谷歌开发的数据库中间件）
 读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave-proxy.png" width=""> </div><br>
-
-
-
 
 
 # 事务隔离机制

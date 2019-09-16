@@ -2280,3 +2280,83 @@ public class OuterClass$InnerClass {
 
 - JRE is the JVM program, Java application need to run on JRE.
 - JDK is a superset of JRE, JRE + tools for developing java programs. e.g, it provides the compiler "javac"
+
+# Java根类Object的方法
+
+Java中的Object类是所有类的父类，它提供了以下11个方法：
+
+```
+public final native Class<?> getClass()
+public native int hashCode()
+public boolean equals(Object obj)
+protected native Object clone() throws CloneNotSupportedException
+public String toString()
+public final native void notify()
+public final native void notifyAll()
+public final native void wait(long timeout) throws InterruptedException
+public final void wait(long timeout, int nanos) throws InterruptedException
+public final void wait() throws InterruptedException
+protected void finalize() throws Throwable { }
+```
+
+## getClass方法
+getClass()也是一个native方法，返回的是此Object对象的类对象/运行时类对象Class<?>。效果与Object.class相同。
+
+首先解释下"类对象"的概念：在Java中，类是是对具有一组相同特征或行为的实例的抽象并进行描述，对象则是此类所描述的特征或行为的具体实例。作为概念层次的类，其本身也具有某些共同的特性，如都具有类名称、由类加载器去加载，都具有包，具有父类，属性和方法等。于是，Java中有专门定义了一个类，Class，去描述其他类所具有的这些特性，因此，从此角度去看，类本身也都是属于Class类的对象。为与经常意义上的对象相区分，在此称之为"类对象"。
+
+## equals方法
+这个方法是可以自己定义的,"等于"的标准取决于自己
+## hashCode方法
+
+哈希码的通用约定如下：
+
+1. 在java程序执行过程中，在一个对象没有被改变的前提下，无论这个对象被调用多少次，hashCode方法都会返回相同的整数值。对象的哈希码没有必要在不同的程序中保持相同的值。
+2. 如果2个对象使用equals方法进行比较并且相同的话，那么这2个对象的hashCode方法的值也必须相等。
+3. 如果根据equals方法，得到两个对象不相等，那么这2个对象的hashCode值不需要必须不相同。但是，不相等的对象的hashCode值不同的话可以提高哈希表的性能。
+
+根据第二三条,重写equals就必须重写hashCode.
+
+## clone方法
+
+创建并返回当前对象的一份拷贝。一般情况下，对于任何对象 x，表达式 x.clone() != x 为true，x.clone().getClass() == x.getClass() 也为true。
+
+Object类的clone方法是一个protected的native方法。
+
+由于Object本身没有实现Cloneable接口，所以不重写clone方法并且进行调用的话会发生CloneNotSupportedException异常。
+
+深拷贝拷贝堆内存,浅拷贝拷贝栈指针.
+
+## toString方法
+toString()是由对象的类型和其哈希码唯一确定，同一类型但不相等的两个对象分别调用toString()方法返回的结果可能相同。
+
+## notify方法
+
+唤醒一个在此对象监视器上等待的线程(监视器相当于就是锁的概念)。如果所有的线程都在此对象上等待，那么只会选择一个线程。选择是任意性的，并在对实现做出决定时发生。一个线程在对象监视器上等待可以调用wait方法。
+
+因为notify只能在拥有对象监视器的所有者线程中调用，否则会抛出IllegalMonitorStateException异常
+
+## notifyAll方法
+跟notify一样，唯一的区别就是会唤醒在此对象监视器上等待的所有线程，而不是一个线程。
+
+同样，如果当前线程不是对象监视器的所有者，那么调用notifyAll同样会发生IllegalMonitorStateException异常。
+
+## wait(long timeout) throws InterruptedException方法
+
+wait(long timeout)方法同样是一个native方法，并且也是final的，不允许子类重写。
+
+wait方法会让当前线程等待直到另外一个线程调用对象的notify或notifyAll方法，或者超过参数设置的timeout超时时间。
+
+跟notify和notifyAll方法一样，当前线程必须是此对象的监视器所有者，否则还是会发生IllegalMonitorStateException异常。
+
+线程T是不可用并处于休眠状态，直到发生以下四件事中的任意一件：
+
+其他某个线程调用此对象的notify方法，并且线程T碰巧被任选为被唤醒的线程
+其他某个线程调用此对象的notifyAll方法
+其他某个线程调用Thread.interrupt方法中断线程T
+时间到了参数设置的超时时间。如果timeout参数为0，则不会超时，会一直进行等待
+
+## finalize方法
+finalize方法是一个protected方法，Object类的默认实现是不进行任何操作。
+
+该方法的作用是实例被垃圾回收器回收的时候触发的操作，就好比 “死前的最后一波挣扎”。
+
