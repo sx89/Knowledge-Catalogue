@@ -53,7 +53,7 @@
         - [重载和重写的区别](#重载和重写的区别)
 - [Object 通用方法](#object-通用方法)
     - [概览](#概览-1)
-- [== 与 equal](#-与-equal)
+    - [== 与 equal](#-与-equal)
     - [hashCode()](#hashcode)
     - [toString()](#tostring)
     - [clone()](#clone)
@@ -384,6 +384,7 @@ public : 对所有类可见。使用对象：类、接口、变量、方法
 
 protected : 对同一包内的类和所有子类可见。使用对象：变量、方法。 注意：不能修饰类（外部类）。
 ```
+
 
 
 ## 多态
@@ -844,7 +845,7 @@ public final void wait(long timeout, int nanos) throws InterruptedException
 
 public final void wait() throws InterruptedException
 ```
-# == 与 equal
+## == 与 equal
 
 ==比较的是引用的内存地址
 
@@ -1810,6 +1811,7 @@ class FruitGenerator<T> implements Generator<T>{
 ```
 当实现泛型接口的类，传入泛型实参时：
 ```java
+
 /**
  * 传入泛型实参时：
  * 定义一个生产器实现这个接口,虽然我们只创建了一个泛型接口Generator<T>
@@ -1937,7 +1939,7 @@ public class GenericEraseTest {
 
 ### 泛型擦除的优缺点
 优点  
-提高编译速度,List<String>和List<Integer>将生成两个不同的类，这样很容易导致类膨胀的问题，使得代码编译的速度降低。
+提高编译速度,List<String>和List<Integer>将生成两个不同的类，很容易导致类膨胀的问题，使得代码编译的速度降低。
 
 缺点  
 无法在运行的代码中获取到泛型的类型信息,所以不能再创建实例
