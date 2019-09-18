@@ -1,84 +1,90 @@
 
 <!-- TOC -->
 
-- [一、线程状态转换](#%e4%b8%80%e7%ba%bf%e7%a8%8b%e7%8a%b6%e6%80%81%e8%bd%ac%e6%8d%a2)
-  - [新建（New）](#%e6%96%b0%e5%bb%banew)
-  - [可运行（Runnable）](#%e5%8f%af%e8%bf%90%e8%a1%8crunnable)
-  - [阻塞（Blocked）](#%e9%98%bb%e5%a1%9eblocked)
-  - [无限期等待（Waiting）](#%e6%97%a0%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85waiting)
-  - [限期等待（Timed Waiting）](#%e9%99%90%e6%9c%9f%e7%ad%89%e5%be%85timed-waiting)
-  - [死亡（Terminated）](#%e6%ad%bb%e4%ba%a1terminated)
-- [二、使用线程](#%e4%ba%8c%e4%bd%bf%e7%94%a8%e7%ba%bf%e7%a8%8b)
-  - [实现 Runnable 接口](#%e5%ae%9e%e7%8e%b0-runnable-%e6%8e%a5%e5%8f%a3)
-  - [实现 Callable 接口](#%e5%ae%9e%e7%8e%b0-callable-%e6%8e%a5%e5%8f%a3)
-  - [继承 Thread 类](#%e7%bb%a7%e6%89%bf-thread-%e7%b1%bb)
-  - [实现接口 VS 继承 Thread](#%e5%ae%9e%e7%8e%b0%e6%8e%a5%e5%8f%a3-vs-%e7%bb%a7%e6%89%bf-thread)
-  - [run与start的区别](#run%e4%b8%8estart%e7%9a%84%e5%8c%ba%e5%88%ab)
-- [三、基础线程机制](#%e4%b8%89%e5%9f%ba%e7%a1%80%e7%ba%bf%e7%a8%8b%e6%9c%ba%e5%88%b6)
-  - [Executor](#executor)
-  - [Daemon](#daemon)
-  - [sleep()](#sleep)
-  - [yield()](#yield)
-- [四、中断](#%e5%9b%9b%e4%b8%ad%e6%96%ad)
-  - [Interrupt()](#interrupt)
-  - [interrupted()与isInterrupted()](#interrupted%e4%b8%8eisinterrupted)
-    - [区别](#%e5%8c%ba%e5%88%ab)
-  - [Executor 的中断操作](#executor-%e7%9a%84%e4%b8%ad%e6%96%ad%e6%93%8d%e4%bd%9c)
-- [五、互斥同步](#%e4%ba%94%e4%ba%92%e6%96%a5%e5%90%8c%e6%ad%a5)
-  - [synchronized](#synchronized)
-  - [ReentrantLock](#reentrantlock)
-  - [比较](#%e6%af%94%e8%be%83)
-  - [使用选择](#%e4%bd%bf%e7%94%a8%e9%80%89%e6%8b%a9)
-- [六、线程之间的协作](#%e5%85%ad%e7%ba%bf%e7%a8%8b%e4%b9%8b%e9%97%b4%e7%9a%84%e5%8d%8f%e4%bd%9c)
-  - [join()](#join)
-  - [wait() notify() notifyAll()](#wait-notify-notifyall)
-  - [await() signal() signalAll()](#await-signal-signalall)
-- [七、J.U.C - AQS](#%e4%b8%83juc---aqs)
-  - [CountDownLatch](#countdownlatch)
-  - [CyclicBarrier](#cyclicbarrier)
-  - [Semaphore](#semaphore)
-- [八、J.U.C - 其它组件](#%e5%85%abjuc---%e5%85%b6%e5%ae%83%e7%bb%84%e4%bb%b6)
-  - [FutureTask](#futuretask)
-  - [BlockingQueue](#blockingqueue)
-  - [ForkJoin](#forkjoin)
-- [九、线程不安全示例](#%e4%b9%9d%e7%ba%bf%e7%a8%8b%e4%b8%8d%e5%ae%89%e5%85%a8%e7%a4%ba%e4%be%8b)
-- [十、Java 内存模型](#%e5%8d%81java-%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b)
-  - [主内存与工作内存](#%e4%b8%bb%e5%86%85%e5%ad%98%e4%b8%8e%e5%b7%a5%e4%bd%9c%e5%86%85%e5%ad%98)
-  - [内存间交互操作](#%e5%86%85%e5%ad%98%e9%97%b4%e4%ba%a4%e4%ba%92%e6%93%8d%e4%bd%9c)
-  - [内存模型三大特性](#%e5%86%85%e5%ad%98%e6%a8%a1%e5%9e%8b%e4%b8%89%e5%a4%a7%e7%89%b9%e6%80%a7)
-    - [1. 原子性](#1-%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-%e8%83%bd%e4%bf%9d%e8%af%81%e5%a4%9a%e4%b8%aa%e7%ba%bf%e7%a8%8b%e4%bf%ae%e6%94%b9%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [互斥锁保证操作的原子性](#%e4%ba%92%e6%96%a5%e9%94%81%e4%bf%9d%e8%af%81%e6%93%8d%e4%bd%9c%e7%9a%84%e5%8e%9f%e5%ad%90%e6%80%a7)
-    - [2. 可见性](#2-%e5%8f%af%e8%a7%81%e6%80%a7)
-    - [3. 有序性](#3-%e6%9c%89%e5%ba%8f%e6%80%a7)
-  - [先行发生原则](#%e5%85%88%e8%a1%8c%e5%8f%91%e7%94%9f%e5%8e%9f%e5%88%99)
-    - [1. 单一线程原则](#1-%e5%8d%95%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%8e%9f%e5%88%99)
-    - [2. 管程锁定规则](#2-%e7%ae%a1%e7%a8%8b%e9%94%81%e5%ae%9a%e8%a7%84%e5%88%99)
-    - [3. volatile 变量规则](#3-volatile-%e5%8f%98%e9%87%8f%e8%a7%84%e5%88%99)
-    - [4. 线程启动规则](#4-%e7%ba%bf%e7%a8%8b%e5%90%af%e5%8a%a8%e8%a7%84%e5%88%99)
-    - [5. 线程终止规则](#5-%e7%ba%bf%e7%a8%8b%e7%bb%88%e6%ad%a2%e8%a7%84%e5%88%99)
-    - [6. 线程中断规则](#6-%e7%ba%bf%e7%a8%8b%e4%b8%ad%e6%96%ad%e8%a7%84%e5%88%99)
-    - [7. 对象终结规则](#7-%e5%af%b9%e8%b1%a1%e7%bb%88%e7%bb%93%e8%a7%84%e5%88%99)
-    - [8. 传递性](#8-%e4%bc%a0%e9%80%92%e6%80%a7)
-- [十一、线程安全](#%e5%8d%81%e4%b8%80%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8)
-  - [不可变](#%e4%b8%8d%e5%8f%af%e5%8f%98)
-  - [悲观锁(阻塞同步)](#%e6%82%b2%e8%a7%82%e9%94%81%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
-    - [synchronized的底层原理](#synchronized%e7%9a%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86)
-    - [synchronized悲观锁的使用场景](#synchronized%e6%82%b2%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
-  - [乐观锁(非阻塞同步)](#%e4%b9%90%e8%a7%82%e9%94%81%e9%9d%9e%e9%98%bb%e5%a1%9e%e5%90%8c%e6%ad%a5)
-    - [乐观锁的使用场景](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af)
-  - [乐观锁的两种实现方式](#%e4%b9%90%e8%a7%82%e9%94%81%e7%9a%84%e4%b8%a4%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f)
-    - [CAS(compareAndSwap)](#cascompareandswap)
-      - [定义](#%e5%ae%9a%e4%b9%89)
-      - [底层实现](#%e5%ba%95%e5%b1%82%e5%ae%9e%e7%8e%b0)
-      - [ABA问题](#aba%e9%97%ae%e9%a2%98)
-      - [循环时间开销大](#%e5%be%aa%e7%8e%af%e6%97%b6%e9%97%b4%e5%bc%80%e9%94%80%e5%a4%a7)
-      - [只能保证一个共享变量的原子操作](#%e5%8f%aa%e8%83%bd%e4%bf%9d%e8%af%81%e4%b8%80%e4%b8%aa%e5%85%b1%e4%ba%ab%e5%8f%98%e9%87%8f%e7%9a%84%e5%8e%9f%e5%ad%90%e6%93%8d%e4%bd%9c)
-      - [AtomicInteger](#atomicinteger)
-    - [版本号机制(解决ABA问题)](#%e7%89%88%e6%9c%ac%e5%8f%b7%e6%9c%ba%e5%88%b6%e8%a7%a3%e5%86%b3aba%e9%97%ae%e9%a2%98)
-  - [无同步方案](#%e6%97%a0%e5%90%8c%e6%ad%a5%e6%96%b9%e6%a1%88)
-    - [1. 栈封闭](#1-%e6%a0%88%e5%b0%81%e9%97%ad)
-    - [2. 线程本地存储（Thread Local Storage）](#2-%e7%ba%bf%e7%a8%8b%e6%9c%ac%e5%9c%b0%e5%ad%98%e5%82%a8thread-local-storage)
+- [一、线程状态转换](#一线程状态转换)
+    - [新建（New）](#新建new)
+    - [可运行（Runnable）](#可运行runnable)
+    - [阻塞（Blocked）](#阻塞blocked)
+    - [无限期等待（Waiting）](#无限期等待waiting)
+    - [限期等待（Timed Waiting）](#限期等待timed-waiting)
+    - [死亡（Terminated）](#死亡terminated)
+- [二、使用线程](#二使用线程)
+    - [实现 Runnable 接口](#实现-runnable-接口)
+    - [实现 Callable 接口](#实现-callable-接口)
+    - [继承 Thread 类](#继承-thread-类)
+    - [实现接口 VS 继承 Thread](#实现接口-vs-继承-thread)
+    - [run与start的区别](#run与start的区别)
+    - [new thread的错误](#new-thread的错误)
+    - [线程池的优点](#线程池的优点)
+- [线程池](#线程池)
+    - [自定义线程池](#自定义线程池)
+        - [handler的拒绝策略：](#handler的拒绝策略)
+    - [预定义线程池](#预定义线程池)
+- [三、基础线程机制](#三基础线程机制)
+    - [Executor](#executor)
+    - [Daemon](#daemon)
+    - [sleep()](#sleep)
+    - [yield()](#yield)
+- [四、中断](#四中断)
+    - [Interrupt()](#interrupt)
+    - [interrupted()与isInterrupted()](#interrupted与isinterrupted)
+        - [区别](#区别)
+    - [Executor 的中断操作](#executor-的中断操作)
+- [五、互斥同步](#五互斥同步)
+    - [synchronized](#synchronized)
+    - [ReentrantLock](#reentrantlock)
+    - [比较](#比较)
+    - [使用选择](#使用选择)
+- [六、线程之间的协作](#六线程之间的协作)
+    - [join()](#join)
+    - [wait() notify() notifyAll()](#wait-notify-notifyall)
+    - [await() signal() signalAll()](#await-signal-signalall)
+- [七、J.U.C - AQS](#七juc---aqs)
+    - [CountDownLatch](#countdownlatch)
+    - [CyclicBarrier](#cyclicbarrier)
+    - [Semaphore](#semaphore)
+- [八、J.U.C - 其它组件](#八juc---其它组件)
+    - [FutureTask](#futuretask)
+    - [BlockingQueue](#blockingqueue)
+    - [ForkJoin](#forkjoin)
+- [九、线程不安全示例](#九线程不安全示例)
+- [十、Java 内存模型](#十java-内存模型)
+    - [主内存与工作内存](#主内存与工作内存)
+    - [内存间交互操作](#内存间交互操作)
+    - [内存模型三大特性](#内存模型三大特性)
+        - [1. 原子性](#1-原子性)
+        - [AtomicInteger 能保证多个线程修改的原子性。](#atomicinteger-能保证多个线程修改的原子性)
+        - [互斥锁保证操作的原子性](#互斥锁保证操作的原子性)
+        - [2. 可见性](#2-可见性)
+        - [3. 有序性](#3-有序性)
+    - [先行发生原则](#先行发生原则)
+        - [1. 单一线程原则](#1-单一线程原则)
+        - [2. 管程锁定规则](#2-管程锁定规则)
+        - [3. volatile 变量规则](#3-volatile-变量规则)
+        - [4. 线程启动规则](#4-线程启动规则)
+        - [5. 线程终止规则](#5-线程终止规则)
+        - [6. 线程中断规则](#6-线程中断规则)
+        - [7. 对象终结规则](#7-对象终结规则)
+        - [8. 传递性](#8-传递性)
+- [十一、线程安全](#十一线程安全)
+    - [不可变](#不可变)
+    - [悲观锁(阻塞同步)](#悲观锁阻塞同步)
+        - [synchronized的底层原理](#synchronized的底层原理)
+        - [synchronized悲观锁的使用场景](#synchronized悲观锁的使用场景)
+    - [乐观锁(非阻塞同步)](#乐观锁非阻塞同步)
+        - [乐观锁的使用场景](#乐观锁的使用场景)
+    - [乐观锁的两种实现方式](#乐观锁的两种实现方式)
+        - [CAS(compareAndSwap)](#cascompareandswap)
+            - [定义](#定义)
+            - [底层实现](#底层实现)
+            - [ABA问题](#aba问题)
+            - [循环时间开销大](#循环时间开销大)
+            - [只能保证一个共享变量的原子操作](#只能保证一个共享变量的原子操作)
+            - [AtomicInteger](#atomicinteger)
+        - [版本号机制(解决ABA问题)](#版本号机制解决aba问题)
+    - [无同步方案](#无同步方案)
+        - [1. 栈封闭](#1-栈封闭)
+        - [2. 线程本地存储（Thread Local Storage）](#2-线程本地存储thread-local-storage)
 
 <!-- /TOC -->
 
@@ -241,6 +247,57 @@ Run方法运行结束，
 程序中依然只有主线程--这一个线程，
 其程序执行路径还是只有一条，
 这样就没有达到写线程的目的
+
+## new thread的错误
+new Thread的弊端？
+
+a. 每次new Thread新建对象性能差。  
+b. 线程缺乏统一管理，可能无限制新建线程，相互之间竞争，及可能占用过多系统资源导致死机或oom。  
+c. 缺乏更多功能，如定时执行、定期执行、线程中断。  
+## 线程池的优点
+相比new Thread，Java提供的四种线程池的好处在于：
+a. 重用存在的线程，减少对象创建、消亡的开销，性能佳。  
+b. 可有效控制最大并发线程数，提高系统资源的使用率，同时避免过多资源竞争，避免堵塞。  
+c. 提供定时执行、定期执行、单线程、并发数控制等功能。  
+
+# 线程池
+
+线程池：Java中开辟出了一种管理线程的概念，这个概念叫做线程池，从概念以及应用场景中，我们可以看出，线程池的好处，就是可以方便的管理线程，也可以减少内存的消耗。
+
+## 自定义线程池
+
+那么，我们应该如何创建一个线程池Java中已经提供了创建线程池的一个类：Executor
+
+而我们创建时，一般使用它的子类：ThreadPoolExecutor.
+
+<div align="center"> <img src=" .\pictures\java-concurrency\Snipaste_2019-09-18_20-22-13.jpg" width="600px"> </div><br>
+
+线程池中的corePoolSize就是线程池中的核心线程数量，这几个核心线程，只是在没有用的时候，也不会被回收，maximumPoolSize就是线程池中可以容纳的最大线程的数量，而keepAliveTime，就是线程池中除了核心线程之外的其他的最长可以保留的时间，因为在线程池中，除了核心线程即使在无任务的情况下也不能被清除，其余的都是有存活时间的，意思就是非核心线程可以保留的最长的空闲时间，而util，就是计算这个时间的一个单位，workQueue，就是等待队列，任务可以储存在任务队列中等待被执行，执行的是FIFIO原则（先进先出）。threadFactory，就是创建线程的线程工厂，最后一个handler,是一种拒绝策略，我们可以在任务满了知乎，拒绝执行某些任务。
+
+
+<div align="center"> <img src=".\pictures\java-concurrency\Snipaste_2019-09-18_20-24-45.jpg " width="600px"> </div><br>
+
+
+任务进来时，首先执行判断，判断核心线程是否处于空闲状态，如果不是，核心线程就先就执行任务，如果核心线程已满，则判断任务队列是否有地方存放该任务，若果有，就将任务保存在任务队列中，等待执行，如果满了，在判断最大可容纳的线程数，如果没有超出这个数量，就开创非核心线程执行任务，如果超出了，就调用handler实现拒绝策略。
+
+### handler的拒绝策略：
+第一种AbortPolicy:不执行新任务，直接抛出异常，提示线程池已满
+
+第二种DisCardPolicy:不执行新任务，也不抛出异常
+
+第三种DisCardOldSetPolicy:将消息队列中的第一个任务替换为当前新进来的任务执行
+
+第四种CallerRunsPolicy:直接调用execute来执行当前任务
+
+## 预定义线程池
+CachedThreadPool:可缓存的线程池，该线程池中没有核心线程，非核心线程的数量为Integer.max_value，就是无限大，当有需要时创建线程来执行任务，没有需要时回收线程，适用于耗时少，任务量大的情况。
+
+SecudleThreadPool:周期性执行任务的线程池，按照某种特定的计划执行线程中的任务，有核心线程，但也有非核心线程，非核心线程的大小也为无限大。适用于执行周期性的任务。
+
+SingleThreadPool:只有一条线程来执行任务，适用于有顺序的任务的应用场景。
+
+FixedThreadPool:定长的线程池，有核心线程，核心线程的即为最大的线程数量，没有非核心线程
+
 
 # 三、基础线程机制
 
