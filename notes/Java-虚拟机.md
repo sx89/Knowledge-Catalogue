@@ -59,14 +59,12 @@
 - [JVM类生命周期概述：加载时机与加载过程](#jvm类生命周期概述加载时机与加载过程)
     - [类加载机制定义](#类加载机制定义)
     - [类的生命周期](#类的生命周期)
-    - [类加载的时机与步骤](#类加载的时机与步骤)
-        - [加载步骤](#加载步骤)
     - [加载时机与初始化时机](#加载时机与初始化时机)
         - [类加载时机](#类加载时机)
         - [类初始化时机(五种主动引用)](#类初始化时机五种主动引用)
         - [类的被动引用(不触发初始化)](#类的被动引用不触发初始化)
         - [实例化小结: 实例化就是对象实例变量,代码,构造器的初始化,字节码中是init函数(要与静态变量,代码的初始化区分开,字节码中是clinit函数)](#实例化小结-实例化就是对象实例变量代码构造器的初始化字节码中是init函数要与静态变量代码的初始化区分开字节码中是clinit函数)
-    - [准备阶段,初始化阶段,实例化阶段](#准备阶段初始化阶段实例化阶段)
+    - [区分 准备阶段,初始化阶段,实例化阶段](#区分-准备阶段初始化阶段实例化阶段)
         - [常见考题](#常见考题)
 
 <!-- /TOC -->
@@ -651,11 +649,6 @@ JVM类加载机制主要包括两个问题：类加载的时机与步骤 和 类
 - 卸载（Unloading）
 
 
-## 类加载的时机与步骤
-**运行时动态链接**  
-类型的加载和连接都是在程序运行期间完成，这样会在类加载时稍微增加一些性能开销，但是却能为Java应用程序提供高度的灵活性，Java中天生可以动态扩展的语言特性多态就是依赖运行期动态加载和动态链接这个特点实现的。例如，如果编写一个使用接口的应用程序，可以等到运行时再指定其实际的实现。这种组装应用程序的方式广泛应用于Java程序之中。
-### 加载步骤
-
 Java类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载（Loading）、验证（Verification）、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using) 和 卸载(Unloading)七个阶段。其中准备、验证、解析3个部分统称为连接（Linking）
 <div align="center"> <img src="pictures/java-vm/Snipaste_2019-08-13_09-58-03.jpg" width="430px"> </div><br>
 
@@ -666,7 +659,7 @@ Java类从被加载到虚拟机内存中开始，到卸载出内存为止，它�
 ## 加载时机与初始化时机
 ### 类加载时机
 
-什么情况下虚拟机需要开始加载一个类呢？虚拟机规范中并没有对此进行强制约束，这点可以交给虚拟机的具体实现来自由把握。
+什么情况下虚拟机需要开始加载一个类呢？虚拟机规范中并没有对此进行强制约束，这点可以交给虚拟机的具体实现来自由把握。程序运行期间虚拟机自行加载.
 
 ### 类初始化时机(五种主动引用)
 **虚拟机规范指明 有且只有 五种情况必须立即对类进行初始化（而这一过程自然发生在加载、验证、准备之后）：**
@@ -1475,7 +1468,7 @@ Java通过对构造函数作出这种限制以便保证一个类的实例能够�
 在准备实例化一个类的对象前，首先准备实例化该类的父类，如果该类的父类还有父类，那么准备实例化该类的父类的父类，依次递归直到递归到Object类。此时，首先实例化Object类，再依次对以下各类进行实例化，直到完成对目标类的实例化。具体而言，在实例化每个类时，都遵循如下顺序：先依次执行实例变量初始化和实例代码块初始化，再执行构造函数初始化。也就是说，编译器会将实例变量初始化和实例代码块初始化相关代码放到类的构造函数中去，并且这些代码会被放在对超类构造函数的调用语句之后，构造函数本身的代码之前。
 
 
-## 准备阶段,初始化阶段,实例化阶段
+## 区分 准备阶段,初始化阶段,实例化阶段
 在类加载过程中，准备阶段是正式为类变量(static 成员变量)分配内存并设置类变量初始值（零值）的阶段，
 
 而初始化阶段是真正开始执行类中定义的java程序代码(字节码)并按程序猿的意图去初始化类变量的过程。更直接地说，初始化阶段就是执行类构造器`<clinit>()`方法的过程。`<clinit>()`方法是由编译器自动收集类中的所有类变量的赋值动作和静态代码块static{}中的语句合并产生的，其中编译器收集的顺序是由语句在源文件中出现的顺序所决定。
@@ -1490,7 +1483,7 @@ Java通过对构造函数作出这种限制以便保证一个类的实例能够�
 
 ### 常见考题
 
-    一个实例变量在对象初始化的过程中会被赋值几次？
+ 一个实例变量在对象初始化的过程中会被赋值几次？
 
 　　我们知道，JVM在为一个对象分配完内存之后，会给每一个实例变量赋予默认值，这个时候实例变量被第一次赋值，这个赋值过程是没有办法避免的。如果我们在声明实例变量x的同时对其进行了赋值操作，那么这个时候，这个实例变量就被第二次赋值了。如果我们在实例代码块中，又对变量x做了初始化操作，那么这个时候，这个实例变量就被第三次赋值了。如果我们在构造函数中，也对变量x做了初始化操作，那么这个时候，变量x就被第四次赋值。也就是说，在Java的对象初始化过程中，一个实例变量最多可以被初始化4次。
 
@@ -1546,6 +1539,255 @@ public class StaticTest {
 
 ## 类加载器
 
+[https://blog.csdn.net/justloveyou_/article/details/72217806](https://blog.csdn.net/justloveyou_/article/details/72217806)
+
+启动（Bootstrap）类加载器：启动类加载器是用本地代码实现的类加载器，它负责将JAVA_HOME/lib下面的核心类库或-Xbootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。由于启动类加载器涉及到虚拟机本地实现细节，开发者无法直接获取到启动类加载器的引用。具体可由启动类加载器加载到的路径可通过System.getProperty(“sun.boot.class.path”)查看。
+
+扩展（Extension）类加载器：扩展类加载器是由Sun的ExtClassLoader（sun.misc.Launcher$ExtClassLoader）实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-Djava.ext.dir指定位置中的类库加载到内存中。开发者可以直接使用标准扩展类加载器，具体可由扩展类加载器加载到的路径可通过System.getProperty("java.ext.dirs")查看。
+
+系统（System）类加载器：系统类加载器是由 Sun 的 AppClassLoader（sun.misc.Launcher$AppClassLoader）实现的，它负责将用户类路径(java -classpath或-Djava.class.path变量所指的目录，即当前类所在路径及其引用的第三方类库的路径，如第四节中的问题6所述)下的类库加载到内存中。开发者可以直接使用系统类加载器，具体可由系统类加载器加载到的路径可通过System.getProperty("java.class.path")查看。
+
+
+<div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_10-52-19.jpg" width="420px"/> </div><br>
+
+
+### 双亲委派机制
+JVM在加载类时默认采用的是双亲委派机制。通俗的讲，就是某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归 (本质上就是loadClass函数的递归调用)，因此所有的加载请求最终都应该传送到顶层的启动类加载器中。如果父类加载器可以完成这个类加载请求，就成功返回；只有当父类加载器无法完成此加载请求时，子加载器才会尝试自己去加载。
+
+<div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_13-06-19.jpg" width="420px"/> </div><br>
+
+上面两张图分别是扩展类加载器继承层次图和系统类加载器继承层次图。通过这两张图我们可以看出，扩展类加载器和系统类加载器均是继承自 java.lang.ClassLoader抽象类。我们下面我们就看简要介绍一下抽象类 java.lang.ClassLoader 中几个最重要的方法：
+
+面试题:findclass loadclass defineclass的区别
+
+[https://blog.csdn.net/mollen/article/details/100840940](https://blog.csdn.net/mollen/article/details/100840940)
+
+loadClass()
+findLoadedClass(String) 调用这个方法，查看这个Class是否已经别加载
+
+如果没有被加载，继续往下走，查看父类加载器，递归调用loadClass()
+
+如果父类加载器是null，说明是启动类加载器，查找对应的Class
+
+如果都没有找到，就调用findClass(String)
+
+findClass()
+根据名称或位置加载.class字节码,然后使用defineClass
+
+
+definclass()
+把字节码转化为Class
+
+
+```java
+//加载指定名称（包括包名）的二进制类型，供用户调用的接口  
+public Class<?> loadClass(String name) throws ClassNotFoundException{ … }  
+  
+//加载指定名称（包括包名）的二进制类型，同时指定是否解析（但是这里的resolve参数不一定真正能达到解析的效果），供继承用  
+protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException{ … }  
+  
+//findClass方法一般被loadClass方法调用去加载指定名称类，供继承用  
+protected Class<?> findClass(String name) throws ClassNotFoundException { … }  
+  
+//定义类型，一般在findClass方法中读取到对应字节码后调用，final的，不能被继承  
+//这也从侧面说明：JVM已经实现了对应的具体功能，解析对应的字节码，产生对应的内部数据结构放置到方法区，所以无需覆写，直接调用就可以了）  
+protected final Class<?> defineClass(String name, byte[] b, int off, int len) throws ClassFormatError{ … }  
+
+```
+
+标准扩展类加载器和系统类加载器的代码以及其公共父类（java.net.URLClassLoader和java.security.SecureClassLoader）的代码可以看出，都没有覆写java.lang.ClassLoader中默认的加载委派规则 — loadClass（…）方法。既然这样，我们就可以从java.lang.ClassLoader中的loadClass（String name）方法的代码中分析出虚拟机默认采用的双亲委派机制到底是什么模样：
+
+```java
+public Class<?> loadClass(String name) throws ClassNotFoundException {  
+    return loadClass(name, false);  
+}  
+  
+protected synchronized Class<?> loadClass(String name, boolean resolve)  
+        throws ClassNotFoundException {  
+  
+    // 首先判断该类型是否已经被加载  
+    Class c = findLoadedClass(name);  
+    if (c == null) {  
+        //如果没有被加载，就委托给父类加载或者委派给启动类加载器加载  
+        try {  
+            if (parent != null) {  
+                //如果存在父类加载器，就委派给父类加载器加载  
+                c = parent.loadClass(name, false);  
+            } else {    // 递归终止条件
+                // 由于启动类加载器无法被Java程序直接引用，因此默认用 null 替代
+                // parent == null就意味着由启动类加载器尝试加载该类，  
+                // 即通过调用 native方法 findBootstrapClass0(String name)加载  
+                c = findBootstrapClass0(name);  
+            }  
+        } catch (ClassNotFoundException e) {  
+            // 如果父类加载器不能完成加载请求时，再调用自身的findClass方法进行类加载，若加载成功，findClass方法返回的是defineClass方法的返回值
+            // 注意，若自身也加载不了，会产生ClassNotFoundException异常并向上抛出
+            c = findClass(name);  
+        }  
+    }  
+    if (resolve) {  
+        resolveClass(c);  
+    }  
+    return c;  
+}  
+
+```
+
+
+### 运行时动态扩展
+Java的连接模型允许用户运行时扩展引用程序，既可以通过当前虚拟机中预定义的加载器加载编译时已知的类或者接口，又允许用户自行定义类装载器，在运行时动态扩展用户的程序。通过用户自定义的类装载器，你的程序可以加载在编译时并不知道或者尚未存在的类或者接口，并动态连接它们并进行有选择的解析。运行时动态扩展java应用程序有如下两个途径：
+
+#### 反射 (调用java.lang.Class.forName(…)加载类)
+
+**Class.forName(String name)默认会使用调用类的类加载器来进行类加载。**
+
+```java
+//java.lang.Class.java  
+publicstatic Class<?> forName(String className) throws ClassNotFoundException {  
+    return forName0(className, true, ClassLoader.getCallerClassLoader());  
+}  
+  
+//java.lang.ClassLoader.java  
+// Returns the invoker's class loader, or null if none.  
+static ClassLoader getCallerClassLoader() {  
+    // 获取调用类（caller）的类型  
+    Class caller = Reflection.getCallerClass(3);  
+    // This can be null if the VM is requesting it  
+    if (caller == null) {  
+        return null;  
+    }  
+    // 调用java.lang.Class中本地方法获取加载该调用类（caller）的ClassLoader  
+    return caller.getClassLoader0();  
+}  
+  
+//java.lang.Class.java  
+//虚拟机本地实现，获取当前类的类加载器，前面介绍的Class的getClassLoader()也使用此方法  
+native ClassLoader getClassLoader0(); 
+
+```
+
+
+**这里需要说明的是多参数版本的forName(…)方法：**
+
+public static Class<?> forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException  
+
+
+这里的initialize参数是很重要的，它表示在加载同时是否完成初始化的工作（说明：单参数版本的forName方法默认是完成初始化的）。有些场景下需要将initialize设置为true来强制加载同时完成初始化，例如典型的就是加载数据库驱动问题。因为JDBC驱动程序只有被注册后才能被应用程序使用，这就要求驱动程序类必须被初始化，而不单单被加载。
+
+
+
+#### 自定义类加载器
+用户自定义类加载器
+　　
+　　通过前面的分析，我们可以看出，除了和本地实现密切相关的启动类加载器之外，包括标准扩展类加载器和系统类加载器在内的所有其他类加载器我们都可以当做自定义类加载器来对待，唯一区别是是否被虚拟机默认使用。前面的内容中已经对java.lang.ClassLoader抽象类中的几个重要的方法做了介绍，这里就简要叙述一下一般用户自定义类加载器的工作流程（可以结合后面问题解答一起看）：
+
+1、首先检查请求的类型是否已经被这个类装载器装载到命名空间中了，如果已经装载，直接返回；否则转入步骤2；
+
+2、委派类加载请求给父类加载器（更准确的说应该是双亲类加载器，真实虚拟机中各种类加载器最终会呈现树状结构），如果父类加载器能够完成，则返回父类加载器加载的Class实例；否则转入步骤3；
+
+3、调用本类加载器的findClass（…）方法，试图获取对应的字节码。如果获取的到，则调用defineClass（…）导入类型到方法区；如果获取不到对应的字节码或者其他原因失败， 向上抛异常给loadClass（…）， loadClass（…）转而调用findClass（…）方法处理异常，直至完成递归调用。
+
+必须指出的是，这里所说的自定义类加载器是指JDK1.2以后版本的写法，即不覆写改变java.lang.loadClass(…)已有委派逻辑情况下。整个加载类的过程如下图：
+
+
+<div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_12-47-36.jpg" width="420px"/> </div><br>
+
+
+### 类加载器常见问题
+
+#### 由不同的类加载器加载的指定类还是相同的类型吗？
+
+在Java中，一个类用其完全匹配类名(fully qualified class name)作为标识，这里指的完全匹配类名包括包名和类名。但在JVM中，一个类用其全名 和 一个ClassLoader的实例作为唯一标识，不同类加载器加载的类将被置于不同的命名空间。我们可以用两个自定义类加载器去加载某自定义类型（注意不要将自定义类型的字节码放置到系统路径或者扩展路径中，否则会被系统类加载器或扩展类加载器抢先加载），然后用获取到的两个Class实例进行java.lang.Object.equals（…）判断，将会得到不相等的结果，如下所示：
+```java
+public class TestBean {
+
+	public static void main(String[] args) throws Exception {
+	    // 一个简单的类加载器，逆向双亲委派机制
+	    // 可以加载与自己在同一路径下的Class文件
+		ClassLoader myClassLoader = new ClassLoader() {
+			@Override
+			public Class<?> loadClass(String name)
+					throws ClassNotFoundException {
+				try {
+					String filename = name.substring(name.lastIndexOf(".") + 1)
+							+ ".class";
+					InputStream is = getClass().getResourceAsStream(filename);
+					if (is == null) {
+						return super.loadClass(name);   // 递归调用父类加载器
+					}
+					byte[] b = new byte[is.available()];
+					is.read(b);
+					return defineClass(name, b, 0, b.length);
+				} catch (Exception e) {
+					throw new ClassNotFoundException(name);
+				}
+			}
+		};
+
+		Object obj = myClassLoader.loadClass("classloader.test.bean.TestBean")
+				.newInstance();
+		System.out.println(obj.getClass());
+		System.out.println(obj instanceof classloader.test.bean.TestBean);
+	}
+}/* Output: 
+        class classloader.test.bean.TestBean
+        false  
+ *///:~    
+```
+
+我们发现，obj 确实是类classloader.test.bean.TestBean实例化出来的对象，但当这个对象与类classloader.test.bean.TestBean做所属类型检查时却返回了false。这是因为虚拟机中存在了两个TestBean类，一个是由系统类加载器加载的，另一个则是由我们自定义的类加载器加载的，虽然它们来自同一个Class文件，但依然是两个独立的类，因此做所属类型检查时返回false。
+
+#### 在编写自定义类加载器时，如果没有设定父加载器，那么父加载器是谁？
+
+
+自定义类加载器没有指定父类加载器的情况下，默认的父类加载器即为系统类加载器。同时，我们可以得出如下结论：即使用户自定义类加载器不指定父类加载器，那么，同样可以加载如下三个地方的类：
+
+<Java_Runtime_Home>/lib下的类；  
+<Java_Runtime_Home>/lib/ext下或者由系统变量java.ext.dir指定位置中的类；  
+当前工程类路径下或者由系统变量java.class.path指定位置中的类。  
+
+#### 在编写自定义类加载器时，如果将父类加载器强制设置为null，那么会有什么影响？如果自定义的类加载器不能加载指定类，就肯定会加载失败吗？
+因为启动类加载器的代表就是null;
+
+JVM规范中规定如果用户自定义的类加载器将父类加载器强制设置为null，那么会自动将启动类加载器设置为当前用户自定义类加载器的父类加载器（这个问题前面已经分析过了）。同时，我们可以得出如下结论：即使用户自定义类加载器不指定父类加载器，那么，同样可以加载到<JAVA_HOME>/lib下的类，但此时就不能够加载<JAVA_HOME>/lib/ext目录下的类了。
+
+#### 如何在运行时判断系统类加载器能加载哪些路径下的类？
+
+
+一是可以直接调用ClassLoader.getSystemClassLoader()或者其他方式获取到系统类加载器（系统类加载器和扩展类加载器本身都派生自URLClassLoader），调用URLClassLoader中的getURLs()方法可以获取到。二是可以直接通过获取系统属性java.class.path来查看当前类路径上的条目信息 ：System.getProperty(“java.class.path”)。如下所示，
+
+```java
+public class Test {
+	public static void main(String[] args) {
+		System.out.println("Rico");
+		Gson gson = new Gson();
+		System.out.println(gson.getClass().getClassLoader());
+		System.out.println(System.getProperty("java.class.path"));
+	}
+}/* Output: 
+        Rico
+		sun.misc.Launcher$AppClassLoader@6c68bcef
+		I:\AlgorithmPractice\TestClassLoader\bin;I:\Java\jars\Gson\gson-2.3.1.jar
+ *///:~ 
+
+```
+如上述程序所示，Test类和Gson类由系统类加载器加载，并且其加载路径就是用户类路径，包括当前类路径和引用的第三方类库的路径。
+
+
+### 再理解双亲委派
+在前面介绍类加载器的代理委派模型的时候，提到过类加载器会首先代理给其它类加载器来尝试加载某个类，这就意味着真正完成类的加载工作的类加载器和启动这个加载过程的类加载器，有可能不是同一个。真正完成类的加载工作是通过调用defineClass来实现的；而启动类的加载过程是通过调用loadClass来实现的。前者称为一个类的定义加载器（defining loader），后者称为初始加载器（initiating loader）。在Java虚拟机判断两个类是否相同的时候，使用的是类的定义加载器。也就是说，哪个类加载器启动类的加载过程并不重要，重要的是最终定义这个类的加载器。两种类加载器的关联之处在于：一个类的定义加载器是它引用的其它类的初始加载器。如类 com.example.Outer引用了类 com.example.Inner，则由类 com.example.Outer的定义加载器负责启动类 com.example.Inner的加载过程。
+
+类加载器在成功加载某个类之后，会把得到的 java.lang.Class类的实例缓存起来。下次再请求加载该类的时候，类加载器会直接使用缓存的类的实例，而不会尝试再次加载。也就是说，对于一个类加载器实例来说，相同全名的类只加载一次，即 loadClass方法不会被重复调用。
+
+
+
+在绝大多数情况下，系统默认提供的类加载器实现已经可以满足需求。但是在某些情况下，您还是需要为应用开发出自己的类加载器。比如您的应用通过网络来传输Java类的字节代码，为了保证安全性，这些字节代码经过了加密处理。这个时候您就需要自己的类加载器来从某个网络地址上读取加密后的字节代码，接着进行解密和验证，最后定义出要在Java虚拟机中运行的类来。下面将通过两个具体的实例来说明类加载器的开发。
+
+[文件系统类加载器,网络系统类加载器见博客最底部](https://blog.csdn.net/justloveyou_/article/details/72217806)
+
+<div align="center"> <img src="" width="420px"/> </div><br>
+
+<div align="center"> <img src="" width="420px"/> </div><br>
 
 
  # 强引用,软引用,弱引用,虚引用

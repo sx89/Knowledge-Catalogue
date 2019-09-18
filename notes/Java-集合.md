@@ -37,7 +37,8 @@
     - [7. 计算数组容量](#7-%e8%ae%a1%e7%ae%97%e6%95%b0%e7%bb%84%e5%ae%b9%e9%87%8f)
     - [8. 链表转红黑树](#8-%e9%93%be%e8%a1%a8%e8%bd%ac%e7%ba%a2%e9%bb%91%e6%a0%91)
     - [9. 与 HashTable 的比较](#9-%e4%b8%8e-hashtable-%e7%9a%84%e6%af%94%e8%be%83)
-  - [hashmap不支持并发的原因](#hashmap%e4%b8%8d%e6%94%af%e6%8c%81%e5%b9%b6%e5%8f%91%e7%9a%84%e5%8e%9f%e5%9b%a0)
+    - [hashmap不支持并发的原因](#hashmap%e4%b8%8d%e6%94%af%e6%8c%81%e5%b9%b6%e5%8f%91%e7%9a%84%e5%8e%9f%e5%9b%a0)
+  - [解决hash 冲突的三种方法](#%e8%a7%a3%e5%86%b3hash-%e5%86%b2%e7%aa%81%e7%9a%84%e4%b8%89%e7%a7%8d%e6%96%b9%e6%b3%95)
   - [ConcurrentHashMap](#concurrenthashmap)
     - [1. 存储结构](#1-%e5%ad%98%e5%82%a8%e7%bb%93%e6%9e%84-1)
     - [hashentry](#hashentry)
@@ -82,6 +83,22 @@
 - LinkedList：可以用它来实现双向队列。LinkedList类实现了Queue接口，因此我们可以把LinkedList当成Queue来用。
 
 - PriorityQueue：基于堆结构实现，可以用它来实现优先队列和大顶堆小顶堆(见LeetCode的topK问题).PriorityQueue的逻辑结构是一棵完全二叉树，存储结构其实是一个数组。逻辑结构层次遍历的结果刚好是一个数组。
+
+offer，add 区别：
+
+一些队列有大小限制，因此如果想在一个满的队列中加入一个新项，多出的项就会被拒绝。
+
+这时新的 offer 方法就可以起作用了。它不是对调用 add() 方法抛出一个 unchecked 异常，而只是得到由 offer() 返回的 false。
+
+poll，remove 区别：
+
+remove() 和 poll() 方法都是从队列中删除第一个元素。remove() 的行为与 Collection 接口的版本相似， 但是新的 poll() 方法在用空集合调用时不是抛出异常，只是返回 null。因此新的方法更适合容易出现异常条件的情况。
+
+peek，element区别：
+
+element() 和 peek() 用于在队列的头部查询元素。与 remove() 方法类似，在队列为空时， element() 抛出一个异常，而 peek() 返回 null。
+
+
 
 
 
@@ -827,12 +844,25 @@ static final int tableSizeFor(int cap) {
 - HashMap 的迭代器是 fail-fast 迭代器。
 - HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
 
-## hashmap不支持并发的原因
+### hashmap不支持并发的原因
 
 并发的hashmap在rehash时候会导致环形链表的错误:  
 put一个key,value对到hashmap中的时候,先计算hash值,然后计算索引位置,如果key存在则替换掉旧value,不存在则增加一个新的entry,增加entry的时候检查entry的数量是否超出了capicity*容量因子(即threshold);超出的话就会把旧的hash表的数据迁移到新的hash表中,其中,在迁移的过程中,entry下的链表部分会在迁移的时候,因为并发线程的挂起产生循环链表,报出HashMap Infinite Loop错误
 
 [参考博客](https://coolshell.cn/articles/9606.html)
+
+## 解决hash 冲突的三种方法
+1. 拉链法
+
+HashSet其实都是采用的拉链法来解决哈希冲突的，就是在每个位桶实现的时候，我们采用链表（jdk1.8之后采用链表+红黑树）的数据结构来去存取发生哈希冲突的输入域的关键字（也就是被哈希函数映射到同一个位桶上的关键字）。
+
+2. 开放地址法
+
+开放地址法有个非常关键的特征，就是所有输入的元素全部存放在哈希表里，也就是说，位桶的实现是不需要任何的链表来实现的，换句话说，也就是这个哈希表的装载因子不会超过1。它的实现是在插入一个元素的时候，先通过哈希函数进行判断，若是发生哈希冲突，就以当前地址为基准，根据再寻址的方法（探查序列），去寻找下一个地址，若发生冲突再去寻找，直至找到一个为空的地址为止。所以这种方法又称为再散列法。
+
+3. 重新哈希
+
+再散列法其实很简单，就是再使用哈希函数去散列一个输入的时候，输出是同一个位置就再次散列，直至不发生冲突位置
 
 ## ConcurrentHashMap
 
