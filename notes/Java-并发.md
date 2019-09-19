@@ -80,7 +80,6 @@
             - [ABA问题](#aba问题)
             - [循环时间开销大](#循环时间开销大)
             - [只能保证一个共享变量的原子操作](#只能保证一个共享变量的原子操作)
-            - [AtomicInteger](#atomicinteger)
         - [版本号机制(解决ABA问题)](#版本号机制解决aba问题)
     - [无同步方案](#无同步方案)
         - [1. 栈封闭](#1-栈封闭)
@@ -1518,7 +1517,7 @@ JDK 1.5 以后的 AtomicStampedReference 类就提供了此种能力，其中的
 CAS 只对单个共享变量有效，当操作涉及跨多个共享变量时 CAS 无效。但是从 JDK 1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行 CAS 操作.所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。
 
 
-####  AtomicInteger
+ ####  AtomicInteger
 
 [AtomicInteger中的cas应用](https://www.jianshu.com/p/fb6e91b013cc)
 
