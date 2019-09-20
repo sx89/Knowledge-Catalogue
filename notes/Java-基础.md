@@ -2031,6 +2031,10 @@ SOURCE：注解将被编译器丢弃（该类型的注解信息只会保留在�
 CLASS：注解在class文件中可用，但会被VM丢弃（该类型的注解信息会保留在源码里和class文件里，在执行的时候，不会加载到虚拟机中），请注意，当注解未定义Retention值时，默认值是CLASS，如Java内置注解，@Override、@Deprecated、@SuppressWarnning等
 
 RUNTIME：注解信息将在运行期(JVM)也保留，因此可以通过反射机制读取注解的信息（源码、class文件和执行的时候都有注解的信息），如SpringMvc中的@Controller、@Autowired、@RequestMapping等。
+# 内部变量
+
+<div align="center"> <img src=" .\pictures\java-basic\Snipaste_2019-09-20_22-08-25.jpg" width="600px"> </div><br>
+
 
 # 内部类
 ## 定义
