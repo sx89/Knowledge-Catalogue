@@ -81,10 +81,23 @@
 - [redis的并发竞争问题(修改一个值,商品超卖)](#redis的并发竞争问题修改一个值商品超卖)
     - [解决方案](#解决方案)
         - [分布式锁(更详细的知识  见下一章分布式锁)](#分布式锁更详细的知识--见下一章分布式锁)
+            - [数据库实现方式](#数据库实现方式)
+            - [zookeeper实现](#zookeeper实现)
+            - [redis实现](#redis实现)
         - [利用消息队列](#利用消息队列)
         - [用事务或者lua脚本实现乐观锁](#用事务或者lua脚本实现乐观锁)
-- [分布式锁](#分布式锁)
 - [redis与数据库的一致性(缓存入库万一mysql失败了怎么办)](#redis与数据库的一致性缓存入库万一mysql失败了怎么办)
+- [RDB原理再理解](#rdb原理再理解)
+    - [rdbSave](#rdbsave)
+    - [save && bgsave](#save--bgsave)
+    - [bgsave](#bgsave)
+    - [服务器的dirty](#服务器的dirty)
+    - [rdbLoad](#rdbload)
+- [lua脚本保证操作原子性](#lua脚本保证操作原子性)
+- [雪花算法](#雪花算法)
+    - [SnowFlake作用](#snowflake作用)
+    - [雪花中的溢出问题](#雪花中的溢出问题)
+    - [雪花中的冬令时问题(时钟回拨问题)](#雪花中的冬令时问题时钟回拨问题)
 
 <!-- /TOC -->
 
@@ -1380,9 +1393,22 @@ Redis是一种单线程机制的nosql数据库，基于key-value，数据可持�
 ## 解决方案
 ### 分布式锁(更详细的知识  见下一章分布式锁)
 
-因为传统的加锁的做法（如java的synchronized和Lock）这里没用，只适合单点。因为这是分布式环境，需要的是分布式锁。
+#### 数据库实现方式
 
-当然，分布式锁可以基于很多种方式实现，比如zookeeper、redis等，不管哪种方式实现，基本原理是不变的：用一个状态值表示锁，对锁的占用和释放通过状态值来标识。
+#### zookeeper实现
+
+#### redis实现
+A已经首先获得了锁 lock.id，然后线A断线。B,C都在等待竞争该锁；
+B,C读取lock.id的值，比较当前时间和键 lock.id 的值来判断是否超时，发现超时；
+
+B检测到锁已超时，即当前的时间大于键 lock.id 的值，B会执行
+GETSET lock.id <current Unix timestamp + lock timeout + 1>设置时间戳，通过比较键 lock.id 的旧值是否小于当前时间，判断进程是否已获得锁；
+
+B发现GETSET返回的值小于当前时间，则执行 DEL lock.id命令，并执行 SETNX lock.id 命令，并返回1，B获得锁；
+
+C执行GETSET得到的时间大于当前时间，则继续等待。
+
+在线程释放锁，即执行 DEL lock.id 操作前，需要先判断锁是否已超时。如果锁已超时，那么锁可能已由其他线程获得，这时直接执行 DEL lock.id 操作会导致把其他线程已获得的锁释放掉。
 
 ### 利用消息队列
 在并发量过大的情况下,可以通过消息中间件进行处理,把并行读写进行串行化。
@@ -1414,7 +1440,9 @@ exec
 watch这里表示监控该key值，后面的事务是有条件的执行，如果从watch的exec语句执行时，watch的key对应的value值被修改了，则事务不会执行。
 
 
-# 分布式锁
+
+
+
 
 # redis与数据库的一致性(缓存入库万一mysql失败了怎么办)
 
@@ -1428,6 +1456,393 @@ watch这里表示监控该key值，后面的事务是有条件的执行，如果
 
 
 在并发不高的情况下，读操作优先读取redis，不存在的话就去访问MySQL，并把读到的数据写回Redis中；写操作的话，直接写MySQL，成功后再写入Redis(可以在MySQL端定义CRUD触发器，在触发CRUD操作后写数据到Redis，也可以在Redis端解析binlog，再做相应的操作)
+
+
+
+# RDB原理再理解
+
+https://cgiirw.github.io/2018/09/13/Redis_RDB/
+
+
+## rdbSave
+保存是rdbSave()提供的，这个方法有点长，但并不复杂，主要功能如下：
+
+创建临时文件，保存的过程中会先创建一个临时文件；
+
+写入文件前的准备工作，包括初始化IO、设置校验、写入版本号等；
+
+遍历数据库，写入临时文件；
+
+将临时文件覆盖原RDB文件；
+
+做好“善后工作”，比如考虑程序的鲁棒性，对各种可能情况设置好处理方法，并且保存/清除各种需要/不需要的数据，关闭打开的文件等等
+
+
+在Redis中，可能调用rdbSave的命令包括flushallCommand、debugCommand、rdbSaveBackground、saveCommand、prepareForShutdown。下面就来研究直接保存和后台保存命令的实现。
+
+## save && bgsave
+
+首先看看save，Redis会调用saveCommand函数，它的全部代码：
+
+```c
+void saveCommand(redisClient *c) {
+    // BGSAVE 已经在执行中，不能再执行 SAVE
+    // 否则将产生竞争条件
+    if (server.rdb_child_pid != -1) {
+        addReplyError(c,"Background save already in progress");
+        return;
+    }
+    // 执行
+    if (rdbSave(server.rdb_filename) == REDIS_OK) {
+        addReply(c,shared.ok);
+    } else {
+        addReply(c,shared.err);
+    }
+}
+```
+
+所以save不是任何时刻都可以执行成功，server.rdb_child_pid不等于-1说明存在执行bgsave的子进程，此时saveCommand()会直接返回。
+
+从上面的代码可以看出，saveCommand()基本上就是简单封装了rdbSave函数。
+
+## bgsave
+
+再来看看bgsave，Redis会调用bgsaveCommand函数：
+
+```c
+void bgsaveCommand(redisClient *c) {
+    // 不能重复执行 BGSAVE
+    if (server.rdb_child_pid != -1) {
+        addReplyError(c,"Background save already in progress");
+    // 不能在 BGREWRITEAOF 正在运行时执行
+    } else if (server.aof_child_pid != -1) {
+        addReplyError(c,"Can't BGSAVE while AOF log rewriting is in progress");
+    // 执行 BGSAVE
+    } else if (rdbSaveBackground(server.rdb_filename) == REDIS_OK) {
+        addReplyStatus(c,"Background saving started");
+    } else {
+        addReply(c,shared.err);
+    }
+}
+```
+
+不能重复执行，也不能在aof子进程存在的时候执行。具体核心代码又封装在rdbSaveBackground()中
+```c
+int rdbSaveBackground(char *filename) {
+    pid_t childpid;
+    long long start;
+    if (server.rdb_child_pid != -1) return REDIS_ERR;
+    // 记录后台保存前服务器状态
+    server.dirty_before_bgsave = server.dirty;
+    // 开始时间
+    start = ustime();
+    // 创建子进程
+    if ((childpid = fork()) == 0) {
+        int retval;
+        /* Child */
+        // 子进程不接收网络数据
+        if (server.ipfd > 0) close(server.ipfd);
+        if (server.sofd > 0) close(server.sofd);
+        // 保存数据
+        retval = rdbSave(filename);
+        if (retval == REDIS_OK) {
+            size_t private_dirty = zmalloc_get_private_dirty();
+            if (private_dirty) {
+                redisLog(REDIS_NOTICE,
+                    "RDB: %lu MB of memory used by copy-on-write",
+                    private_dirty/(1024*1024));
+            }
+        }
+        // 退出子进程
+        exitFromChild((retval == REDIS_OK) ? 0 : 1);
+    } else {
+        /* Parent */
+        // 记录最后一次 fork 的时间
+        server.stat_fork_time = ustime()-start;
+        // 创建子进程失败时进行错误报告
+        if (childpid == -1) {
+            redisLog(REDIS_WARNING,"Can't save in background: fork: %s",
+                strerror(errno));
+            return REDIS_ERR;
+        }
+        redisLog(REDIS_NOTICE,"Background saving started by pid %d",childpid);
+        // 记录保存开始的时间
+        server.rdb_save_time_start = time(NULL);
+        // 记录子进程的 id
+        server.rdb_child_pid = childpid;
+        // 在执行时关闭对数据库的 rehash
+        // 避免 copy-on-write
+        updateDictResizePolicy();
+        return REDIS_OK;
+    }
+    return REDIS_OK; /* unreached */
+}
+```
+
+调用fork()会创建新的进程 **(fork创建进程,是把进程完全拷贝一份)**，有三种情况：
+
+fork()如果创建子进程成功，会返回0给子进程；  
+fork()如果创建子进程成功，会返回子进程的pid号给父进程；  
+fork()执行发生错误，会返回-1(此时创建新的进程失败，也就无所谓父进程子进程，返回给当前进程)；  
+
+一旦childpid = fork()创建子进程成功，则从这个地方开始，将有父子两个进程同时向下按各自逻辑执行代码，下面考虑这种情况下的父子进程的情况：
+
+—–子进程—–
+
+对子进程来说，由于fork()返回了0给它，它会执行从上向下数第二个if语句的内容，断掉该进程的网络连接进而不接受新进的数据，调用rdbSave()进行存储，当它执行到exitFromChild()，内部通过_exit()就结束进程。
+
+
+—–父进程—–
+
+由于fork()会返回子进程的pid给父进程，所以父进程不会执行第二个if语句中的内容，它会向下执行else中的内容，进行一些日志记录啦，打印一些可能发生的错误报告啦等等，最后返回REDIS_OK。
+
+Redis通过RDB进行持久化的保存功能基本解析完毕了，现在的问题是，bgsave命令执行后，后台保存是一个间断性实施的过程，这个功能如何实现的？
+
+## 服务器的dirty
+
+server.dirty用来记录更改过却没有被持久化的键的个数。
+
+dbSaveBackground()在子进程创建之前执行server.dirty_before_bgsave = server.dirty;，是因为一旦子进程创建之后，由于dirty在父进程和子进程中都会被更改，而它更改后的值分别保存在各自进程拷贝的内存页中，所以要在之前记录一个dirty的锚点，方便后续使用。在之前的文章中，本人提到了操作系统的写时复制(COW)，Redis在这方面利用了操作系统的写时复制机制，下一篇文章将进一步阐述原理，这里只需要暂时知道，在dirty更改前，两个进程的dirty指针指向同一内存地址，一旦变更，那么父进程的dirty不再是子进程的dirty了。
+
+## rdbLoad
+
+Redis的main()会调用loadDataFromDisk()，而loadDataFromDisk()会调用rdbLoad，调用方式如下：
+
+```c
+void loadDataFromDisk(void) {
+    long long start = ustime();
+    // 如果开启了 AOF 功能，那么优先使用 AOF 文件来还原数据
+    if (server.aof_state == REDIS_AOF_ON) {
+        if (loadAppendOnlyFile(server.aof_filename) == REDIS_OK)
+            redisLog(REDIS_NOTICE,"DB loaded from append only file: %.3f seconds",(float)(ustime()-start)/1000000);
+    } else {
+        // 在没有开启 AOF 功能时，才使用 RDB 来还原
+        if (rdbLoad(server.rdb_filename) == REDIS_OK) {
+            redisLog(REDIS_NOTICE,"DB loaded from disk: %.3f seconds",
+                (float)(ustime()-start)/1000000);
+        } else if (errno != ENOENT) {
+            redisLog(REDIS_WARNING,"Fatal error loading the DB. Exiting.");
+            exit(1);
+        }
+    }
+}
+```
+
+RDB在后台保存时会利用操作系统写时复制机制，不至于在内存中完整复制一份要保存的数据，从而减少开销，
+
+
+# lua脚本保证操作原子性
+只满足了原子性的一个特性,执行完成的话,能保证全部执行.但不能保证在执行错误的情况下回滚.
+
+redis的lua脚本类似于MULTI和EXEC,redis保证其中的命令的执行期间,不会插入其他的命令.
+
+# 雪花算法
+
+
+Twitter-Snowflake算法产生的背景相当简单，为了满足Twitter每秒上万条消息的请求，每条消息都必须分配一条唯一的id，这些id还需要一些大致的顺序（方便客户端排序），并且在分布式系统中不同机器产生的id必须不同。
+
+<div align="center"> <img src=" .\pictures\redis\Snipaste_2019-09-21_12-12-20.jpg" width="600px"> </div><br>
+
+1) 1位，不用。二进制中最高位为1的都是负数，但是我们生成的id一般都使用整数，所以这个最高位固定是0
+
+2) 41位，用来记录时间戳（毫秒）。
+
+
+3) 41位可以表示2^41−1个数字，如果只用来表示正整数（计算机中正数包含0），可以表示的数值范围是：0 至 2^41−1，减1是因为可表示的数值范围是从0开始算的，而不是1。
+也就是说41位可以表示2^41−1个毫秒的值，转化成单位年则是(2^41−1)/(1000∗60∗60∗24∗365)=69年
+
+4) 10位，用来记录工作机器id。
+可以部署在2^10=1024个节点，包括5位datacenterId和5位workerId,5位（bit）可以表示的最大正整数是2^5−1=31，即可以用0、1、2、3、....31这32个数字，来表示不同的datecenterId或workerId
+   
+1) 12位，序列号，用来记录同毫秒内产生的不同id。
+12位（bit）可以表示的最大正整数是2^12−1=4095，即可以用0、1、2、3、....4094这4095个数字，来表示同一机器同一时间截（毫秒)内产生的4095个ID序号
+
+## SnowFlake作用
+
+由于在Java中64bit的整数是long类型，所以在Java中SnowFlake算法生成的id就是long来存储的。
+
+所有生成的id按时间趋势递增
+
+整个分布式系统内不会产生重复id（因为有datacenterId和workerId来做区分）
+
+
+代码:
+```java
+public class SnowFlake {
+
+    /**
+     * 起始的时间戳:这个时间戳自己随意获取，比如自己代码的时间戳
+     */
+    private final static long START_STMP = 1543903501000L;
+
+    /**
+     * 每一部分占用的位数
+     */
+    private final static long SEQUENCE_BIT = 12; //序列号占用的位数
+    private final static long MACHINE_BIT = 5;  //机器标识占用的位数
+    private final static long DATACENTER_BIT = 5;//数据中心占用的位数
+
+    /**
+     * 每一部分的最大值：先进行左移运算，再同-1进行异或运算；异或：相同位置相同结果为0，不同结果为1
+     */
+     /** 用位运算计算出最大支持的数据中心数量：31 */
+    private final static long MAX_DATACENTER_NUM = -1L ^ (-1L << DATACENTER_BIT);
+    
+    /** 用位运算计算出最大支持的机器数量：31 */
+    private final static long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT);
+    
+    /** 用位运算计算出12位能存储的最大正整数：4095 */
+    private final static long MAX_SEQUENCE = -1L ^ (-1L << SEQUENCE_BIT);
+
+    /**
+     * 每一部分向左的位移
+     */
+     
+     /** 机器标志较序列号的偏移量 */
+    private final static long MACHINE_LEFT = SEQUENCE_BIT;
+    
+    /** 数据中心较机器标志的偏移量 */
+    private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;
+    
+    /** 时间戳较数据中心的偏移量 */
+    private final static long TIMESTMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;
+
+    private static long datacenterId;  //数据中心
+    private static long machineId;    //机器标识
+    private static long sequence = 0L; //序列号
+    private static long lastStmp = -1L;//上一次时间戳
+
+	 /** 此处无参构造私有，同时没有给出有参构造，在于避免以下两点问题：
+	 	  1、私有化避免了通过new的方式进行调用，主要是解决了在for循环中通过new的方式调用产生的id不一定唯一问题问题，因为用于			 记录上一次时间戳的lastStmp永远无法得到比对；
+	 	  2、没有给出有参构造在第一点的基础上考虑了一套分布式系统产生的唯一序列号应该是基于相同的参数
+	  */
+    private SnowFlake(){}
+
+    /**
+     * 产生下一个ID
+     *
+     * @return
+     */
+    public static synchronized long nextId() {
+    	  /** 获取当前时间戳 */
+        long currStmp = getNewstmp();
+        
+        /** 如果当前时间戳小于上次时间戳则抛出异常 */
+        if (currStmp < lastStmp) {
+            throw new RuntimeException("Clock moved backwards.  Refusing to generate id");
+        }
+		 /** 相同毫秒内 */
+        if (currStmp == lastStmp) {
+            //相同毫秒内，序列号自增
+            sequence = (sequence + 1) & MAX_SEQUENCE;
+            //同一毫秒的序列数已经达到最大
+            if (sequence == 0L) {
+            
+            		/** 获取下一时间的时间戳并赋值给当前时间戳 */
+                currStmp = getNextMill();
+            }
+        } else {
+            //不同毫秒内，序列号置为0
+            sequence = 0L;
+        }
+		 /** 当前时间戳存档记录，用于下次产生id时对比是否为相同时间戳 */
+        lastStmp = currStmp;
+
+
+        return (currStmp - START_STMP) << TIMESTMP_LEFT //时间戳部分
+                | datacenterId << DATACENTER_LEFT      //数据中心部分
+                | machineId << MACHINE_LEFT            //机器标识部分
+                | sequence;                            //序列号部分
+    }
+
+    private static long getNextMill() {
+        long mill = getNewstmp();
+        while (mill <= lastStmp) {
+            mill = getNewstmp();
+        }
+        return mill;
+    }
+
+    private static long getNewstmp() {
+        return System.currentTimeMillis();
+    }
+
+}
+```
+## 雪花中的溢出问题
+当同一毫秒产生的序列号已经最大了,那就获取下一时间戳,来重新生成id;
+## 雪花中的冬令时问题(时钟回拨问题)
+我们所说的夏令时实际上包括两类：夏令时和冬令时
+
+```
+夏令时(1:00 -> 3:00 AM)
+往后拨一个小时，直接从1点变到3点，也就是说我们要比原来提前一个小时和美国人开会。
+冬令时(1:00 -> 1:00 -> 2:00 AM)
+往前拨一个小时，要过两个1点，这时比平常晚一个小时。
+```
+
+由此可见夏令时从1点跳到3点在雪花算法中没有什么影响，但是在冬令时要经历两个相同的时间段并使用相同的时间戳和算法参数进行运算就要出问题了。   
+解决方法:  
+备份之前未使用的雪花id,分配给后来的机器用.  
+https://www.jianshu.com/p/98c202f64652
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

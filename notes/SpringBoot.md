@@ -8,7 +8,10 @@
   - [IoC能做什么](#ioc%e8%83%bd%e5%81%9a%e4%bb%80%e4%b9%88)
   - [依赖注入（DI，DI—Dependency Injection）](#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5dididependency-injection)
   - [控制反转与依赖注入的理解](#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac%e4%b8%8e%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e7%9a%84%e7%90%86%e8%a7%a3)
-- [切面编程与动态代理的关系](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8b%e4%b8%8e%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e7%9a%84%e5%85%b3%e7%b3%bb)
+- [切面编程实现原理:发射与动态代理](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8b%e5%ae%9e%e7%8e%b0%e5%8e%9f%e7%90%86%e5%8f%91%e5%b0%84%e4%b8%8e%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86)
+- [常用注解](#%e5%b8%b8%e7%94%a8%e6%b3%a8%e8%a7%a3)
+  - [@AutoWired](#autowired)
+- [springboot热部署的两种方式](#springboot%e7%83%ad%e9%83%a8%e7%bd%b2%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e5%bc%8f)
 
 <!-- /TOC -->
 
@@ -79,4 +82,16 @@ IoC 不是一种技术，只是一种思想，一个重要的面向对象编程�
 　　这是我对Spring的IoC(控制反转)的理解。DI(依赖注入)其实就是IOC的另外一种说法，DI是由Martin Fowler 在2004年初的一篇论文中首次提出的。他总结：控制的什么被反转了？就是：获得依赖对象的方式反转了
 
 
-# 切面编程与动态代理的关系
+# 切面编程实现原理:发射与动态代理
+
+proxy
+
+# 常用注解
+
+## @AutoWired
+作用:@Autowired表示被修饰的类需要注入对象,spring会扫描所有被@Autowired标注的类,然后根据 类型 在ioc容器中找到匹配的类注入。
+
+
+# springboot热部署的两种方式
+https://blog.csdn.net/a656678879/article/details/80356323
+
