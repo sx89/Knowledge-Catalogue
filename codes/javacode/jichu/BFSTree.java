@@ -1,5 +1,8 @@
 package javacode.jichu;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -7,7 +10,7 @@ import java.util.LinkedList;
  * @date 19/9/16/016 15:06
  */
 public class BFSTree {
-    class TreeNode{
+    class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
