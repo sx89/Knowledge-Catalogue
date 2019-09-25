@@ -59,6 +59,8 @@
     - [clone()](#clone)
 - [关键字](#关键字)
     - [final](#final)
+        - [设计一个不可变的类](#设计一个不可变的类)
+            - [不可变模式](#不可变模式)
     - [static](#static)
     - [native](#native)
         - [定义](#定义-5)
@@ -1143,6 +1145,89 @@ private 方法隐式地被指定为 final，如果在子类中定义的方法和
 **3. 类** 
 
 声明类不允许被继承。
+
+### 设计一个不可变的类
+
+#### 不可变模式
+对象创建之后它的属性值不能够发生变化！所有对原对象的操作都会返回原对象的拷贝。
+
+设计一个不可变类应该遵循以下几点：
+
+1、类的所有属性声明为private，去除掉所有的setter方法，防止外界直接对其进行修改  
+2、类的声明采用final进行修饰，保证没有父类对其修改  
+3、类的属性声明为final,如果对象类型为可变类型，应对其重新包装，重新new一个对象返回  
+
+
+优点：
+
+**多线程环境中进行同步而不需要考虑线程同步**
+
+缺点：
+
+每次返回都创建新的对象，内存会有一定的开销，不容易被垃圾回收器回收，造成资源的浪费,不适合大对象、且创建频繁的场景，因为对象大且创建频繁会容易导致内存泄漏
+
+```java
+package com.wokao66;
+
+/**
+ * 不可变类
+ * @author: huangjiawei
+ * @since: 2018年4月2日
+ * @version: $Revision$ $Date$ $LastChangedBy$
+ *
+ */
+//采用fianl修饰，防止子类继承
+public final class Immutable {
+
+	/**
+	 * 所有的属性private且final
+	 */
+	private final String name;
+	private final int age;
+
+	/**
+	 * 构造方法
+	 * @param name
+	 * @param age
+	 */
+	public Immutable(String name, int age) {
+		this.name = name;
+		this.age = age;
+	}
+
+	/**
+	 * 去除所有的setter方法
+	 */
+	public String getName() {
+		return name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	/**
+	 * 将年龄增加10岁
+	 * @param newAge
+	 * @return
+	 */
+	public Immutable addAge(int newAge) {
+		/**
+		 * 重新返回一个对象
+		 */
+		return new Immutable(this.getName(), newAge + this.getAge());
+	}
+
+	public static void main(String[] args) {
+		Immutable immutable = new Immutable("a", 12);
+		System.err.println(immutable.getAge());
+		Immutable newImmutable = immutable.addAge(10);
+		System.err.println(immutable.getAge());
+		System.err.println(newImmutable.getAge());
+	}
+}
+
+```
 
 ## static
 
