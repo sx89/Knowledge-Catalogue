@@ -10,3 +10,10 @@ s := arr[:]
 
 初始化切片s,是数组arr的引用
 
+断言:
+```
+value,ok: = a.(string)
+if !ok{
+    fmt.Println("不是string类型")
+}
+fmt.Println("值为",value)
