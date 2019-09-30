@@ -17,3 +17,23 @@ if !ok{
     fmt.Println("不是string类型")
 }
 fmt.Println("值为",value)
+```
+
+时区对应表:
+
+```
+月份 1,01,Jan,January
+日　 2,02,_2
+时　 3,03,15,PM,pm,AM,am
+分　 4,04
+秒　 5,05
+年　 06,2006
+时区 -07,-0700,Z0700,Z07:00,-07:00,MST
+周几 Mon,Monday
+```
+```
+format := time.Now().Format("2006年01月15时 时区MST")
+fmt.Println(format)
+```
+
+
