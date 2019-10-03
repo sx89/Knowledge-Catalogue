@@ -517,8 +517,6 @@ func main() {
 ## 工厂模式代替构造函数
 
 
-
-<div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
@@ -555,3 +553,5 @@ fmt.Println("值为",value)
 format := time.Now().Format("2006年01月15时 时区MST")
 fmt.Println(format)
 ```
+
+
