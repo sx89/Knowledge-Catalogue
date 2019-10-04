@@ -535,15 +535,6 @@ func main() {
 ## 工厂模式代替构造函数
 
 
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-
-
-
 
 
 ## 断言:
@@ -650,3 +641,278 @@ func main() {
 }
 ```
 
+## 序列化与反序列化 
+
+序列化
+```go
+	//将monster 序列化
+	data, err := json.Marshal(&monster) //..
+	if err != nil {
+		fmt.Printf("序列号错误 err=%v\n", err)
+	}
+	//输出序列化后的结果
+	fmt.Printf("monster序列化后=%v\n", string(data))
+```
+
+反序列化
+
+```go
+
+//演示将json字符串，反序列化成map
+func unmarshalMap() {
+	//str := "{\"address\":\"洪崖洞\",\"age\":30,\"name\":\"红孩儿\"}"
+	str := testMap()
+	//定义一个map
+	var a map[string]interface{} 
+
+	//反序列化
+	//注意：反序列化map,不需要make,因为make操作被封装到 Unmarshal函数
+	//传入的是引用传递,只有引用传递才会改变函数外面的a的值
+	err := json.Unmarshal([]byte(str), &a)
+	if err != nil {
+		fmt.Printf("unmarshal err=%v\n", err)
+	}
+	fmt.Printf("反序列化后 a=%v\n", a)
+
+}
+```
+
+## 单元测试
+
+
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_13-42-04.png" width="600"/> </div><br>
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_13-43-01.png" width="600"/> </div><br>
+
+
+## 协程(goroutine)
+
+go的主线程(进程级别)内,可以开启多个协程(编译器级别优化,轻量级的线程)
+
+协程特点:  
+有独立的栈空间  
+共享程序堆内存  
+调度由用户控制  
+协程是轻量级的线程  
+
+
+协程的资源消耗要小于线程,这是go语言的在并发上的巨大优势.线程等于堆资源+栈 ,协程是多个协程存储在一个线程中,协程的堆资源在线程中,栈资源用线程的堆来保存.所以多个协程可以在一个线程里面运行.
+
+
+MPG模式   
+
+m是主线程,p是上下文,g是协程
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_14-41-39.png" width="600"/> </div><br>
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_14-53-44.png" width="600"/> </div><br>
+
+## 管道
+
+先进先出,线程安全,存储类型统一
+
+管道关闭后,只可读,不可写
+
+遍历用for-range,遍历的前提是管道关闭,不然报错
+
+```go
+管道使用实例
+
+
+//演示一下管道的使用
+//1. 创建一个可以存放3个int类型的管道
+var intChan chan int
+intChan = make(chan int, 3)
+//2. 看看intChan是什么
+fmt.Printf("intChan 的值=%v intChan本身的地址=%p\n", intChan, &intChan)
+//3. 向管道写入数据
+intChan<- 10
+num := 211
+intChan<- num
+intChan<- 50
+// //如果从channel取出数据后，可以继续放入
+<-intChan
+intChan<- 98//注意点, 当我们给管写入数据时，不能超过其容量
+//4. 看看管道的长度和cap(容量)
+fmt.Printf("channel len= %v cap=%v \n", len(intChan), cap(intChan)) // 3, 3
+//5. 从管道中读取数据
+var num2 int
+num2 = <-intChan 
+fmt.Println("num2=", num2)
+fmt.Printf("channel len= %v cap=%v \n", len(intChan), cap(intChan))  // 2, 3
+
+
+
+管道的遍历
+for v:=range intChan{
+	fmt.Println(v)
+}
+```
+
+
+管道读写的实例
+```go
+
+//write Data
+func writeData(intChan chan int) {
+	for i := 1; i <= 50; i++ {
+		//放入数据
+		intChan<- i //
+		fmt.Println("writeData ", i)
+		//time.Sleep(time.Second)
+	}
+	close(intChan) //关闭
+}
+
+//read data
+func readData(intChan chan int, exitChan chan bool) {
+
+	for {
+		v, ok := <-intChan
+		if !ok {
+			break
+		}
+		time.Sleep(time.Second)
+		fmt.Printf("readData 读到数据=%v\n", v) 
+	}
+	//readData 读取完数据后，即任务完成
+	exitChan<- true
+	close(exitChan)
+
+}
+
+func main() {
+
+	//创建两个管道
+	intChan := make(chan int, 10)
+	exitChan := make(chan bool, 1)
+	
+	go writeData(intChan)
+	go readData(intChan, exitChan)
+
+	//time.Sleep(time.Second * 10)
+	//exitChan存在的意义是为了防止主线程main的退出,要等到readData读完之后再退出
+	for {
+		_, ok := <-exitChan
+		if !ok {
+			break
+		}
+	}
+
+}
+```
+### 只读只写的chan
+var chan1 <-chan int
+
+var chan2 chan<- int
+
+### select解决一个协程本可以读三个channel却在一个channel上阻塞的问题
+
+```go
+package main
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+
+	//使用select可以解决从管道取数据的阻塞问题
+
+	//1.定义一个管道 10个数据int
+	intChan := make(chan int, 10)
+	for i := 0; i < 10; i++ {
+		intChan<- i
+	}
+	//2.定义一个管道 5个数据string
+	stringChan := make(chan string, 5)
+	for i := 0; i < 5; i++ {
+		stringChan <- "hello" + fmt.Sprintf("%d", i)
+	}
+
+	//传统的方法在遍历管道时，如果不关闭会阻塞而导致 deadlock
+
+	//问题，在实际开发中，可能我们不好确定什么关闭该管道.
+	//可以使用select 方式可以解决
+	//label:
+	for {
+		select {
+			//注意: 这里，如果intChan一直没有关闭，不会一直阻塞而deadlock
+			//，会自动到下一个case匹配
+			case v := <-intChan : 
+				fmt.Printf("从intChan读取的数据%d\n", v)
+				time.Sleep(time.Second)
+			case v := <-stringChan :
+				fmt.Printf("从stringChan读取的数据%s\n", v)
+				time.Sleep(time.Second)
+			default :
+				fmt.Printf("都取不到了，不玩了, 程序员可以加入逻辑\n")
+				time.Sleep(time.Second)
+				return 
+				//break label
+		}
+	}
+}
+```
+
+goroutine(协程)中使用recover,来解决协程中出现panic的问题,导致程序崩溃.使用了recover之后,出错协程的异常被捕获,主线程不受影响
+```go
+
+//函数
+func sayHello() {
+	for i := 0; i < 10; i++ {
+		time.Sleep(time.Second)
+		fmt.Println("hello,world")
+	}
+}
+//函数
+func test() {
+	//这里我们可以使用defer + recover
+	defer func() {
+		//捕获test抛出的panic
+		if err := recover(); err != nil {
+			fmt.Println("test() 发生错误", err)
+		}
+	}()
+	//定义了一个map,这里有error
+	var myMap map[int]string
+	myMap[0] = "golang" //error
+}
+
+func main() {
+
+	go sayHello()
+	go test()
+
+
+	for i := 0; i < 10; i++ {
+		fmt.Println("main() ok=", i)
+		time.Sleep(time.Second)
+	}
+
+}
+```
+
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
+<div align="center"> <img src="" width="600"/> </div><br>
