@@ -1,4 +1,19 @@
 
+## 目录结构
+
+https://blog.csdn.net/stpeace/article/details/82710969
+
+goroot  是 go的sdk的安装目录
+
+gopath是项目的存储路径,gopath下有src,pkg,bin
+
+src下是源代码
+
+pkg是执行`go install <import下的依赖包名字> `时,在pkg下生成一份main中依赖的包
+
+bin是执行`go install main.go` 时,在bin下生成可执行文件main,同时在pkg中生成依赖的包文件
+
+
 ## make 和 new 的异同
 
 二者都是内存的分配（堆上），但是make只用于slice、map以及channel的初始化（非零值）；而new用于类型的内存分配，并且内存置为零。所以在我们编写程序的时候，就可以根据自己的需要很好的选择了。
@@ -892,6 +907,95 @@ func main() {
 
 }
 ```
+## 反射
+
+
+## 网络编程
+
+### tcp socket编程,比如qq聊天
+
+### http编程,比如web开发
+
+## 匿名函数
+
+defer的调用解读
+
+```go
+defer func() {
+	 fmt.Println(“Hello，world”) 
+}()
+
+可以看成
+
+func aa() { 
+    fmt.Println("Hello，world")
+}
+
+func main() {
+
+    defer aa()
+}
+```
+
+## go modules
+
+### go mod init example.com/hello
+
+go.mod 文件只存在于模块的根目录中。模块子目录的代码包的导入路径等于模块根目录的导入路径（就是前面说的 module path）加上子目录的相对路径。比如，我们如果创建了一个子目录叫 world，我们不需要（也不会想要）在子目录里面再运行一次 go mod init 了，这个代码包会被认为就是 example.com/hello 模块的一部分，而这个代码包的导入路径就是 example.com/hello/world。
+
+### import与gomod的细节
+当我们imort一个包的时候, go.mod 文件里面又没有指定这个包的时候，go 命令行工具会自动寻找包含这个代码包的模块的最新版本，并添加到 go.mod 中（这里的 " 最新 " 指的是：它是最近一次被 tag 的稳定版本（即非预发布版本，non-prerelease），如果没有，则是最近一次被 tag 的预发布版本，如果没有，则是最新的没有被 tag 过的版本）。
+
+
+比如，go新导入的 rsc.io/quote 包解析为 rec.io/quote v1.5.2模块:
+```go
+package hello
+ 
+import "rsc.io/quote"
+ 
+func Hello() string {
+    return quote.Hello()
+
+```
+
+它还会下载 rsc.io/quote 模块依赖的两个依赖项。即 rsc.io/sampler 和 golang.org/x/text。但是只有直接依赖会记录在 go.mod 文件里面：
+
+
+### go list -m all
+
+在上述 go list 命令的输出中，当前的模块，又称为主模块 (main module)，永远都在第一行，接着是主模块的依赖项，以依赖项的 module path 排序。
+
+### 包的版本号
+
+一个语义化版本号包括三个部分：主版本号（major）、次版本号（minor）、修订号（patch）。举个例子：对于版本 v0.1.2，主版本号是 0，次版本号是 1，修订号是 2。我们先来过一遍更新某个模块的次版本号的流程。
+
+#### 更改某个依赖包的版本号
+```
+go get rsc.io/sampler@v1.3.1
+
+```
+
+### 常用命令
+```
+go mod init 创建了一个新的模块，初始化 go.mod 文件并且生成相应的描述
+go build, go test 和其它构建代码包的命令，会在需要的时候在 go.mod 文件中添加新的依赖项
+go list -m all 列出了当前模块所有的依赖项
+go get 修改指定依赖项的版本（或者添加一个新的依赖项）
+go mod tidy 移除模块中没有用到的依赖项。
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
