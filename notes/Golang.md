@@ -1055,13 +1055,77 @@ https://blog.csdn.net/DinnerHowe/article/details/79805250
 原文链接：https://blog.csdn.net/weixin_42255190/article/details/98942901
 
 
+## 解析json的方法
+
+
+### 知道数据结构就先写数据结构
+```go
+package main
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"path/filepath"
+	"regexp"
+	"runtime"
+)
+type Contact struct {
+	Name string `json:"name"`
+	Title string `json:"title,omitempty"`
+	Contact struct {
+		Home string `json:"home"`
+		Cell string `json:"cell"`
+	} `json:"contact"`
+}
+ 
+var JSON = `{
+	"name":"Gopher",
+	"title":"", 
+	"contact":{
+		"home":"123123123",
+		"cell":"456456456"
+		}
+	}`
+ 
+func main() {
+	// 解析json
+	var c Contact
+	err := json.Unmarshal([]byte(JSON), &c)
+	if err != nil {
+		fmt.Println("ERROR", err)
+		return
+	}
+	fmt.Println(c.Contact)
+	fmt.Println(c.Title)
+	fmt.Println(c.Name)
+ 
+	// 编码json
+	data, _ := json.Marshal(c)
+	fmt.Println(string(data))
+ ```
+### 不知道数据结构的时候解析json
+```go
+	var tmp map[string]interface{}
+	_ = json.Unmarshal([]byte(JSON), &tmp)
+	fmt.Println("Name:", tmp["name"])
+	fmt.Println("Title:", tmp["title"])
+	fmt.Println("Contact:", tmp["contact"])
+	fmt.Println("Home:", tmp["contact"].(map[string]interface{})["home"])
+	fmt.Println("Cell:", tmp["contact"].(map[string]interface{})["cell"])
+ 
+}
+
+```
+## http的知识
+### 请求头
+响应码是哪部分
+### 请求行
+
+### 请求实体
 
 
 
-
-
-
-
+## go写http  (整理了,下次用就不用去网上再学再找了)
 
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
