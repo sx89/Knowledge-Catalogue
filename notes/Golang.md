@@ -1009,6 +1009,50 @@ _ "github.com/ziutek/mymysql/godrv"
 _操作其实是引入该包，而不直接使用包里面的函数，而是调用了该包里面的init函数。
 
 
+## go build 和  go install的区别
+
+作用
+
+go build：用于测试编译包，在项目目录下生成可执行文件（有main包）。
+
+go install：主要用来生成库和工具。一是编译包文件（无main包），将编译后的包文件放到 pkg 目录下（$GOPATH/pkg）。二是编译生成可执行文件（有main包），将可执行文件放到 bin 目录（$GOPATH/bin）。
+
+2. 相同点
+都能生成可执行文件
+
+1. 不同点
+go build 不能生成包文件, go install 可以生成包文件  
+go build 生成可执行文件在当前目录下， go install 生成可执行文件在bin目录下（$GOPATH/bin）  
+
+
+## proto的使用
+
+https://blog.csdn.net/DinnerHowe/article/details/79805250
+
+## 结构体的三种声明方式
+
+// 然后创建实例化结构体 : 每个元素都需要使用逗号 ，结尾
+	// 简短变量创建
+	m := Movie{
+		Name:   "www.ydook.com",
+		Rating: 10,
+	}
+	fmt.Println(m)
+
+	// 显式创建
+	var M Movie
+	M.Name = "MyName"
+	M.Rating = 9
+	fmt.Println(M)
+
+	// new() 简短变量创建
+	movi := new(Movie)
+	movi.Name = "New() struct"
+	movi.Rating = 8
+	fmt.Println(movi)
+————————————————
+版权声明：本文为CSDN博主「YDOOK」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_42255190/article/details/98942901
 
 
 
