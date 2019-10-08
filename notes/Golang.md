@@ -1105,17 +1105,38 @@ func main() {
  ```
 ### 不知道数据结构的时候解析json
 ```go
+
 	var tmp map[string]interface{}
 	_ = json.Unmarshal([]byte(JSON), &tmp)
-	fmt.Println("Name:", tmp["name"])
-	fmt.Println("Title:", tmp["title"])
-	fmt.Println("Contact:", tmp["contact"])
-	fmt.Println("Home:", tmp["contact"].(map[string]interface{})["home"])
-	fmt.Println("Cell:", tmp["contact"].(map[string]interface{})["cell"])
+	
+	//断言转型
+	str := tmp["name"].(string)
+	//显式转型(go没有自动转型)
+	str2 : = string(tmp["name"])
  
 }
 
 ```
+## 转型包 strconv  ParseXxx
+
+https://www.cnblogs.com/f-ck-need-u/p/9863915.html
+
+
+## time
+
+获取当前时间
+
+currentTime:=time.Now()
+
+进程休眠
+
+time.Sleep(10 * time.Millisecond) //time的sleep
+
+
+## go一个协程的原理,main怎么办
+
+
+
 ## http的知识
 ### 请求头
 响应码是哪部分
@@ -1126,6 +1147,86 @@ func main() {
 
 
 ## go写http  (整理了,下次用就不用去网上再学再找了)
+
+
+## go部署到服务器
+
+windows服务器
+先本地编译
+
+go build main.go
+
+编译后会在同级目录生成可执行文件
+
+main.exe
+
+### linux服务器
+方法一：服务器上去编译
+安装go，配置GOPATH
+
+1，把服务器上配置成本地一样的环境
+
+2，包括项目里面所依赖的包
+
+3，项目源码拷贝到与服务器，服务器上编译
+
+go build main.go
+
+编译后会在同级目录生成可执行文件
+
+main
+
+最后执行 ./main 就行了。
+
+如果想让项目在后台执行：执行 nohup ./main & ，这样就可以程序在后台运行了
+
+注意：发现如果按照官方给的安装方法只指定GOROOT的路径，于是自己新建一个目录gopath 作为GOPATH 的目录，并且设置环境变量（export GOPATH=/newhome/go/gopath）。在gopath下新建3个文件夹（模仿windows GOPATH的方式，也是go语言的工作环境目录）分别为 src、pkg、bin目录
+
+### 方法二：本地编译
+cmd控制台到main.go文件目录下
+
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build set.go
+
+会生成一个没有后缀的二进制文件
+
+main
+
+将该文件放入linux系统某个文件夹下
+
+赋予权限
+
+chmod 777 main
+
+最后执行 ./main 就行了。
+
+如果想让项目在后台执行：执行 nohup ./main & ，这样就可以程序在后台运行了
+## 传文件到linux
+
+scp 文件路径  目标机器用户名@目标机器id:目标路径(比如~/)
+
+## nohup与&
+
+### nohup
+不挂断地运行命令。我们在使用Xshell等工具执行Linux脚本时，有时候会由于网络问题，导致失去连接，终端断开，程序运行一半就意外结束了。这种时候，就可以用nohup指令来运行指令，使程序可以忽略挂起信号继续运行。
+
+### &
+用途：在后台运行
+
+### nohup与&区别
+&：是指在后台运行，当用户退出（挂起）的时候，命令自动跟着结束
+
+nohup：不挂断的运行，注意并没有后台运行的功能，就是指用nohup运行命令可以使命令永久的执行下去，和用户终端没有关系，例如我们断开SSH连接都不会影响他的运行，注意了nohup没有后台运行的意思；&才是后台运行
+
+因此将nohup和&结合使用，就可以实现使命令永久地在后台执行的功能
+
+## 杀掉进程
+
+netstat -antp | grep 端口号
+
+ps -ef | grep  程序名
+
+kill -9 pid
+
 
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
