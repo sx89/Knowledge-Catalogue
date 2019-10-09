@@ -1227,6 +1227,83 @@ ps -ef | grep  程序名
 
 kill -9 pid
 
+## 遍历mysql某个表的所有行
+```go
+rows, err := d.db.Query(ctx, _getAllMid)
+	defer rows.Close()
+	var tmp int64
+	if err!=nil{
+		log.Error("")
+	}
+	for rows.Next() {
+		err:=rows.Scan(&tmp)
+		if err!=nil{
+			log.Error("")
+		}
+		mids = append(mids, tmp)
+	}
+```
+## 遍历结构体,切片,map
+```go
+package main
+import (
+    "fmt"
+    "reflect"
+)
+type person struct {
+    name string
+    age  int
+}
+func main() {
+    v := reflect.ValueOf(person{"steve", 30})
+    count := v.NumField()
+    for i := 0; i < count; i++ {
+        f := v.Field(i)
+        switch f.Kind() {
+        case reflect.String:
+            fmt.Println(f.String())
+        case reflect.Int:
+            fmt.Println(f.Int())
+        }
+    }
+}
+```
+
+
+```go
+切片
+slice := []string{"hello","world","hello","everyone!"}
+    for k,val:=range slice{
+        fmt.Printf("slice %d is :%s\n",k,val )
+	}
+```
+
+```go
+遍历map
+for key, val := range m {
+        fmt.Printf("%v===>%v\n", key, val)
+	}
+
+
+顺序遍历map
+m := make(map[string]string)
+    m["1"] = "hello"
+    m["2"] = "world"
+    m["3"] = "go"
+    m["4"] = "is"
+    m["5"] = "cool"
+
+    sorted_keys := make([]string, 0)
+    for k, _ := range m {
+        sorted_keys = append(sorted_keys, k)
+    }
+    sort.Strings(sorted_keys)
+
+    for _, k := range sorted_keys {
+        fmt.Printf("%v=====>%v\n", k, m[k])
+    }
+```
+
 
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
