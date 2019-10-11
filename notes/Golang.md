@@ -1008,9 +1008,50 @@ _ "github.com/ziutek/mymysql/godrv"
 )
 _操作其实是引入该包，而不直接使用包里面的函数，而是调用了该包里面的init函数。
 
+# err的理解
 
+```go
+for{
+	err := rows.Scan(&tmp)
+		if err != nil {
+			log.Errorc(ctx, "mysql,rows.Scan failed,err(%s)", err)
+			continue
+		}
+		mids = append(mids, tmp)
+}
+此处err如果存在,则不能再对mids进行append,所以不单单是log.Errorc,还要continue,不要把错误放进mids
+```
 
+```go
+_, err := d.userClient.UpdateUserStatistics(ctx, in)
+	if err != nil {
+￼	
+		log.Errorc(ctx, "mysql,update user_statistic failed,err(%s)", err)
+		return
 
+	}
+	如果err存在,则要return,让这个方法返回.不然后面的代码可能会出现不可预知的错误,导致程序崩溃
+```
+
+```go
+func (d *Dao) GetVideoStatisticPlaySumByMid(ctx context.Context, mid int64) (sum int64,err error) {
+	s := []int64{mid}
+	in := &archive.FilterVideosReq{Mids: s}
+	response, err := d.archiveClient.FilterVideos(ctx, in)
+		reply, err := d.archiveClient.ListVideoStat(ctx, &req)
+		if err != nil {
+			log.Errorc(ctx, "mysql,list videostat by mid from video_statistic failed,err(%s)", err)
+			// return 错误写法
+			return -1,err
+		}
+		stat := reply.VideoStats[v.Svid].View
+		sum += stat
+	}
+	// return sum  错误写法
+	return sum,nil
+}
+这个函数的功能是获取mids,如果出现了err,要告知调用它的函数,所以要在返回值里面放一个err
+```
 
 
 
