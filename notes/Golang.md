@@ -1054,6 +1054,109 @@ func (d *Dao) GetVideoStatisticPlaySumByMid(ctx context.Context, mid int64) (sum
 ```
 
 
+# panic recover err
+
+背景：Go语言追求简洁优雅，所以，Go语言不支持传统的 try…catch…finally 这种异常，因为Go语言的设计者们认为，将异常与控制结构混在一起会很容易使得代码变得混乱。因为开发者很容易滥用异常，甚至一个小小的错误都抛出一个异常。在Go语言中，使用多值返回来返回错误。不要用异常代替错误，更不要用来控制流程。在极个别的情况下，才使用Go中引入的Exception处理：defer, panic, recover。
+
+
+## panic 
+
+假如函数F中发生了panic语句，会终止其后要执行的代码，在panic所在函数F内如果存在要执行的defer函数列表，按照defer的逆序执行
+
+返回函数F的调用者G，在G中，调用函数F语句之后的代码不会执行，假如函数G中存在要执行的defer函数列表，按照defer的逆序执行，这里的defer 有点类似 try-catch-finally 中的 finally
+
+直到goroutine整个退出，主程序崩溃并报告错误
+
+## recover
+recover专用于恢复panic,或者说平息运行时恐慌， recover 函数无需任何参数，并且会返回一个空接口类型的值
+
+如果用法正确，这个值实际就是即将恢复的panic包含的值，并且，如果这个panic 是因为我们调用panic函数引发的，那么该值同时也会是我们此次调用panic函数时，传入的参数值副本
+```go
+package main
+
+
+import (
+    "fmt"
+    "errors"
+)
+
+func main() {
+    fmt.Println("Enter function main.")
+    defer func() {
+        fmt.Println("Enter defer function")
+        if p:= recover(); p!= nil {
+            fmt.Printf("panic :%s\n", p)
+        }
+        fmt.Println("Exit defer function")
+    }()
+
+    panic(errors.New("something wrong"))
+    fmt.Println("Exit function main.")
+}
+```
+
+## defer
+defer 就是被用来延迟执行代码的。这个延迟会延迟到该语句所在的函数即将执行结束的那一刻，无论结执行的原因是什么
+
+一个defer语句总是由一个defer关键字和一个调用表达式组成
+
+但是需要注意一些限制： 有些表达式不能出现在这里，包括：针对Go语言内建函数的调用表达式，以及针对unsafe包中函数的调用表达式
+
+
+## err和panic的区别
+panic 表示进程内的错误。panic 的原因来自于代码的逻辑 bug，比如强制类型转换失败，比如数组越界。这个代表了程序员的责任不到位，导致了程序的panic。
+
+error 代表进程外的错误。比如输入符合预期。比如访问外部的服务失败。这些都不是程序员可以设计控制的。这些情况的错误处理是业务逻辑的一部分。
+
+## 总结
+**error**
+
+是一个用于标准错误处理的接口，是内建的接口类型
+
+type error interface{
+
+    Error() string
+
+}
+
+提供了New方法创建error结构体
+
+Errorf函数
+
+fmt中有一个返回error结构体的方法Errorf，内部使用errors包的New方法实现
+
+**panic**
+
+当遇到不可恢复的错误状态的时候，如数组访问越界、空指针引用等，这些运行时错误会引起panic异常。
+
+创建panic
+
+panic内置函数支持任何参数值
+
+func panic(v interface{})
+
+**recover**
+
+recover用于从panic状态中恢复并重新获得流程控制权
+
+func recover() interface{}
+
+recover函数只在defer调用的函数中有效
+
+defer func(){
+
+    if err:= recover();err !=nil{
+
+        fmt.Println(rcover())
+
+    }
+
+}
+
+
+
+
+
 
 
 
