@@ -1576,6 +1576,34 @@ W 字符代表着平日 (Mon-Fri)，并且仅能用于日域中。它用来指�
 "0 15 10 ? *6#3" 每月的第三个星期五上午10:15触发
 
 
+# go 中while和do while的实现
+
+
+## while
+```go
+var i int = 1
+    for {
+        if i > 10 {
+            break
+        }
+        fmt.Println("hello! ", i)
+        i++
+    }
+```
+## do while
+
+```go
+var i int = 1
+    for {
+        fmt.Println("hello! ", i)
+        i++
+     if i > 10 {
+            break
+        }
+	}
+```
+
+
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
