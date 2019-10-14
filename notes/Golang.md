@@ -1603,11 +1603,241 @@ var i int = 1
 	}
 ```
 
+# 引用与指针区别
+指针是一个实体，而引用仅是个别名；
 
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
-<div align="center"> <img src="" width="600"/> </div><br>
+引用使用时无需解引用(*)，指针需要解引用；
+
+引用只能在定义时被初始化一次，之后不可变；指针可变；
+
+引用没有 const，指针有 const；const修饰的指针不可变；
+
+引用不能为空，指针可以为空；
+
+**从内存分配上看：程序为指针变量分配内存区域，而引用不需要分配内存区域。**
+
+“sizeof 引用”得到的是所指向的变量(对象)的大小，而“sizeof 指针”得到的是指针本身(所指向的变量或对象的地址)的大小；
+指针和引用的自增(++)运算意义不一样；
+
+**两者都是地址的概念，指针指向一块儿内存，其内容为所指内存的地址；引用是某块儿内存的别名。**
+
+# 值类型与引用类型的区别
+
+
+**数组和结构体是值类型,map slice是引用类型**
+'
+
+## 声明变量时候的却别
+```go
+package main
+import (
+ "fmt"
+)
+func main() {
+ var i *int
+ *i=10
+ fmt.Println(*i)
+}
+这个例子会打印出什么？0还是10?。以上全错，运行的时候会painc，原因如下：
+
+panic: runtime error: invalid memory address or nil pointer dereference
+
+```
+
+
+对于引用类型的变量，我们不光要声明它，还要为它分配内容空间，否则我们的值放在哪里去呢？这就是上面错误提示的原因
+
+对于值类型的声明不需要，是因为已经默认帮我们分配好了
+分配内存，Go提供了两种方式，分别是new和make
+
+## 数值传递上的区别
+值类型在赋值给另一个变量的时候是值拷贝,引用类型则是指针拷贝(地址拷贝)
+
+只要区别在于函数传参的时候,因为数组和结构体是值类型,形参的改变不会导致传参的改变. 如果传地址则可以改变传参
+
+```go
+type person struct {
+	name string
+	age int
+}
+
+func main() {
+	p:=person{
+		name:"sx"
+		age:12
+	}
+
+	change (&p)
+	uableChange(p)
+}
+func change (p *person){
+	p.age--
+}
+func unableChange(p person)[
+	p.age++
+]
+```
+##  在new 和 make的区别
+### new
+Go提供内建函数new
+
+func new(Type) *Type
+
+它只接受一个参数，这个参数是一个类型，分配好内存后，返回一个指向该类型内存地址的指针。同时请注意它同时把分配的内存置为零，也就是类型的零值。那么上面的函数可以改写成
+```go
+func main() {
+ var i *int
+ i=new(int)
+ *i=10
+ fmt.Println(*i)
+}
+```
+这就是new，它返回的永远是类型的指针，指向分配类型的内存地址
+### make
+make也是用于内存分配的，但和new不同，它只用于通道chan、映射map以及切片slice的内存创建
+
+它的返回的类型就是这三个类型本身，而不是他们的指针类型，因为这三种类型本身就是引用类型
+
+注意，因为这三种类型是引用类型，所以必须得初始化，但不是置为零值
+
+func make(t Type, size ...IntegerType) Type
+### new 和 make的区别
+二者都是内存的分配（堆上），但是make只用于slice、map以及channel的初始化（非零值）；而new用于类型的内存分配，并且内存置为零
+
+make返回的还是这三个引用类型本身；而new返回的是指向类型的指针
+new不常用，通常都是采用短语句声明以及结构体的字面量达到我们的目的，比如：
+```go
+i:=0
+u:=user{}
+```
+make函数是无可替代的
+
+# slice 
+## 介绍
+```
+type slice struct {
+    array unsafe.Pointer
+    len   int
+    cap   int
+}
+```
+## 切片的三种定义方式,map两种
+
+### 1.定义一个切片，然后让切片去引用一个已经创建好的数组
+
+```go
+package main
+import (
+    "fmt"
+)
+
+func main() {
+    var arr [5]int = [...]int {1, 2, 3, 4, 5}
+    var slice = arr[1:3]
+    fmt.Println("arr=", arr)
+    fmt.Println("slice=", slice)
+    fmt.Println("slice len", len(slice))
+    fmt.Println("slice cap", cap(slice))
+}
+```
+
+### 2.通过make来创建切片。
+
+基本语法：var 切片名 []type = make([], len, [cap])；参数说明：type是数据类型、len是大小、cap是切片容量（容量必须>=长度）
+
+通过make方式创建切片可以指定切片大小和容量
+如果没有给切片的各个元素赋值，那么就会使用默认值(int、float=>0, strint=>"", bool=>false)
+荣国make方式创建的切片对应的数组是由make底层维护，对外不可见，也就是只能通过slice访问各个元素
+
+```go
+
+package main
+import (
+    "fmt"
+)
+
+
+func main() {
+    var slice []float64 = make([]float64, 5, 10)
+    //没有给值，默认都是0
+    fmt.Println(slice)  //[0 0 0 0 0]
+
+    //赋值
+    slice[1] = 5
+    slice[3] = 10  
+    fmt.Println(slice)  //[0 5 0 10 0]
+
+
+    fmt.Println("slice大小:", len(slice)) //slice大小: 5
+    fmt.Println("slice容量:", cap(slice)) //slice容量: 10
+}
+```
+### 3.定义一个切片，直接就指定具体数组，使用原理类似于make的方式
+
+```go
+package main
+import (
+    "fmt"
+)
+
+
+func main() {
+    var slice []string = []string{"zhangsan", "lisi", "wangwu"}
+    fmt.Println("slice=", slice) //slice= [zhangsan lisi wangwu]
+    fmt.Println("slice len", len(slice)) //slice len 3
+    fmt.Println("slice cap", cap(slice)) //slice cap 3
+}
+```
+ 
+## 第一种和第二种的区别
+
+第一种方式是直接引用数组，这个数组是事先存在的，程序员可见
+第二种方式是通过make来创建切片，make也会创建一个数组，是由切片在底层维护，程序员不可见
+
+
+## 底层原理
+
+
+
+# map
+## 创建 
+
+## 底层原理
+
+https://i6448038.github.io/2018/08/26/map-secret/
+
+一个map是一个bucket数组,bucket可以链式追加,如图:
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-29-01.png" width="600"/> </div><br>
+
+根据key经过hash计算处的值会分为高八位和低八位,低八位用于寻找位于map的哪个bucket,高八位用于寻找bucket内部的哪个key
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-31-36.png" width="600"/> </div><br>
+
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-32-00.png" width="600"/> </div><br>
+go的bucket内部并不是key0/value0/key1/value1的形式，这样做的好处是：在key和value的长度不同的时候，可以消除padding带来的空间浪费。
+
+## map的扩容
+当以上的哈希表增长的时候，Go语言会将bucket数组的数量扩充一倍，产生一个新的bucket数组，并将旧数组的数据迁移至新数组。
+
+## 加载因子
+判断扩充的条件，就是哈希表中的加载因子(即loadFactor)。
+
+加载因子是一个阈值，一般表示为：散列包含的元素数 除以 位置总数。是一种“产生冲突机会”和“空间使用”的平衡与折中：加载因子越小，说明空间空置率高，空间使用率小，但是加载因子越大，说明空间利用率上去了，但是“产生冲突机会”高了。
+
+每种哈希表的都会有一个加载因子，数值超过加载因子就会为哈希表扩容。
+
+
+当Go的map长度增长到大于加载因子所需的map长度时，Go语言就会将产生一个新的bucket数组，然后把旧的bucket数组移到一个属性字段oldbucket中。**注意：并不是立刻把旧的数组中的元素转义到新的bucket当中，而是，只有当访问到具体的某个bucket的时候，会把bucket中的数据转移到新的bucket中。并且不会直接删除旧的bucket，而是把原来的引用去掉，利用GC清除内存。**
+
+<div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-35-24.png" width="600"/> </div><br>
+
+ 
+# chan
+
+
+
+
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>
