@@ -1,91 +1,5 @@
 
-<!-- TOC -->
-
-- [一 、基础概念](#%e4%b8%80-%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5)
-  - [URI](#uri)
-  - [请求和响应报文](#%e8%af%b7%e6%b1%82%e5%92%8c%e5%93%8d%e5%ba%94%e6%8a%a5%e6%96%87)
-    - [1. 请求报文](#1-%e8%af%b7%e6%b1%82%e6%8a%a5%e6%96%87)
-    - [2. 响应报文](#2-%e5%93%8d%e5%ba%94%e6%8a%a5%e6%96%87)
-- [二、HTTP 方法](#%e4%ba%8chttp-%e6%96%b9%e6%b3%95)
-  - [GET](#get)
-  - [HEAD](#head)
-  - [POST](#post)
-  - [PUT](#put)
-  - [PATCH](#patch)
-  - [DELETE](#delete)
-  - [OPTIONS](#options)
-  - [CONNECT](#connect)
-  - [TRACE](#trace)
-- [三、HTTP 状态码](#%e4%b8%89http-%e7%8a%b6%e6%80%81%e7%a0%81)
-  - [1XX 信息](#1xx-%e4%bf%a1%e6%81%af)
-  - [2XX 成功](#2xx-%e6%88%90%e5%8a%9f)
-  - [3XX 重定向](#3xx-%e9%87%8d%e5%ae%9a%e5%90%91)
-  - [4XX 客户端错误](#4xx-%e5%ae%a2%e6%88%b7%e7%ab%af%e9%94%99%e8%af%af)
-  - [5XX 服务器错误](#5xx-%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%94%99%e8%af%af)
-- [四、HTTP 首部](#%e5%9b%9bhttp-%e9%a6%96%e9%83%a8)
-  - [通用首部字段](#%e9%80%9a%e7%94%a8%e9%a6%96%e9%83%a8%e5%ad%97%e6%ae%b5)
-  - [请求首部字段](#%e8%af%b7%e6%b1%82%e9%a6%96%e9%83%a8%e5%ad%97%e6%ae%b5)
-  - [响应首部字段](#%e5%93%8d%e5%ba%94%e9%a6%96%e9%83%a8%e5%ad%97%e6%ae%b5)
-  - [实体首部字段](#%e5%ae%9e%e4%bd%93%e9%a6%96%e9%83%a8%e5%ad%97%e6%ae%b5)
-- [五、具体应用](#%e4%ba%94%e5%85%b7%e4%bd%93%e5%ba%94%e7%94%a8)
-  - [连接管理](#%e8%bf%9e%e6%8e%a5%e7%ae%a1%e7%90%86)
-    - [1. 短连接与长连接](#1-%e7%9f%ad%e8%bf%9e%e6%8e%a5%e4%b8%8e%e9%95%bf%e8%bf%9e%e6%8e%a5)
-    - [2. 流水线](#2-%e6%b5%81%e6%b0%b4%e7%ba%bf)
-  - [Cookie](#cookie)
-    - [1. 用途](#1-%e7%94%a8%e9%80%94)
-    - [2. 创建过程](#2-%e5%88%9b%e5%bb%ba%e8%bf%87%e7%a8%8b)
-    - [3. 分类](#3-%e5%88%86%e7%b1%bb)
-    - [4. 作用域](#4-%e4%bd%9c%e7%94%a8%e5%9f%9f)
-    - [5. JavaScript](#5-javascript)
-    - [6. HttpOnly](#6-httponly)
-    - [7. Secure](#7-secure)
-    - [8. Session](#8-session)
-    - [9. 浏览器禁用 Cookie](#9-%e6%b5%8f%e8%a7%88%e5%99%a8%e7%a6%81%e7%94%a8-cookie)
-    - [10. Cookie 与 Session 选择](#10-cookie-%e4%b8%8e-session-%e9%80%89%e6%8b%a9)
-  - [缓存](#%e7%bc%93%e5%ad%98)
-    - [1. 优点](#1-%e4%bc%98%e7%82%b9)
-    - [2. 实现方法](#2-%e5%ae%9e%e7%8e%b0%e6%96%b9%e6%b3%95)
-    - [3. Cache-Control](#3-cache-control)
-    - [4. 缓存验证](#4-%e7%bc%93%e5%ad%98%e9%aa%8c%e8%af%81)
-  - [内容协商](#%e5%86%85%e5%ae%b9%e5%8d%8f%e5%95%86)
-    - [1. 类型](#1-%e7%b1%bb%e5%9e%8b)
-    - [2. Vary](#2-vary)
-  - [内容编码](#%e5%86%85%e5%ae%b9%e7%bc%96%e7%a0%81)
-  - [范围请求](#%e8%8c%83%e5%9b%b4%e8%af%b7%e6%b1%82)
-    - [1. Range](#1-range)
-    - [2. Accept-Ranges](#2-accept-ranges)
-    - [3. 响应状态码](#3-%e5%93%8d%e5%ba%94%e7%8a%b6%e6%80%81%e7%a0%81)
-  - [分块传输编码](#%e5%88%86%e5%9d%97%e4%bc%a0%e8%be%93%e7%bc%96%e7%a0%81)
-  - [多部分对象集合](#%e5%a4%9a%e9%83%a8%e5%88%86%e5%af%b9%e8%b1%a1%e9%9b%86%e5%90%88)
-  - [虚拟主机](#%e8%99%9a%e6%8b%9f%e4%b8%bb%e6%9c%ba)
-  - [通信数据转发](#%e9%80%9a%e4%bf%a1%e6%95%b0%e6%8d%ae%e8%bd%ac%e5%8f%91)
-    - [1. 代理](#1-%e4%bb%a3%e7%90%86)
-    - [2. 网关](#2-%e7%bd%91%e5%85%b3)
-    - [3. 隧道](#3-%e9%9a%a7%e9%81%93)
-- [六、HTTPS](#%e5%85%adhttps)
-  - [加密](#%e5%8a%a0%e5%af%86)
-    - [1. 对称密钥加密](#1-%e5%af%b9%e7%a7%b0%e5%af%86%e9%92%a5%e5%8a%a0%e5%af%86)
-    - [2.非对称密钥加密](#2%e9%9d%9e%e5%af%b9%e7%a7%b0%e5%af%86%e9%92%a5%e5%8a%a0%e5%af%86)
-    - [3. HTTPS 采用的加密方式](#3-https-%e9%87%87%e7%94%a8%e7%9a%84%e5%8a%a0%e5%af%86%e6%96%b9%e5%bc%8f)
-  - [认证](#%e8%ae%a4%e8%af%81)
-  - [完整性保护](#%e5%ae%8c%e6%95%b4%e6%80%a7%e4%bf%9d%e6%8a%a4)
-  - [HTTPS 的缺点](#https-%e7%9a%84%e7%bc%ba%e7%82%b9)
-- [七、HTTP/2.0](#%e4%b8%83http20)
-  - [HTTP/1.x 缺陷](#http1x-%e7%bc%ba%e9%99%b7)
-  - [二进制分帧层](#%e4%ba%8c%e8%bf%9b%e5%88%b6%e5%88%86%e5%b8%a7%e5%b1%82)
-  - [服务端推送](#%e6%9c%8d%e5%8a%a1%e7%ab%af%e6%8e%a8%e9%80%81)
-  - [首部压缩](#%e9%a6%96%e9%83%a8%e5%8e%8b%e7%bc%a9)
-- [八、HTTP/1.1 新特性](#%e5%85%abhttp11-%e6%96%b0%e7%89%b9%e6%80%a7)
-- [九、GET 和 POST 比较](#%e4%b9%9dget-%e5%92%8c-post-%e6%af%94%e8%be%83)
-  - [作用](#%e4%bd%9c%e7%94%a8)
-  - [参数](#%e5%8f%82%e6%95%b0)
-  - [安全](#%e5%ae%89%e5%85%a8)
-  - [幂等性](#%e5%b9%82%e7%ad%89%e6%80%a7)
-  - [可缓存](#%e5%8f%af%e7%bc%93%e5%ad%98)
-  - [XMLHttpRequest](#xmlhttprequest)
-  - [TCP底层的区别](#tcp%e5%ba%95%e5%b1%82%e7%9a%84%e5%8c%ba%e5%88%ab)
-
-<!-- /TOC -->
+<!-- TOC -->autoauto- [一 、基础概念](#一-基础概念)auto    - [URI](#uri)auto    - [请求和响应报文](#请求和响应报文)auto        - [1. 请求报文](#1-请求报文)auto            - [请求行:](#请求行)auto            - [请求头](#请求头)auto            - [请求体](#请求体)auto        - [2. 响应报文](#2-响应报文)auto- [二、HTTP 方法](#二http-方法)auto    - [GET](#get)auto    - [HEAD](#head)auto    - [POST](#post)auto    - [PUT](#put)auto    - [PATCH](#patch)auto    - [DELETE](#delete)auto    - [OPTIONS](#options)auto    - [CONNECT](#connect)auto    - [TRACE](#trace)auto- [三、HTTP 状态码](#三http-状态码)auto    - [1XX 信息](#1xx-信息)auto    - [2XX 成功](#2xx-成功)auto    - [3XX 重定向](#3xx-重定向)auto    - [4XX 客户端错误](#4xx-客户端错误)auto    - [5XX 服务器错误](#5xx-服务器错误)auto- [四、HTTP 首部](#四http-首部)auto    - [通用首部字段](#通用首部字段)auto    - [请求首部字段](#请求首部字段)auto    - [响应首部字段](#响应首部字段)auto    - [实体首部字段](#实体首部字段)auto- [五、具体应用](#五具体应用)auto    - [连接管理](#连接管理)auto        - [1. 短连接与长连接](#1-短连接与长连接)auto        - [2. 流水线](#2-流水线)auto    - [Cookie](#cookie)auto        - [1. 用途](#1-用途)auto        - [2. 创建过程](#2-创建过程)auto        - [3. 分类](#3-分类)auto        - [4. 作用域](#4-作用域)auto        - [5. JavaScript](#5-javascript)auto        - [6. HttpOnly](#6-httponly)auto        - [7. Secure](#7-secure)auto        - [8. Session](#8-session)auto        - [9. 浏览器禁用 Cookie](#9-浏览器禁用-cookie)auto        - [10. Cookie 与 Session 选择](#10-cookie-与-session-选择)auto    - [缓存](#缓存)auto        - [1. 优点](#1-优点)auto        - [2. 实现方法](#2-实现方法)auto        - [3. Cache-Control](#3-cache-control)auto        - [4. 缓存验证](#4-缓存验证)auto    - [内容协商](#内容协商)auto        - [1. 类型](#1-类型)auto        - [2. Vary](#2-vary)auto    - [内容编码](#内容编码)auto    - [范围请求](#范围请求)auto        - [1. Range](#1-range)auto        - [2. Accept-Ranges](#2-accept-ranges)auto        - [3. 响应状态码](#3-响应状态码)auto    - [分块传输编码](#分块传输编码)auto    - [多部分对象集合](#多部分对象集合)auto    - [虚拟主机](#虚拟主机)auto    - [通信数据转发](#通信数据转发)auto        - [1. 代理](#1-代理)auto        - [2. 网关](#2-网关)auto        - [3. 隧道](#3-隧道)auto- [六、HTTPS](#六https)auto    - [加密](#加密)auto        - [1. 对称密钥加密](#1-对称密钥加密)auto        - [2.非对称密钥加密](#2非对称密钥加密)auto        - [3. HTTPS 采用的加密方式](#3-https-采用的加密方式)auto    - [认证](#认证)auto    - [完整性保护](#完整性保护)auto    - [HTTPS 的缺点](#https-的缺点)auto- [七、HTTP/2.0](#七http20)auto    - [HTTP/1.x 缺陷](#http1x-缺陷)auto    - [二进制分帧层](#二进制分帧层)auto    - [服务端推送](#服务端推送)auto    - [首部压缩](#首部压缩)auto- [八、HTTP/1.1 新特性](#八http11-新特性)auto- [九、GET 和 POST 比较](#九get-和-post-比较)auto    - [作用](#作用)auto    - [参数](#参数)auto    - [安全](#安全)auto    - [幂等性](#幂等性)auto    - [可缓存](#可缓存)auto    - [XMLHttpRequest](#xmlhttprequest)auto    - [TCP底层的区别](#tcp底层的区别)autoauto<!-- /TOC -->
 
 # 一 、基础概念
 
@@ -101,6 +15,20 @@ URI 包含 URL 和 URN。
 
 <div align="center"> <img src="pics/HTTP_RequestMessageExample.png" width=""/> </div><br>
 
+#### 请求行:
+请求方法，HTTP/1.1 定义的请求方法有8种：GET、POST、PUT、DELETE、PATCH、HEAD、OPTIONS、TRACE,最常的两种GET和POST，如果是RESTful接口的话一般会用到GET、POST、DELETE、PUT。
+
+请求对应的URL地址，它和报文头的Host属性组成完整的请求URL
+
+协议名称及版本号。
+#### 请求头
+HTTP的报文头，报文头包含若干个属性，格式为“属性名:属性值”，服务端据此获取客户端的信息。
+
+其中一些重要的属性:  
+Content-Type 决定了请求体的格式,常用的有application/json
+
+#### 请求体
+报文体，它将一个页面表单中的组件值通过param1=value1&param2=value2的键值对形式编码成一个格式化串，它承载多个请求参数的数据。不但报文体可以传递请求参数，请求URL也可以通过类似于“/chapter15/user.html? param1=value1&param2=value2”的方式传递请求参数。
 ### 2. 响应报文
 
 <div align="center"> <img src="pics/HTTP_ResponseMessageExample.png" width=""/> </div><br>
