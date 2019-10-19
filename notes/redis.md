@@ -548,6 +548,23 @@ Redis服务器实际使用的是惰性删除和定期删除两种策略：通过
 
 定期删除策略是怎么实现的？通过activeExpireCycle函数，serverCron函数执行时，activeExpireCycle函数就会被调用，规定的时间里面分多次遍历服务器的expires字典随机检查一部分key的过期时间，并删除其中的过期key
 
+# Redis过期细节
+## 清除过期时间
+使用DEL,SET,GETSET,*STORE，那么失效时间会被清除。所有对value的修改动作，都会导致expire命令的失效。
+
+比如INCR,LPUSH.HSET不会更改过期时间
+
+## Redis键值2种失效方式
+
+被动：
+
+当客户端尝试获取key时，发现key超时逾期了，然后删掉。
+但这不够，因为有些key可能永远不会被再次访问。
+这就要用到主动。
+
+主动：
+
+Redis每秒钟进行10次的定时检查，从要失效的key集合中随机抽取，
 
 # 7. 持久化
 
