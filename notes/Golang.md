@@ -1290,7 +1290,62 @@ time.Sleep(10 * time.Millisecond) //time的sleep
 
 
 
-## go写http  (整理了,下次用就不用去网上再学再找了)
+## go实现http请求
+
+### http.Get和http.Post
+
+```go
+func httpGet() {
+    resp, err := http.Get("http://www.baidu.com")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}
+
+func httpPost() {
+    resp, err := http.Post("http://www.baidu.com",
+                           "application/x-www-form-urlencode",
+						   strings.NewReader("name=abc")) 
+	// Content-Type post请求必须设置,application/json比较常用
+    if err != nil {
+        return
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}
+```
+### http.Client
+```go
+// http.Client
+func httpDo() {
+	client := &http.Client{}
+	//设置请求头(方法和地址)和请求体
+    req, err := http.NewRequest("POST", 
+                                "http://www.baidu.com", 
+                                strings.NewReader("name=abc"))
+    if err != nil {
+        return
+	}
+	//担任设置需要的请求行(属性的key和value)
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    resp, err := client.Do(req)
+    if err != nil {
+        return
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return
+    }
+    fmt.Println(string(body))
+}
+```
+
 
 
 ## go部署到服务器
