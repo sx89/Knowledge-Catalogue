@@ -2017,8 +2017,41 @@ main goroutine
 
 当协程创建完毕之后，主函数立即返回继续执行下一行代码，不像函数调用，需要等函数执行完成。主协程执行完毕，程序便退出，printHello 协程随即也退出，便不会有输出。
 
-# 
+# strings.NewReader()
 
+NewReader创建一个从s读取数据的Reader
+```
+type Reader struct {
+	s        string //对应的字符串
+	i        int64  // 当前读取到的位置
+	prevRune int   
+}
+```
+
+## Len,Size，Read方法
+
+Len作用: 返回未读的字符串长度
+
+Size的作用:返回字符串的长度
+
+read的作用: 读取字符串信息
+```go
+	r := strings.NewReader("abcdefghijklmn")
+	fmt.Println(r.Len())   // 输出14  初始时，未读长度等于字符串长度
+	var buf []byte
+	buf = make([]byte, 5)
+	readLen, err := r.Read(buf)
+	fmt.Println("读取到的长度:", readLen) //读取到的长度5
+	if err != nil {
+		fmt.Println("错误:", err)
+	}
+	fmt.Println(buf)            //adcde
+	fmt.Println(r.Len())        //9   读取到了5个 剩余未读是14-5
+	fmt.Println(r.Size())       //14   字符串的长度
+```
+# wait group
+
+# 闭包
 
 
 
