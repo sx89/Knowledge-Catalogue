@@ -2,7 +2,6 @@
 ## 目录结构
 
 https://blog.csdn.net/stpeace/article/details/82710969
-
 goroot  是 go的sdk的安装目录
 
 gopath是项目的存储路径,gopath下有src,pkg,bin
@@ -2053,6 +2052,57 @@ read的作用: 读取字符串信息
 
 # 闭包
 
+# sql timestamp
+
+在go里面用string来接收对应的字段
+
+
+# Go Module
+
+在项目根目录下执行  go mod init 项目名
+
+这时可看到目录内多了 go.mod 文件，内容很简单只有两行：
+
+module github.com/islishude/gomodtest
+
+go 1.12
+首行为当前的模块名称，接下来是 go 的使用版本。这两行和 npm package.json 的 name 和 engine 字段的功能很类似。
+
+然后新建一个 main.go 写入以下内容，这里我们引用了 rsc.io/quote 包，注意我们现在还没有下载这个包。
+```go
+package main
+
+import (
+	"fmt"
+
+	"rsc.io/quote"
+)
+
+func main() {
+	fmt.Println(quote.Hello())
+}
+```
+如果是默认情况下，使用 go run main.go 肯定会提示找不到这个包的错误，但是当前 gomod 模式，如果没有此依赖回先下载这个依赖。
+
+$ go run main.go
+go: finding rsc.io/quote v1.5.2
+go: finding rsc.io/sampler v1.3.0
+go: finding golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+go: downloading rsc.io/quote v1.5.2
+go: extracting rsc.io/quote v1.5.2
+go: downloading rsc.io/sampler v1.3.0
+go: extracting rsc.io/sampler v1.3.0
+go: downloading golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+go: extracting golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c
+Hello, world.
+因为包含 http://golang.org 下的包，记得设置代理。这个时候当前包目录除了 go.mod 还有一个 go.sum 的文件，这个类似 npm package-lock.json。
+
+gomod 不会在 $GOPATH/src 目录下保存 rsc.io 包的源码，而是包源码和链接库保存在 $GOPATH/pkg/mod 目录下。
+
+$ ls $GOPATH/pkg/mod
+cache      golang.org rsc.io
+
+除了 go run 命令以外，go build、go test 等命令也能自动下载相关依赖包。
 
 
 <div align="center"> <img src="" width="600"/> </div><br>
