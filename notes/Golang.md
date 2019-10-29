@@ -2059,6 +2059,7 @@ read的作用: 读取字符串信息
 
 # Go Module
 
+## go mod init
 在项目根目录下执行  go mod init 项目名
 
 这时可看到目录内多了 go.mod 文件，内容很简单只有两行：
@@ -2103,6 +2104,44 @@ $ ls $GOPATH/pkg/mod
 cache      golang.org rsc.io
 
 除了 go run 命令以外，go build、go test 等命令也能自动下载相关依赖包。
+
+## 安装依赖
+如果要想先下载依赖，那么可以直接像以前那样 go get 即可，不过 gomod 下可以跟语义化版本号，比如 go get foo@v1.2.3，也可以跟 git 的分支或 tag，比如go get foo@master，当然也可以跟 git 提交哈希，比如 go get foo@e3702bed2。需要特别注意的是，gomod 除了遵循语义化版本原则外，还遵循最小版本选择原则，也就是说如果当前版本是 v1.1.0，只会下载不超过这个最大版本号。如果使用 go get foo@master，下次在下载只会和第一次的一样，无论 master 分支是否更新了代码，如下所示，使用包含当前最新提交哈希的虚拟版本号替代直接的 master 版本号。
+
+$ go get golang.org/x/crypto/sha3@master
+go: finding golang.org/x/crypto/sha3 latest
+go: finding golang.org/x/crypto latest
+$ cat go.mod
+module github.com/adesight/test
+
+go 1.12
+
+require (
+	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
+	rsc.io/quote v1.5.2
+)
+如果下载所有依赖可以使用 go mod download 命令。
+
+## 移除依赖
+当前代码中不需要了某些包，删除相关代码片段后并没有在 go.mod 文件中自动移出。
+
+运行下面命令可以移出所有代码中不需要的包：
+
+go mod tidy
+
+如果仅仅修改 go.mod 配置文件的内容，那么可以运行 go mod edit --droprequire=path，比如要移出 golang.org/x/crypto 包
+
+go mod edit --droprequire=golang.org/x/crypto
+
+
+## 查看依赖包
+
+go list -m all
+
+
+
+
+
 
 
 <div align="center"> <img src="" width="600"/> </div><br>
