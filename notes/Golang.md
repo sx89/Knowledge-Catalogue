@@ -2138,6 +2138,23 @@ go mod edit --droprequire=golang.org/x/crypto
 
 go list -m all
 
+# go build,install,get区别
+
+[关于编译链接,词法语法分析的好文](https://www.cnblogs.com/qcrao-2018/p/11124360.html)
+
+
+## go build 
+在当前目录下编译生成可执行文件。依赖包编译的.a文件存放在临时文件夹,编译结束后删除
+
+## go install 
+如果为可执行文件（package "main"且包含main方法），则会编译生成可执行文件到【$GOPATH/bin】目录下  
+
+如果为可执行文件import引入的其他包 ，就会被编译到【GOPATH/pkg】目录下。
+
+go install 也可以完成类似【go build】的功能，区别在于【go install】会生成二进制文件到【GOPATH/pkg】目录下,会把可执行文件自动生成到【GOBIN】目录下，这是在一开始被配置到【$PATH】中了，这样就可以使项目可执行文件能被方便的全局调用。
+
+
+
 
 
 
