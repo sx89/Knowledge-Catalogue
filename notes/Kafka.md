@@ -25,3 +25,7 @@ group内的worker可以使用多线程或多进程来实现，也可以将进程
 
 ## Offset
 Offset专指Partition以及User Group而言，记录某个user group在某个partiton中当前已经消费到达的位置。
+
+# Kafka和RocketMq的不同
+
+https://www.jianshu.com/p/c474ca9f9430
