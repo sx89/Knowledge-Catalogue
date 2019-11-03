@@ -422,6 +422,92 @@ append()  底层创建一个新的数组,对原数组进行拷贝
 切片由大传小的时候不会报错,而是把对应位置的赋值过去
 
 string 是一个底层数组是byte的切片,可以使用相关的切片功能,但是string是不可修改的,可以先转换成byte数组,修改,再转换成string
+### 切片的传参
+```go
+func main() {
+
+    slice := []int{0, 1, 2, 3}
+    fmt.Printf("slice: %v slice addr %p \n", slice, &slice)
+
+    ret := changeSlice(slice)
+    fmt.Printf("slice: %v ret: %v slice addr %p \n", slice, &slice, ret)
+}
+
+func changeSlice(s []int) []int {
+	fmt.Printf("func: %p \n", &s)
+    s[1] = 111
+    return s
+}
+```
+输出
+```
+slice: [0 1 2 3], slice addr: 0xc4200660c0 
+func: 0xc4200661c0 (与main函数中的地址不同)
+slice: [0 111 2 3], ret: [0 111 2 3], slice addr: 0xc4200660c0
+```
+
+问题1:
+slice 和 &slice打印的结果都是数据,&slice没有打印地址
+
+
+
+问题2:
+slice作为传参,在changeslice函数内部修改后,main里面的slice也发生了变化
+
+因为slice被传入时,他的参数被复制了一份给changeslice内部的s,s和slice指向的是同一个底层匿名数组,所以修改s,本质是修改底层数组.slice的底层就被修改了
+
+问题3:
+changeslice函数内部的slice和main里面的slice不是同一个 
+
+因为slice被传入时,他的参数被复制了一份给changeslice内部的s,所以s和slice其实是两个不同的变量,所以s的地址与slice地址不同
+
+问题4:
+如果保证s和slice的地址相同?
+
+传引用:
+```go
+func main() {
+    slice := []int{0, 1}
+    fmt.Printf("slice %v %p \n", slice, &slice)
+
+    changeSlice(&slice)
+    fmt.Printf("slice %v %p \n", slice, &slice)
+
+    slice[1] = -1111
+
+    fmt.Printf("slice %v %p \n", slice, &slice)
+}
+
+func changeSlice(s *[]int) {
+    fmt.Printf("func s %v %p \n", *s, s)
+    (*s)[0] = -1
+    *s = append(*s, 3)
+    (*s)[1] =  1111
+}
+
+输出
+
+slice [0 1] 0xc42000a1e0 
+func s [0 1] 0xc42000a1e0 
+slice [-1 1111 3] 0xc42000a1e0 
+slice [-1 -1111 3] 0xc42000a1e0
+```
+
+### 切片的append
+切片都依赖底层的数组结构，即使是直接创建的切片，也会生成一个匿名的数组。
+
+使用append时候，本质上是针对底层依赖的数组进行操作。如果切片的容量大于长度，给切片追加元素其实是修改底层数中，切片元素后面的元素。
+
+如果容量满了，就不能在原来的数组上修改，而是要创建一个新的数组，当然golang是通过创建一个新的切片实现的，因为新切片必然也有一个新的数组，并且这个数组的长度是原来的2倍，使用动态规划算法的简单实现。
+
+超出容量的append过程:
+
+1.创建一个新的临时切片t，t的长度和slice切片的长度一样，但是t的容量是slice切片的2倍，一个动态规划的方式。新建切片的时候，底层也创建了一个匿名的数组，数组的长度和切片容量一样。
+
+2.复制s里面的元素到t里，即填入匿名数组中。然后把t赋值给slice，现在slice的指向了底层的匿名数组。
+
+3.转变成小于容量的append方法。
+
 
 ## map
 

@@ -1639,7 +1639,16 @@ from后面的表关联，是自右向左解析的
 
 而把能筛选出大量数据的条件放在where语句的最下面。
 
-
+# mysql 数据库的备份
+备份:
+1. 开启binlog
+   https://blog.csdn.net/king_kgh/article/details/74800513  
+   https://blog.51cto.com/lookingdream/1921162
+   https://learnku.com/articles/20702
+2. mysqldump 全量备份
+恢复
+1. mysqldump全量恢复
+2. binlog指定恢复  全量备份之后的部分小数据
 
 
 
