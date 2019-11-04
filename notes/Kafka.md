@@ -1,6 +1,13 @@
 
 
 # 基本概念
+
+同一个topic的消息,有多个分区,会被平均分配(不是复制)到这几个分区,  
+同一个组的多个消费者,会分别负责一个分区,来取他们中的消息消费;如果是多个消费者负责一个分区,会有offset来控制消费顺序.
+
+<div align="center"> <img src="./pictures/kafka/Snipaste_2019-11-04_19-50-53.png" width="600"/> </div>
+
+
 ## Broker
 物理概念，指服务于Kafka的一个node。
 
