@@ -448,9 +448,12 @@ slice: [0 111 2 3], ret: [0 111 2 3], slice addr: 0xc4200660c0
 
 问题1:
 slice 和 &slice打印的结果都是数据,&slice没有打印地址
-
-
-
+```                 
+Printf("%v", people)   {zhangsan}，
+Printf("%+v", people)  {Name:zhangsan}
+Printf("#v", people)   main.Human{Name:"zhangsan"}
+Printf("%T", people)   main.Human
+```
 问题2:
 slice作为传参,在changeslice函数内部修改后,main里面的slice也发生了变化
 
