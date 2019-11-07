@@ -581,6 +581,30 @@ cat1:= struct{},cat1是一个引用类型
 结构体的tag标签
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_17-14-49.png" width="600"/> </div><br>
 
+### 结构体的三种初始化方式
+```go
+// 1-struct as a value type:
+    var pers1 Person
+    pers1.firstName = "Chris"
+    pers1.lastName = "Woodward"
+    upPerson(&pers1)
+    fmt.Printf("The name of the person is %s %s\n", pers1.firstName, pers1.lastName)
+
+    // 2—struct as a pointer:
+    pers2 := new(Person)
+    pers2.firstName = "Chris"
+    pers2.lastName = "Woodward"
+    (*pers2).lastName = "Woodward"  // 这是合法的
+    upPerson(pers2)
+    fmt.Printf("The name of the person is %s %s\n", pers2.firstName, pers2.lastName)
+
+    // 3—struct as a literal:
+    pers3 := &Person{"Chris","Woodward"}
+    upPerson(pers3)
+    fmt.Printf("The name of the person is %s %s\n", pers3.firstName, pers3.lastName)
+}
+```
+
 ## 方法 
 
 ### 需要方法的原因
@@ -1745,8 +1769,40 @@ var i int = 1
         }
 	}
 ```
+# 指针 
+## 重要知识点
+在Go语言中，直接砍掉了 C 语言指针最复杂的指针运算部分，只留下了获取指针（&运算符）和获取对象（*运算符）的运算，用法和C语言很类似。但不同的是，Go语言中没有->操作符来调用指针所属的成员，而与一般对象一样，都是使用.来调用。
 
-# 引用与指针区别
+
+Go 语言自带指针隐式解引用 ：对于一些复杂类型的指针， 如果要访问成员变量时候需要写成类似*p.field的形式时，只需要p.field即可访问相应的成员。
+
+用new(structName)：这个方法得到的是*structName类型，即类的指针类型；
+
+用structName{init para}：这个方法得到的是structName类型，即类的实例类型，不是指针
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Student struct {
+    name   string
+    age    int
+    weight float32
+    score  []int
+}
+
+func main(){
+   pp := new(Student)                                  //使用 new 关键字创建一个指针
+   *pp = Student{"qishuangming", 23, 65.0, []int{2, 3, 6}}
+   fmt.Printf("stu pp have %d subjects\n", len((*pp).score))
+   fmt.Printf("stu pp have %d subjects\n", len(pp.score)) //Go语言自带隐式解引用
+}
+```
+
+## 引用与指针区别
 指针是一个实体，而引用仅是个别名；
 
 引用使用时无需解引用(*)，指针需要解引用；
