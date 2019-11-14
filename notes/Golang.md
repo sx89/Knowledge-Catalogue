@@ -834,7 +834,7 @@ m是主线程,p是上下文,g是协程
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_14-53-44.png" width="600"/> </div><br>
 
-## 管道
+## 通道
 
 先进先出,线程安全,存储类型统一
 
@@ -928,12 +928,62 @@ func main() {
 
 }
 ```
-### 只读只写的chan
+### 通道分类
+
+
+#### 只读  只写  双向
+只读:  
+
 var chan1 <-chan int
+
+ only_read := make(<-chan int,1) 
+
+只写
 
 var chan2 chan<- int
 
-### select解决一个协程本可以读三个channel却在一个channel上阻塞的问题
+only_write := make(chan<- int, 1) 
+
+双向通道
+
+make (chan int , 10)
+
+在调用只接受只读/只写通道的函数的时候，只需要把一个元素类型匹配的双向通道传给它就行了。没必要用单向通道，因为Go 语言在这种情况下自动地把双向通道转换为函数所需的单向通道。
+比如:
+```go
+func SendInt(ch chan<- int) {
+      ch <- rand.Intn(1000)
+  }
+
+
+intChan1 := make(chan int, 3)
+  SendInt(intChan1)
+
+```
+### 通道的阻塞情况
+无论是有缓存通道、还是无缓冲通道都存在阻塞的情况。阻塞场景共4个，有缓存和无缓冲各2个。
+
+**无缓冲通道**的特点是，发送的数据需要被读取后发送才会完成（同步），它阻塞场景是：
+
+通道中无数据，但执行读通道。  
+通道中无数据，向通道写数据，但无协程读取。
+
+
+**有缓存通道**的特点是，有缓存时可以向通道中写入数据后直接返回（异步），它阻塞场景是：
+
+通道缓存无数据，但执行读通道(接收数据)。  
+通道缓存已经占满，向通道写数据(发送数据)，但无协程读。
+
+### for循环的阻塞情况
+for range 遍历通道要注意的点：
+
+  1.for 语句会不断尝试从intChan2 中取出元素值，即使intChan2被关闭，它也会在取出所有剩余的元素值之后再结束关闭。  
+  2.当 intChan2中没有元素值时，它会被阻塞在有 for关键字的那一行，直捣有新的元素可取。  
+  3.假设intChan2的值为nil，那么它会被永远阻塞在有for关键字的那一行。  
+
+### select一个线程读多个通道
+
+[select细节好文](https://studygolang.com/articles/15195)
 
 ```go
 package main
