@@ -2467,7 +2467,213 @@ go list -m all
 go install 也可以完成类似【go build】的功能，区别在于【go install】会生成二进制文件到【GOPATH/pkg】目录下,会把可执行文件自动生成到【GOBIN】目录下，这是在一开始被配置到【$PATH】中了，这样就可以使项目可执行文件能被方便的全局调用。
 
 
+# context  源码阅读
 
+## 简介
+
+golang 的 Context包，是专门用来简化对于处理单个请求的多个goroutine之间与请求域的数据、取消信号、截止时间等相关操作，这些操作可能涉及多个 API 调用。
+比如有一个网络请求Request，每个Request都需要开启一个goroutine做一些事情，这些goroutine又可能会开启其他的goroutine。这样的话， 我们就可以通过Context，来跟踪这些goroutine，并且通过Context来控制他们的目的，这就是Go语言为我们提供的Context，中文可以称之为“上下文”。
+
+另外一个实际例子是，在Go服务器程序中，每个请求都会有一个goroutine去处理。然而，处理程序往往还需要创建额外的goroutine去访问后端资源，比如数据库、RPC服务等。由于这些goroutine都是在处理同一个请求，所以它们往往需要访问一些共享的资源，比如用户身份信息、认证token、请求截止时间等。而且如果请求超时或者被取消后，所有的goroutine都应该马上退出并且释放相关的资源。这种情况也需要用Context来为我们取消掉所有goroutine
+
+## 源码
+
+context接口的核心:
+```go
+type Context interface {
+
+Deadline() (deadline time.Time, ok bool)
+
+Done() <-chan struct{}
+
+Err() error
+
+Value(key interface{}) interface{}
+
+}
+```
+Deadline方法是获取设置的截止时间的意思，第一个返回式是截止时间，到了这个时间点，Context会自动发起取消请求；第二个返回值ok==false时表示没有设置截止时间，如果需要取消的话，需要调用取消函数进行取消。
+
+
+Done方法返回一个只读的chan，类型为struct{}，我们在goroutine中，如果该方法返回的chan可以读取(c.done 被close的时候可以被读取)，则意味着parent context已经发起了取消请求，我们通过Done方法收到这个信号后，就应该做清理操作，然后退出goroutine，释放资源。之后，Err 方法会返回一个错误，告知为什么 Context 被取消。
+
+
+Err方法返回取消的错误原因，因为什么Context被取消。
+
+
+Value方法获取该Context上绑定的值，是一个键值对，所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
+
+
+## context的根源上下文
+
+```go
+var (
+	background = new(emptyCtx)
+
+	todo = new(emptyCtx)
+)
+
+func Background() Context {
+
+	return background
+
+}
+
+func TODO() Context {
+
+	return todo
+}
+
+```
+
+一个是Background，主要用于main函数、初始化以及测试代码中，作为Context这个树结构的最顶层的Context，也就是根Context，它不能被取消。  
+
+一个是TODO，如果我们不知道该使用什么Context的时候，可以使用这个，但是实际应用中，暂时还没有使用过这个TODO。  
+
+他们两个本质上都是emptyCtx结构体类型，是一个不可取消，没有设置截止时间，没有携带任何值的Context。  
+
+```go
+type emptyCtx int
+
+func (*emptyCtx) Deadline() (deadline time.Time, ok bool) {
+
+	return
+}
+
+func (*emptyCtx) Done() <-chan struct{} {
+
+	return nil
+}
+
+func (*emptyCtx) Err() error {
+
+	return nil
+}
+
+func (*emptyCtx) Value(key interface{}) interface{} {
+
+	return nil
+}
+```
+
+## 其他类型的context
+WithCancel函数，传递一个父Context作为参数，返回子Context，以及一个取消函数用来取消Context。
+
+WithDeadline函数，和WithCancel差不多，它会多传递一个截止时间参数，意味着到了这个时间点，会自动取消Context，当然我们也可以不等到这个时候，可以提前通过取消函数进行取消。
+
+WithTimeout和WithDeadline基本上一样，这个表示是超时自动取消，是多少时间后自动取消Context的意思。
+
+WithValue函数和取消Context无关，它是为了生成一个绑定了一个键值对数据的Context，这个绑定的数据可以通过Context.Value方法访问到，这是我们实际用经常要用到的技巧，一般我们想要通过上下文来传递数据时，可以通过这个方法，如我们需要tarce追踪系统调用栈的时候。
+
+
+## WithCancel源码阅读
+context.WithCancel生成了一个withCancel的实例以及一个cancelFuc，这个函数就是用来关闭ctxWithCancel中的 Done channel 函数。
+下面来分析下源码实现，首先看看初始化，如下：
+```go
+func newCancelCtx(parent Context) cancelCtx {
+	return cancelCtx{
+		Context: parent,
+		done:    make(chan struct{}),
+	}
+}
+
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
+	c := newCancelCtx(parent)
+	propagateCancel(parent, &c)
+	return &c, func() { c.cancel(true, Canceled) }
+}
+newCancelCtx返回一个初始化的cancelCtx，cancelCtx结构体继承了Context，实现了canceler方法：
+//*cancelCtx 和 *timerCtx 都实现了canceler接口，实现该接口的类型都可以被直接canceled
+type canceler interface {
+    cancel(removeFromParent bool, err error)
+    Done() <-chan struct{}
+}
+
+
+type cancelCtx struct {
+    Context
+    done chan struct{} // closed by the first cancel call.
+    mu       sync.Mutex
+    children map[canceler]struct{} // set to nil by the first cancel call
+    err      error             // 当其被cancel时将会把err设置为非nil
+}
+
+func (c *cancelCtx) Done() <-chan struct{} {
+    return c.done
+}
+
+func (c *cancelCtx) Err() error {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    return c.err
+}
+
+func (c *cancelCtx) String() string {
+    return fmt.Sprintf("%v.WithCancel", c.Context)
+}
+
+//核心是关闭c自己的done通道
+//同时会设置c.err = err, c.children = nil
+//依次遍历c.children，每个child分别cancel
+//如果设置了removeFromParent，则将c从其parent的children中删除
+func (c *cancelCtx) cancel(removeFromParent bool, err error) {
+    if err == nil {
+        panic("context: internal error: missing cancel error")
+    }
+    c.mu.Lock()
+    if c.err != nil {
+        c.mu.Unlock()
+        return // already canceled
+    }
+    c.err = err
+    close(c.done)
+    for child := range c.children {
+        // NOTE: acquiring the child's lock while holding parent's lock.
+        child.cancel(false, err)
+    }
+    c.children = nil
+    c.mu.Unlock()
+
+    if removeFromParent {
+        removeChild(c.Context, c) // 从此处可以看到 cancelCtx的Context项是一个类似于parent的概念
+    }
+}
+```
+可以看到，所有的children都存在一个map中；Done方法会返回其中的done channel， 而另外的cancel方法会关闭Done channel并且逐层向下遍历，关闭children的channel，并且将当前canceler从parent中移除。
+
+WithCancel初始化一个cancelCtx的同时，还执行了propagateCancel方法，最后返回一个cancel function。
+
+propagateCancel 方法定义如下：
+```go
+// propagateCancel arranges for child to be canceled when parent is.
+func propagateCancel(parent Context, child canceler) {
+	if parent.Done() == nil {
+		return // parent is never canceled
+	}
+	if p, ok := parentCancelCtx(parent); ok {
+		p.mu.Lock()
+		if p.err != nil {
+			// parent has already been canceled
+			child.cancel(false, p.err)
+		} else {
+			if p.children == nil {
+				p.children = make(map[canceler]struct{})
+			}
+			p.children[child] = struct{}{}
+		}
+		p.mu.Unlock()
+	} else {
+		go func() {
+			select {
+			case <-parent.Done():
+				child.cancel(false, parent.Err())
+			case <-child.Done():
+			}
+		}()
+	}
+}
+```
+propagateCancel 的含义就是传递cancel，从当前传入的parent开始（包括该parent），向上查找最近的一个可以被cancel的parent， 如果找到的parent已经被cancel，则将方才传入的child树给cancel掉，否则，将child节点直接连接为找到的parent的children中（Context字段不变，即向上的父亲指针不变，但是向下的孩子指针变直接了）； 如果没有找到最近的可以被cancel的parent，即其上都不可被cancel，则启动一个goroutine等待传入的parent终止，则cancel传入的child树，或者等待传入的child终结。
 
 
 
