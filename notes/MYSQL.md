@@ -1,10 +1,11 @@
-
-<!-- TOC -->autoauto- [一、索引](#一索引)auto    - [B+ Tree 原理](#b-tree-原理)auto        - [1. 数据结构](#1-数据结构)auto        - [2. 操作](#2-操作)auto        - [3. 与红黑树的比较](#3-与红黑树的比较)auto        - [红黑树介绍](#红黑树介绍)auto- [树的介绍](#树的介绍)auto    - [普通二叉查找树](#普通二叉查找树)auto    - [B树与B+树](#b树与b树)auto        - [B树出现的原因](#b树出现的原因)auto        - [B+树的特点](#b树的特点)auto        - [B+树比B树的优点](#b树比b树的优点)auto    - [MySQL 索引](#mysql-索引)auto        - [1. B+Tree 索引](#1-btree-索引)auto        - [2. 哈希索引](#2-哈希索引)auto        - [3. 全文索引](#3-全文索引)auto        - [倒排索引:](#倒排索引)auto        - [4. 空间数据索引](#4-空间数据索引)auto    - [索引优化](#索引优化)auto        - [1. 独立的列](#1-独立的列)auto        - [2. 多列索引](#2-多列索引)auto        - [3. 索引列的顺序](#3-索引列的顺序)auto        - [4. 前缀索引](#4-前缀索引)auto        - [5. 覆盖索引](#5-覆盖索引)auto    - [聚集索引,辅助索引,组合索引,非聚集索引](#聚集索引辅助索引组合索引非聚集索引)auto    - [索引的优点](#索引的优点)auto    - [索引的使用条件](#索引的使用条件)auto- [二、查询性能优化](#二查询性能优化)auto    - [使用 Explain 进行分析](#使用-explain-进行分析)auto    - [优化数据访问](#优化数据访问)auto        - [1. 减少请求的数据量](#1-减少请求的数据量)auto        - [2. 减少服务器端扫描的行数](#2-减少服务器端扫描的行数)auto    - [重构查询方式](#重构查询方式)auto        - [1. 切分大查询](#1-切分大查询)auto        - [2. 分解大连接查询](#2-分解大连接查询)auto- [三、存储引擎](#三存储引擎)auto    - [InnoDB](#innodb)auto    - [MyISAM](#myisam)auto    - [比较](#比较)auto    - [隔离级别](#隔离级别)auto- [四、数据类型](#四数据类型)auto    - [整型](#整型)auto    - [浮点数](#浮点数)auto    - [字符串](#字符串)auto    - [时间和日期](#时间和日期)auto        - [1. DATETIME](#1-datetime)auto        - [2. TIMESTAMP](#2-timestamp)auto- [五、切分](#五切分)auto    - [分库分表中间件](#分库分表中间件)auto    - [水平切分](#水平切分)auto    - [垂直切分](#垂直切分)auto    - [Sharding 策略](#sharding-策略)auto        - [顺序分库分表](#顺序分库分表)auto        - [取模分库分表](#取模分库分表)auto        - [映射表：使用单独的一个数据库来存储映射关系。](#映射表使用单独的一个数据库来存储映射关系)auto    - [Sharding 存在的问题](#sharding-存在的问题)auto        - [1. 事务问题](#1-事务问题)auto        - [2. 连接](#2-连接)auto        - [3. ID 唯一性](#3-id-唯一性)auto        - [跨库join](#跨库join)auto        - [跨节点的count,order by,group by以及聚合函数问题](#跨节点的countorder-bygroup-by以及聚合函数问题)auto        - [数据迁移，容量规划，扩容等问题](#数据迁移容量规划扩容等问题)auto- [六、复制](#六复制)auto    - [主从复制](#主从复制)auto    - [读写分离](#读写分离)auto- [事务隔离机制](#事务隔离机制)auto    - [事务必须满足ACID](#事务必须满足acid)auto    - [事务的定义](#事务的定义)auto    - [并发事务会出现的问题](#并发事务会出现的问题)auto        - [第一类丢失更新](#第一类丢失更新)auto        - [第二类丢失更新](#第二类丢失更新)auto        - [脏读：](#脏读)auto        - [不可重复读：](#不可重复读)auto        - [幻读:](#幻读)auto    - [四种事务隔离机制](#四种事务隔离机制)auto        - [读未提交](#读未提交)auto        - [读已提交](#读已提交)auto        - [Repeatable read 可重复读](#repeatable-read-可重复读)auto        - [Serializable 串行化](#serializable-串行化)auto    - [事务隔离机制的实现原理](#事务隔离机制的实现原理)auto    - [MVCC](#mvcc)auto        - [定义](#定义)auto        - [实现](#实现)auto            - [insert](#insert)auto            - [select](#select)auto            - [delete](#delete)auto            - [update](#update)auto        - [mvcc解决幻读](#mvcc解决幻读)auto    - [数据库的锁](#数据库的锁)auto        - [乐观锁与悲观锁](#乐观锁与悲观锁)auto        - [共享锁(读锁,S锁)](#共享锁读锁s锁)auto        - [排他锁(写锁,X锁)](#排他锁写锁x锁)auto        - [更新锁(意向锁)](#更新锁意向锁)auto        - [锁粒度](#锁粒度)auto- [一、基础](#一基础)auto- [二、创建表](#二创建表)auto- [三、修改表](#三修改表)auto- [四、插入](#四插入)auto- [五、更新](#五更新)auto- [六、删除](#六删除)auto- [七、查询](#七查询)auto    - [DISTINCT](#distinct)auto    - [LIMIT](#limit)auto- [八、排序](#八排序)auto- [九、过滤](#九过滤)auto- [十、通配符](#十通配符)auto- [十一、计算字段](#十一计算字段)auto- [十二、函数](#十二函数)auto    - [汇总](#汇总)auto    - [文本处理](#文本处理)auto    - [日期和时间处理](#日期和时间处理)auto    - [数值处理](#数值处理)auto- [十三、分组](#十三分组)auto- [十四、子查询](#十四子查询)auto- [十五、连接](#十五连接)auto    - [内连接](#内连接)auto    - [自连接](#自连接)auto    - [自然连接](#自然连接)auto    - [外连接](#外连接)auto- [十六、组合查询](#十六组合查询)auto- [十七、视图](#十七视图)auto- [十八、存储过程](#十八存储过程)auto- [十九、游标](#十九游标)auto- [二十、触发器](#二十触发器)auto- [二十一、事务管理](#二十一事务管理)auto- [二十二、字符集](#二十二字符集)auto- [二十三、权限管理](#二十三权限管理)auto- [sql执行顺序](#sql执行顺序)autoauto<!-- /TOC -->
+[TOC]
 
 
 
 
 # 一、索引
+
+
 
 ## B+ Tree 原理
 
@@ -17,7 +18,6 @@ B+ Tree 是基于 B Tree 和叶子节点顺序访问指针进行实现，它具�
 在 B+ Tree 中，一个节点中的 key 从左到右非递减排列，如果某个指针的左右相邻 key 分别是 key<sub>i</sub> 和 key<sub>i+1</sub>，且不为 null，则该指针指向节点的所有 key 大于等于 key<sub>i</sub> 且小于等于 key<sub>i+1</sub>。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/33576849-9275-47bb-ada7-8ded5f5e7c73.png" width="350px"> </div><br>
-
 ### 2. 操作
 
 进行查找操作时，首先在根节点进行二分查找，找到一个 key 所在的指针，然后递归地在指针所指向的节点进行查找。直到查找到叶子节点，然后在叶子节点上进行二分查找，找出 key 所对应的 data。
@@ -73,7 +73,6 @@ B-树就是B树，没有所谓的B减树
 ### B+树的特点
 
 <div align="center"> <img src=" .\pictures\mysql\Snipaste_2019-09-25_20-23-50.jpg" width="600px"> </div><br>
-
 1.有k个子树的中间节点包含有k个元素（B树中是k-1个元素），每个元素不保存数据，只用来索引，所有数据都保存在叶子节点。
 
 2.所有的叶子结点中包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。
@@ -111,11 +110,9 @@ B-树就是B树，没有所谓的B减树
 InnoDB 的 B+Tree 索引分为主索引和辅助索引。主索引的叶子节点 data 域记录着完整的数据记录，这种索引方式被称为聚簇索引。因为无法把数据行存放在两个不同的地方，所以一个表只能有一个聚簇索引。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/45016e98-6879-4709-8569-262b2d6d60b9.png" width="350px"> </div><br>
-
 辅助索引的叶子节点的 data 域记录着主键的值，因此在使用辅助索引进行查找时，需要先在辅助索引中查找到主键值，然后再到主索引中进行查找。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/7c349b91-050b-4d72-a7f8-ec86320307ea.png" width="350px"> </div><br>
-
 ### 2. 哈希索引
 
 哈希索引能以 O(1) 时间进行查找，但是失去了有序性：
@@ -141,18 +138,14 @@ InnoDB 存储引擎在 MySQL 5.6.4 版本中也开始支持全文索引。
 倒排索引(反向索引) 与 正向索引对应,正向索引是以文档id为主键,文档里面有哪些关键单词为内容,如图:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-30-26.jpg" width="350px"> </div><br>
-
 而反向索引是以word为主键,word所在的多个docId为关键内容的索引,如图:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-32-30.jpg" width="350px"> </div><br>
-
 **实例如下**
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_14-33-41.jpg" width="350px"> </div><br>
-
 关键单词作为索引,倒排列表中记录该单词在哪些文档中出现以及出现的位置在哪
 <div align="center"> <img src="notes\pictures\mysql\Snipaste_2019-09-05_14-35-45.jpg" width="350px"> </div><br>
-
 
 ### 4. 空间数据索引
 
@@ -212,7 +205,6 @@ customer_id_selectivity: 0.0373
 
 实例:
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-05_15-15-58.jpg" width="650px"> </div><br>
-
 
 ### 5. 覆盖索引
 
@@ -447,7 +439,6 @@ vitess（谷歌开发的数据库中间件）
 当一个表的数据不断增多时，Sharding 是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/63c2909f-0c5f-496f-9fe5-ee9176b31aba.jpg" width=""> </div><br>
-
 ## 垂直切分
 
 垂直切分是将一张表按列切分成多个表，通常是按照列的关系密集程度进行切分，也可以利用垂直切分将经常被使用的列和不经常被使用的列切分到不同的表中。
@@ -455,7 +446,6 @@ vitess（谷歌开发的数据库中间件）
 在数据库的层面使用垂直切分将按数据库中表的密集程度部署到不同的库中，例如将原来的电商数据库垂直切分成商品数据库、用户数据库等。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e130e5b8-b19a-4f1e-b860-223040525cf6.jpg" width=""> </div><br>
-
 ## Sharding 策略
 
 
@@ -525,7 +515,6 @@ vitess（谷歌开发的数据库中间件）
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave.png" width=""> </div><br>
 
-
 主从同步事件有3种形式:statement、row、mixed。
 
 statement：会将对数据库操作的sql语句写入到binlog中。
@@ -546,7 +535,6 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave-proxy.png" width=""> </div><br>
 
-
 # 事务隔离机制
 
 ## 事务必须满足ACID
@@ -566,14 +554,12 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 事务的生命周期
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-04-15.jpg" width=""/> </div><br>
 
-
 ## 并发事务会出现的问题
 
 ### 第一类丢失更新
 定义：A事务撤销时，把已经提交的B事务的更新数据覆盖了。
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-09-50.jpg" width=""/> </div><br>
-
 以上的示例演示了第一类丢失更新问题，事务B虽然成功了，但是它所做的更新没有被永久存储，这种并发问题是由于完全没有隔离事务造成的。
 
 当两个事务更新相同的数据时，如果一个事务被提交，另一个事务却撤销，那么会连同第一个事务所做的更新也被撤销了。（这是绝对避免出现的事情） 事务A的开始时间和结束时间包含事务B的开始和结束时间,事务A回滚事务的同时,把B的已经提交的事务也回滚的,这是避免的,这就是第一类丢失更新.
@@ -582,7 +568,6 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 定义：A事务提交时，把已经提交的B事务的更新数据覆盖了。
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-11-55.jpg" width=""/> </div><br>
-
 第二类丢失更新和第一类的区别实际上是对数据的影响是由A事务的撤销还是提交造成的，它和不可重复读(下面介绍)本质上是同一类并发问题，通常把它看做是不可重复读的一个特例。两个或多个事务查询同一数据。然后都基于自己的查询结果更新数据，这时会造成最后一个提交的更新事务，将覆盖其它已经提交的更新事务。
 
 
@@ -590,12 +575,10 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据。
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-15-31.jpg" width=""/> </div><br>
-
 ### 不可重复读：
 是指**在一个事务内，多次读同一数据,结果却不是重复的一样的值**。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。（即不能读到相同的数据内容）
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-17-11.jpg" width=""/> </div><br>
-
 
 ### 幻读:
 定义：读到已提交插入数据，幻读与不可重复读类似，幻读是查询到了另一个事务已提交的新插入数据，而不可重复读是查询到了另一个事务已提交的更新数据。
@@ -604,7 +587,6 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-20-07.jpg" width=""/> </div><br>
-
 
 ## 四种事务隔离机制
 未提交读(Read Uncommitted)：允许脏读，也就是可能读取到其他会话中未提交事务修改的数据
@@ -616,7 +598,6 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 串行读(Serializable)：完全串行化的读，每次读都需要获得表级共享锁，读写相互都会阻塞
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-31-29.jpg" width=""/> </div><br>
-
 ### 读未提交
 
 该隔离级别，所有事务都可以看到其他未提交事务的执行结果。通俗地讲就是，在一个事务中可以读取到另一个事务中新增或修改但未提交的数据。
@@ -627,7 +608,6 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 > set tx_isolation='READ-UNCOMMITTED';
 ```
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-28-31.jpg" width=""/> </div><br>
-
 
 ### 读已提交
 
@@ -652,11 +632,9 @@ notes\pictures\mysql\Snipaste_2019-09-08_10-29-01.jpg
 
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-30-05.jpg" width=""/> </div><br>
-
 虽然Repeatable read避免了不可重复读，但还有可能出现幻读 。
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_10-30-41.jpg" width=""/> </div><br>
-
 ### Serializable 串行化
 这是最高的隔离级别
 
@@ -701,7 +679,6 @@ commit;
 ```
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-27-20.jpg" width="650"/> </div><br>
-
 #### select 
 
 InnoDB会根据以下两个条件检查每行记录: 
@@ -736,11 +713,9 @@ commit;
 这时表中的数据如下:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-39-48.jpg" width="650"/> </div><br>
-
 然后接着执行事务2中的(2),由于id=4的数据的创建时间(事务ID为3),执行当前事务的ID为2,而InnoDB只会查找事务ID小于等于当前事务ID的数据行,所以id=4的数据行并不会在执行事务2中的(2)被检索出来,在事务2中的两条select 语句检索出来的数据都只会下表:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-41-37.jpg" width="650"/> </div><br>
-
 **假设2(验证delete)**
 假设在执行这个事务ID为2的过程中,刚执行到(1),假设事务执行完事务3后，接着又执行了事务4;   
 第四个事务:  
@@ -751,17 +726,15 @@ commit;
 ```
 此时数据库中的表如下:
 
-<div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-47-19.jpg" width="650"/> </div><br>
+写代码,写日志,本地debug,发到uat,uat测试通过,code review,发到pre,pre测试通过,发到pro,测试通过,删除次要日志,留下关键日志(info里也有很多关键日志),merge到master(merge交给别人来做)
 
 接着执行事务ID为2的事务(2),根据SELECT 检索条件可以知道,它会检索创建时间(创建事务的ID)小于当前事务ID的行和删除时间(删除事务的ID)大于当前事务的行,而id=4的行上面已经说过,而id=1的行由于删除时间(删除事务的ID)大于当前事务的ID,所以事务2的(2)select * from yang也会把id=1的数据检索出来.所以,事务2中的两条select 语句检索出来的数据都如下:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-47-44.jpg" width="650"/> </div><br>
-
 #### update
 InnoDB执行UPDATE，实际上是新插入了一行记录，并保存其创建时间为当前事务的ID，同时保存当前事务ID到要UPDATE的行的删除时间.
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-37-56.jpg" width="650"/> </div><br>
-
 
 **假设3(验证update)**
 假设在执行完事务2的(1)后又执行,其它用户执行了事务3,4,这时，又有一个用户对这张表执行了UPDATE操作:   
@@ -774,11 +747,9 @@ commit;
 ```
 根据update的更新原则:会生成新的一行,并在原来要修改的列的删除时间列上添加本事务ID,得到表如下:
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-50-12.jpg" width="650"/> </div><br>
-
 继续执行事务2的(2),根据select 语句的检索条件,得到下表:
 
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-09_14-50-36.jpg" width="650"/> </div><br>
-
 还是和事务2中(1)select 得到相同的结果.
 
 ### mvcc解决幻读
@@ -1657,8 +1628,57 @@ count(*) 和 count(1) 一样,会统计表中的所有的记录数，包含字段
 
 count(列名)只包括列名那一列，在统计结果的时候，会忽略列值为空（这里的空不是只空字符串或者0，而是表示null）的计数，即某个字段值为NULL时，不统计。
 
+# mysql转义字符
+
+## 转义字符
+
+\0  
+一个ASCII  0  (NUL)字符。  
+\n  
+一个新行符。  
+\t  
+一个定位符。  
+\r  
+一个回车符。  
+\b  
+一个退格符。  
+\ '  
+一个单引号(“ '”)符。  
+\ "  
+一个双引号(“ "”)符。  
+\\  
+一个反斜线(“\”)符。  
+\%  
+一个“%”符。它用于在正文中搜索“%”的文字实例，否则这里“%”将解释为一个通配符。  
+\_  
+一个“_”符。它用于在正文中搜索“_”的文字实例，否则这里“_”将解释为一个通配符。  
+注意，如果你在某些正文环境中使用“\%”或“\%_”，这些将返回字符串“\%”和“\_”而不是“%”和“_”。  
+
+举一个MySQL中使用转义字符的SQL语句的例子：
+
+1）查找th_article表中的art_content字段，找出其中带有“\"”的记录
+select * from th_article where art_content like '%\\\"%'
+
+2）将上面找出来的记录更新，“\"”修改为“"”
+update th_article set art_content = replace(art_content, '\\\"', '\"') where art_content like '%\\\"%'
+
+## 双引号下的应用
+
+当字符串用双引号引起来的时候,如果内部有需要转义的字符,则会用到转义字符,比如
+
+```sql
+select * from user where name like "%\"sx\"%";
+意思是 匹配名为 %"sx"% 的名字
+```
 
 
 
+## 单引号下的应用
+
+但是用单引号引起来,就代表内部是一个字符串了,不需要用转义字符
+
+```sql
+SELECT * FROM notice_73 where text = '<p style="color:white;font-size:14px">您的（标题/封面/视频）中含有违禁信息，根据相关法律法规政策，予以下架。</p>';
+```
 
 
