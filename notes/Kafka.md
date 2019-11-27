@@ -7,7 +7,6 @@
 
 <div align="center"> <img src="./pictures/kafka/Snipaste_2019-11-04_19-50-53.png" width="600"/> </div>
 
-
 ## Broker
 物理概念，指服务于Kafka的一个node。
 
@@ -36,3 +35,50 @@ Offset专指Partition以及User Group而言，记录某个user group在某个par
 # Kafka和RocketMq的不同
 
 https://www.jianshu.com/p/c474ca9f9430
+
+# kafka消息的同步机制
+
+producer与consumer的delivery guarantee有三种：
+At most once 消息可能会丢，但绝不会重复传输
+At least one 消息绝不会丢，但可能会重复传输
+Exactly once 每条消息肯定会被传输一次且仅传输一次，很多时候这是用户所想要的
+
+## Producer的三种保证
+
+producer 的deliver guarantee 可以通过request.required.acks参数的设置来进行调整：
+
+0 ，相当于异步发送，消息发送完毕即offset增加，继续生产；相当于At most once
+1，leader收到leader replica 对一个消息的接受ack才增加offset，然后继续生产；
+-1，leader收到所有replica 对一个消息的接受ack才增加offset，然后继续生产
+
+当producer向broker发送消息时，一旦这条消息被commit，因数replication的存在，它就不会丢。但是如果producer发送数据给broker后，遇到的网络问题而造成通信中断，那producer就无法判断该条消息是否已经commit。这一点有点像向一个自动生成primary key的数据库表中插入数据。虽然Kafka无法确定网络故障期间发生了什么，但是producer可以生成一种类似于primary key的东西，发生故障时幂等性的retry多次，这样就做到了Exactly one。截止到目前(Kafka 0.8.2版本，2015-01-25)，这一feature还并未实现，有希望在Kafka未来的版本中实现。（所以目前默认情况下一条消息从producer和broker是确保了At least once，但可通过设置producer异步发送实现At most once）。
+
+## Consumer的三种保证
+
+　　consumer在从broker读取消息后，可以选择commit，该操作会在Zookeeper中存下该consumer在该partition下读取的消息的offset。该consumer下一次再读该partition时会从下一条开始读取。如未commit，下一次读取的开始位置会跟上一次commit之后的开始位置相同。当然可以将consumer设置为autocommit，即consumer一旦读到数据立即自动commit。如果只讨论这一读取消息的过程，那Kafka是确保了Exactly once。但实际上实际使用中consumer并非读取完数据就结束了，而是要进行进一步处理，而数据处理与commit的顺序在很大程度上决定了消息从broker和consumer的delivery guarantee semantic。
+
+读完消息先commit再处理消息。这种模式下，如果consumer在commit后还没来得及处理消息就crash了，下次重新开始工作后就无法读到刚刚已提交而未处理的消息，这就对应于At most once
+
+读完消息先处理再commit。这种模式下，如果处理完了消息在commit之前consumer crash了，下次重新开始工作时还会处理刚刚未commit的消息，实际上该消息已经被处理过了。这就对应于At least once（默认）
+如果一定要做到Exactly once，就需要协调offset和实际操作的输出。精典的做法是引入两阶段提交。如果能让offset和操作输入存在同一个地方，会更简洁和通用。这种方式可能更好，因为许多输出系统可能不支持两阶段提交。比如，consumer拿到数据后可能把数据放到HDFS，如果把最新的offset和数据本身一起写到HDFS，那就可以保证数据的输出和offset的更新要么都完成，要么都不完成，间接实现Exactly once。（目前就high level API而言，offset是存于Zookeeper中的，无法存于HDFS，而low level API的offset是由自己去维护的，可以将之存于HDFS中）
+
+## 消息传递过程
+
+　　Producer在发布消息到某个Partition时，先通过Zookeeper找到该Partition的Leader，然后无论该Topic的Replication Factor为多少（也即该Partition有多少个Replica），Producer只将该消息发送到该Partition的Leader。Leader会将该消息写入其本地Log。每个Follower都从Leader pull数据。这种方式上，Follower存储的数据顺序与Leader保持一致。Follower在收到该消息并写入其Log后，向Leader发送ACK。一旦Leader收到了ISR中的所有Replica的ACK，该消息就被认为已经commit了，Leader将增加HW（即offset）并且向Producer发送ACK。
+
+为了提高性能，每个Follower在接收到数据后就立马向Leader发送ACK，而非等到数据写入Log中。因此，对于已经commit的消息，Kafka只能保证它被存于多个Replica的内存中，而不能保证它们被持久化到磁盘中，也就不能完全保证异常发生后该条消息一定能被Consumer消费。但考虑到这种场景非常少见，可以认为这种方式在性能和数据持久化上做了一个比较好的平衡。在将来的版本中，Kafka会考虑提供更高的持久性。
+
+Consumer读消息也是从Leader读取，只有被commit过的消息（offset低于HW的消息）才会暴露给Consumer。
+
+# Kafka的offset与提交关系
+
+## 自动提交
+
+ 
+
+## 手动提交
+
+[关于Kafka 的 consumer 消费者手动提交详解](https://www.cnblogs.com/xuwujing/p/8432984.html)
+
+consumer端手动提交offset之后,该offset之前的消息都会被当成已经消费,之后的数据即使消费了也会被当成没消费.比如:服务端有10条数据,consumer消费到第5条,commit了,消费到第10条没有commit程序退出,下次consumer重启之后,会从第6条开始消费.
+
