@@ -319,7 +319,6 @@ UTF-8 是目前互联网上使用最广泛的一种 Unicode 编码方式，它�
 对于需要使用 N 个字节来表示的字符（N > 1），第一个字节的前 N 位都设为 1，第 N + 1 位设为0，剩余的 N - 1 个字节的前两位都设位 10，剩下的二进制位则使用这个字符的 Unicode 码点来填充。
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-09-30_12-06-23.png" width="700"/> </div><br>
-
 根据上面编码规则对照表，进行 UTF-8 编码和解码就简单多了。下面以汉字“汉”为利，具体说明如何进行 UTF-8 编码和解码。
 
 “汉”的 Unicode 码点是 0x6c49（110 1100 0100 1001），通过上面的对照表可以发现，0x0000 6c49 位于第三行的范围，那么得出其格式为 1110xxxx 10xxxxxx 10xxxxxx。接着，从“汉”的二进制数最后一位开始，从后向前依次填充对应格式中的 x，多出的 x 用 0 补上。这样，就得到了“汉”的 UTF-8 编码为 11100110 10110001 10001001，转换成十六进制就是 0xE6 0xB7 0x89。
@@ -338,8 +337,6 @@ UTF-8 是目前互联网上使用最广泛的一种 Unicode 编码方式，它�
 <div align="center"> <img src="" width="700"/> </div><br>
 <div align="center"> <img src="" width="700"/> </div><br>
 <div align="center"> <img src="" width="700"/> </div><br>
-
-
 # iota的使用
 
 https://www.jianshu.com/p/08d6a4216e96
@@ -431,7 +428,6 @@ panic()  接受interface{}类型的参数,可以接受error类型变量,输出�
 recover(),用defer压栈 可以捕获异常,见下图
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_14-24-10.png" width="600"/> </div><br>
-
 ## 数组
 
 var array [2]int = [2]int {1,2}
@@ -501,7 +497,6 @@ make  指定大小和容量,底层管理数组
 定义切片的时候直接 初始化一个数组
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_15-22-00.png" width="600"/> </div><br>
-
 append()  底层创建一个新的数组,对原数组进行拷贝
 
 切片是引用类型,遵循引用的规律
@@ -664,15 +659,13 @@ go语言其实是面向接口编程
 
 go语言中,指向结构体实例的变量,是一个引用类型;有的语言是指针类型,比如 : 
 cat1:= struct{},cat1是一个引用类型
- 
+
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_16-58-52.png" width="600"/> </div><br>
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_16-58-22.png" width="600"/> </div><br>
-
 结构体内存是连续的
 
 结构体的tag标签
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-02_17-14-49.png" width="600"/> </div><br>
-
 ### 结构体的三种初始化方式
 ```go
 // 1-struct as a value type:
@@ -901,10 +894,7 @@ func unmarshalMap() {
 
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_13-42-04.png" width="600"/> </div><br>
-
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_13-43-01.png" width="600"/> </div><br>
-
-
 ## 协程(goroutine)
 
 go的主线程(进程级别)内,可以开启多个协程(编译器级别优化,轻量级的线程)
@@ -923,9 +913,7 @@ MPG模式
 
 m是主线程,p是上下文,g是协程
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_14-41-39.png" width="600"/> </div><br>
-
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-04_14-53-44.png" width="600"/> </div><br>
-
 ## 通道
 
 先进先出,线程安全,存储类型统一
@@ -1400,9 +1388,9 @@ recover函数只在defer调用的函数中有效
 defer func(){
 
     if err:= recover();err !=nil{
-
+    
         fmt.Println(rcover())
-
+    
     }
 
 }
@@ -1442,7 +1430,7 @@ https://blog.csdn.net/DinnerHowe/article/details/79805250
 	M.Name = "MyName"
 	M.Rating = 9
 	fmt.Println(M)
-
+	
 	// new() 简短变量创建
 	movi := new(Movie)
 	movi.Name = "New() struct"
@@ -1500,7 +1488,7 @@ func main() {
 	// 编码json
 	data, _ := json.Marshal(c)
 	fmt.Println(string(data))
- ```
+```
 ### 不知道数据结构的时候解析json
 ```go
 
@@ -1778,8 +1766,6 @@ select * from datatable where id >= start limit batchCount
 # Cron表达式(定时格式)
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-10_22-44-12.png" width="600"/> </div><br>
-
-
 ## * 星号 
 
 使用星号(*) 指示着你想在这个域上包含所有合法的值。例如，在月份域上使用星号意味着每个月都会触发这个 trigger。
@@ -2066,8 +2052,6 @@ type slice struct {
 ptr指的是指向array的pointer，len是指切片的长度, cap指的是切片的容量。
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-17_08-34-54.png" width="600"/> </div><br>
 
-
-
 ## 扩容
 
 slice这种数据结构便于使用和管理数据集合，可以理解为是一种“动态数组”，扩容规则是:
@@ -2181,7 +2165,7 @@ func main() {
     fmt.Println("slice cap", cap(slice)) //slice cap 3
 }
 ```
- 
+
 ### 第一种和第二种的区别
 
 第一种方式是直接引用数组，这个数组是事先存在的，程序员可见
@@ -2201,12 +2185,9 @@ https://i6448038.github.io/2018/08/26/map-secret/
 
 一个map是一个bucket数组,bucket可以链式追加,如图:
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-29-01.png" width="600"/> </div><br>
-
 根据key经过hash计算处的值会分为高八位和低八位,低八位用于寻找位于map的哪个bucket,高八位用于寻找bucket内部的哪个key
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-31-36.png" width="600"/> </div><br>
-
-
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-32-00.png" width="600"/> </div><br>
 go的bucket内部并不是key0/value0/key1/value1的形式，这样做的好处是：在key和value的长度不同的时候，可以消除padding带来的空间浪费。
 
@@ -2224,8 +2205,6 @@ go的bucket内部并不是key0/value0/key1/value1的形式，这样做的好处�
 当Go的map长度增长到大于加载因子所需的map长度时，Go语言就会将产生一个新的bucket数组，然后把旧的bucket数组移到一个属性字段oldbucket中。**注意：并不是立刻把旧的数组中的元素转义到新的bucket当中，而是，只有当访问到具体的某个bucket的时候，会把bucket中的数据转移到新的bucket中。并且不会直接删除旧的bucket，而是把原来的引用去掉，利用GC清除内存。**
 
 <div align="center"> <img src="./pictures/golang/Snipaste_2019-10-14_13-35-24.png" width="600"/> </div><br>
-
- 
 # channel
 
 关闭已经关闭的管道会有panic
@@ -2681,10 +2660,86 @@ func propagateCancel(parent Context, child canceler) {
 ```
 propagateCancel 的含义就是传递cancel，从当前传入的parent开始（包括该parent），向上查找最近的一个可以被cancel的parent， 如果找到的parent已经被cancel，则将方才传入的child树给cancel掉，否则，将child节点直接连接为找到的parent的children中（Context字段不变，即向上的父亲指针不变，但是向下的孩子指针变直接了）； 如果没有找到最近的可以被cancel的parent，即其上都不可被cancel，则启动一个goroutine等待传入的parent终止，则cancel传入的child树，或者等待传入的child终结。
 
+## golang的redis包
+
+[Golang操作redis指南](https://www.jianshu.com/p/89ca34b84101)
+
+
+
+### redigo模块的详细使用
+
+#### 连接
+
+`Conn`接口是redis操作过程中比较重要的接口。应用一般通过调用`Dial、DialWithTimeout、NewConn`函数来创建一个链接。
+
+ `注意：`应用必须在操作redis结束之后去调用该连接的`Close`方法来关闭连接，以防止资源消耗以及其他问题。
+
+**Conn接口下的相关方法**
+
+```go
+type Conn interface {
+    // 关闭链接
+    Close() error
+
+    // 当链接不可用时返回非空值
+    Err() error
+
+    //Do方法向redis服务端发送命令并返回接收到响应
+    Do(commandName string, args ...interface{}) (reply interface{}, err error)
+
+    //Send 将相关的命令写入客户端的buffer中
+    Send(commandName string, args ...interface{}) error
+
+    // Flush 将客户端的输出缓冲内容刷新到redis服务器端
+    Flush() error
+
+    // Receive 从redis服务端接收单个回复
+    Receive() (reply interface{}, err error)
+}
+```
+
+
+
+#### 使用Pipelining操作redis
+
+`Conn`会使用`Send、Flush、Receive`来支持pipeline操作。
+
+```tsx
+Send(commandName string, args ...interface{}) error
+Flush() error
+Receive() (reply interface{}, err error)
+```
+
+`Send`会写入命令到连接的输出缓冲区里。`Flush`会将输出缓冲区中的数据刷新到服务端。`Receive`回去荣服务端读取单个响应。
+
+```swift
+c.Send("SET", "foo", "bar")
+c.Send("GET", "foo")
+c.Flush()
+c.Receive()
+v, err = c.Receive()
+```
+
+其实，在`Do`方法中会包含`Send/Flush/Receive`等方法。
+
+使用`Send`和`Do`方法来实现pipeline。
+
+```swift
+c.Send("MULTI")
+c.Send("INCR", "foo")
+c.Send("INCR", "bar")
+r, err := c.Do("EXEC")
+fmt.Println(r) //[1,1
+```
+
+`注意:`建议使用redis自身包含的命令进行批量操作而不是使用pipelining，比如`mset、mget、hmset、hmget`等等。原子性可能会更好一些
 
 
 
 
+
+
+1
 
 <div align="center"> <img src="" width="600"/> </div><br>
 <div align="center"> <img src="" width="600"/> </div><br>

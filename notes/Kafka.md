@@ -8,7 +8,7 @@
 <div align="center"> <img src="./pictures/kafka/Snipaste_2019-11-04_19-50-53.png" width="600"/> </div>
 
 ## Broker
-物理概念，指服务于Kafka的一个node。
+物理概念，Kafka集群包含一个或多个服务器，这种服务器被称为broker。
 
 
 ## Topic
@@ -39,8 +39,11 @@ https://www.jianshu.com/p/c474ca9f9430
 # kafka消息的同步机制
 
 producer与consumer的delivery guarantee有三种：
+
 At most once 消息可能会丢，但绝不会重复传输
+
 At least one 消息绝不会丢，但可能会重复传输
+
 Exactly once 每条消息肯定会被传输一次且仅传输一次，很多时候这是用户所想要的
 
 ## Producer的三种保证
@@ -48,7 +51,9 @@ Exactly once 每条消息肯定会被传输一次且仅传输一次，很多时�
 producer 的deliver guarantee 可以通过request.required.acks参数的设置来进行调整：
 
 0 ，相当于异步发送，消息发送完毕即offset增加，继续生产；相当于At most once
+
 1，leader收到leader replica 对一个消息的接受ack才增加offset，然后继续生产；
+
 -1，leader收到所有replica 对一个消息的接受ack才增加offset，然后继续生产
 
 当producer向broker发送消息时，一旦这条消息被commit，因数replication的存在，它就不会丢。但是如果producer发送数据给broker后，遇到的网络问题而造成通信中断，那producer就无法判断该条消息是否已经commit。这一点有点像向一个自动生成primary key的数据库表中插入数据。虽然Kafka无法确定网络故障期间发生了什么，但是producer可以生成一种类似于primary key的东西，发生故障时幂等性的retry多次，这样就做到了Exactly one。截止到目前(Kafka 0.8.2版本，2015-01-25)，这一feature还并未实现，有希望在Kafka未来的版本中实现。（所以目前默认情况下一条消息从producer和broker是确保了At least once，但可通过设置producer异步发送实现At most once）。
@@ -72,13 +77,122 @@ Consumer读消息也是从Leader读取，只有被commit过的消息（offset低
 
 # Kafka的offset与提交关系
 
+//设置不自动提交，手动更新offset:`properties.put("enable.auto.commit", "false");`
+
 ## 自动提交
 
- 
+Kafka中偏移量的自动提交是由参数enable_auto_commit和auto_commit_interval_ms控制的，当enable_auto_commit=True时，Kafka在消费的过程中会以频率为auto_commit_interval_ms向Kafka自带的topic(__consumer_offsets)进行偏移量提交，具体提交到哪个Partation是以算法：partation=hash(group_id)%50来计算的。
+
+调用consumer.close()时候也会触发自动提交，因为它默认autocommit=True
+
+对于自动提交偏移量，如果auto_commit_interval_ms的值设置的过大，当消费者在自动提交偏移量之前异常退出，将导致kafka未提交偏移量，进而出现重复消费的问题，所以建议auto_commit_interval_ms的值越小越好。
+
+如果让kafka自动去维护offset，消费者拉到消息还没消费完成,它就会认为这条数据已经被消费了，那么会造成**数据丢失**.
 
 ## 手动提交
 
 [关于Kafka 的 consumer 消费者手动提交详解](https://www.cnblogs.com/xuwujing/p/8432984.html)
 
 consumer端手动提交offset之后,该offset之前的消息都会被当成已经消费,之后的数据即使消费了也会被当成没消费.比如:服务端有10条数据,consumer消费到第5条,commit了,消费到第10条没有commit程序退出,下次consumer重启之后,会从第6条开始消费.
+
+如果让消费者手动提交，如果在上面的场景中，那么需要我们手动commit，如果comsumer挂了,程序就不会执行commit,其他同group的消费者又可以消费这条数据，保证数据不丢.但可能会导致**重复消费**,
+
+### 手动提交的三种方式 同步 异步 混合(针对提交失败的处理方式)
+
+[Kafka提交offset机制](https://www.cnblogs.com/FG123/p/10091599.html)
+
+1.同步手动提交偏移量
+
+同步模式下提交失败的时候一直尝试提交，直到遇到无法重试的情况下才会结束，同时同步方式下消费者线程在拉取消息会被阻塞，在broker对提交的请求做出响应之前，会一直阻塞直到偏移量提交操作成功或者在提交过程中发生异常，限制了消息的吞吐量。
+
+consumer.commit()
+
+2.异步手动提交偏移量+回调函数
+
+ 异步手动提交offset时，消费者线程不会阻塞，提交失败的时候也不会进行重试，并且可以配合回调函数在broker做出响应的时候记录错误信息。
+
+对于异步提交，由于不会进行失败重试，当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失。
+
+consumer.commit_async(callback=_on_send_response)
+
+ 3.异步+同步 组合的方式提交偏移量
+
+针对异步提交偏移量丢失的问题，通过对消费者进行异步批次提交并且在关闭时同步提交的方式，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试，直到提交成功。
+
+通过finally在最后不管是否异常都会触发consumer.commit()来同步补救一次，确保偏移量不会丢失
+
+```python
+"""
+同步和异步组合的方式提交偏移量
+"""
+
+import pickle
+import uuid
+import time
+from kafka import KafkaConsumer
+
+consumer = KafkaConsumer(
+    bootstrap_servers=['192.168.33.11:9092'],
+    group_id="test_group_1",
+    client_id="{}".format(str(uuid.uuid4())),
+    enable_auto_commit=False,  # 设置为手动提交偏移量.
+    key_deserializer=lambda k: pickle.loads(k),
+    value_deserializer=lambda v: pickle.loads(v)
+)
+
+# 订阅消费round_topic这个主题
+consumer.subscribe(topics=('round_topic',))
+
+
+def _on_send_response(*args, **kwargs):
+    """
+    提交偏移量涉及的回调函数
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    if isinstance(args[1], Exception):
+        print('偏移量提交异常. {}'.format(args[1]))
+    else:
+        print('偏移量提交成功')
+
+
+try:
+    start_time = time.time()
+    while True:
+        consumer_records_dict = consumer.poll(timeout_ms=100)
+
+        record_num = 0
+        for key, record_list in consumer_records_dict.items():
+            for record in record_list:
+                record_num += 1
+        print("---->当前批次获取到的消息个数是:<----".format(record_num))
+        record_num = 0
+
+        for k, record_list in consumer_records_dict.items():
+            print(k)
+            for record in record_list:
+                print("topic = {},partition = {},offset = {},key = {},value = {}".format(
+                    record.topic, record.partition, record.offset, record.key, record.value)
+                )
+
+        try:
+            # 轮询一个batch 手动提交一次
+            consumer.commit_async(callback=_on_send_response)
+            end_time = time.time()
+            time_counts = end_time - start_time
+            print(time_counts)
+        except Exception as e:
+            print('commit failed', str(e))
+
+except Exception as e:
+    print(str(e))
+finally:
+    try:
+        # 同步提交偏移量,在消费者异常退出的时候再次提交偏移量,确保偏移量的提交.
+        consumer.commit()
+        print("同步补救提交成功")
+    except Exception as e:
+        consumer.close()
+```
 
