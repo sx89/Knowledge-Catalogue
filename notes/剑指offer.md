@@ -98,6 +98,41 @@ Output:
             }
         }
 ```
+
+
+
+
+```java
+    public boolean duplicate(int numbers[], int length, int[] duplication) {
+        //遍历数组
+        //数字放到对应下标处
+        //做交换
+        //如果该出已有与下标相同,则返回
+        //如果下标不同,则放入后,重复此过程
+        int idx;
+        int temp;
+        for (int i = 0; i < length; ) {
+            if (numbers[i] != i) {
+                idx = numbers[i];
+
+                if (numbers[idx] == idx) {
+                    duplication[0] = idx;
+                    return true;
+                }
+                temp = numbers[idx];
+                numbers[idx] = numbers[i];
+                numbers[i] = temp;
+                //再循环,不后移
+            } else {
+                i++;
+            }
+        }
+        return false;
+    }
+```
+
+
+
 # 4. 二维数组中的查找
 
 [NowCoder](https://www.nowcoder.com/practice/abc3fe2ce8e146608e868a70efebf62e?tpId=13&tqId=11154&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -402,7 +437,6 @@ public class Solution {
 ① 如果一个节点的右子树不为空，那么该节点的下一个节点是右子树的最左节点；
 
 <div align="center"> <img src="pics/b0611f89-1e5f-4494-a795-3544bf65042a.gif" width="220px"/> </div><br>
-
 ② 否则，向上找第一个左链接指向的树包含该节点的祖先节点。
 
 ```java
@@ -490,12 +524,10 @@ public int pop() throws Exception {
 
 <div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}0&&{n=0}\\1&&{n=1}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br>
 
-
 ## 解题思路
 
 如果使用递归求解，会重复计算一些子问题。例如，计算 f(4) 需要计算 f(3) 和 f(2)，计算 f(3) 需要计算 f(2) 和 f(1)，可以看到 f(2) 被重复计算了。
 <div align="center"> <img src="pics/c13e2a3d-b01c-4a08-a69b-db2c4e821e09.png" width="350px"/> </div><br>
-
 
 递归是将一个问题划分成多个子问题求解，动态规划也是如此，但是动态规划会把子问题的解缓存起来，从而避免重复求解子问题。
 
@@ -526,17 +558,14 @@ public int pop() throws Exception {
 我们可以用 2\*1 的小矩形横着或者竖着去覆盖更大的矩形。请问用 n 个 2\*1 的小矩形无重叠地覆盖一个 2\*n 的大矩形，总共有多少种方法？
 
 <div align="center"> <img src="pics/b903fda8-07d0-46a7-91a7-e803892895cf.gif" width="100px"> </div><br>
-
 ## 解题思路
 
 当 n 为 1 时，只有一种覆盖方法：
 
 <div align="center"> <img src="pics/f6e146f1-57ad-411b-beb3-770a142164ef.png" width="100px"> </div><br>
-
 当 n 为 2 时，有两种覆盖方法：
 
 <div align="center"> <img src="pics/fb3b8f7a-4293-4a38-aae1-62284db979a3.png" width="200px"> </div><br>
-
 要覆盖 2\*n 的大矩形，可以先覆盖 2\*1 的矩形，再覆盖 2\*(n-1) 的矩形；或者先覆盖 2\*2 的矩形，再覆盖 2\*(n-2) 的矩形。
 
 **2\*2有两种覆盖方法,但其中一种和2\*1重合**
@@ -546,7 +575,6 @@ public int pop() throws Exception {
 <!-- <div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}1&&{n=1}\\2&&{n=2}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br> -->
 
 <div align="center"> <img src="pics/508c6e52-9f93-44ed-b6b9-e69050e14807.jpg" width="350px"> </div><br>
-
 非递归写法:
 ```java
   public int RectCover(int target) {
@@ -586,21 +614,17 @@ public int RectCover2(int target) {
 一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
 
 <div align="center"> <img src="pics/9dae7475-934f-42e5-b3b3-12724337170a.png" width="380px"> </div><br>
-
 ## 解题思路
 
 当 n = 1 时，只有一种跳法：
 
 <div align="center"> <img src="pics/72aac98a-d5df-4bfa-a71a-4bb16a87474c.png" width="250px"> </div><br>
-
 当 n = 2 时，有两种跳法：
 
 <div align="center"> <img src="pics/1b80288d-1b35-4cd3-aa17-7e27ab9a2389.png" width="300px"> </div><br>
-
 跳 n 阶台阶，可以先跳 1 阶台阶，再跳 n-1 阶台阶；或者先跳 2 阶台阶，再跳 n-2 阶台阶。而 n-1 和 n-2 阶台阶的跳法可以看成子问题，该问题的递推公式为：
 
 <div align="center"> <img src="pics/508c6e52-9f93-44ed-b6b9-e69050e14807.jpg" width="350px"> </div><br>
-
 
 递归写法:
 ```java
@@ -613,7 +637,7 @@ public int RectCover2(int target) {
             return JumpFloor(target - 1) + JumpFloor(target - 2);
         }
     }
-    ```
+```
 非递归写法
 ```java
 public int JumpFloor(int target) {
@@ -643,7 +667,6 @@ public int JumpFloor(int target) {
 一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级... 它也可以跳上 n 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
 
 <div align="center"> <img src="pics/cd411a94-3786-4c94-9e08-f28320e010d5.png" width="380px"> </div><br>
-
 ## 解题思路
 
 ### 动态规划
@@ -761,3 +784,10 @@ public int JumpFloorII(int target) {
     }
 }
 ```
+
+
+
+
+
+
+
