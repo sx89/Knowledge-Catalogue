@@ -417,37 +417,6 @@ public class Solution {
 
 
 
-asdf sadfasfd
-
-```
-public class Solution {
-    public String replaceSpace(StringBuffer str) {
-        //遍历,寻找空格个数,设置长度是空格数+2
-        //倒序遍历,空格处给str设置为%20
-        int oldPointer = str.length() - 1;
-        int newPointer;
-        for (int i = 0; i <= oldPointer; i++) {
-            if (str.charAt(i) == ' ') {
-                str.append("  ");
-            }
-        }
-        newPointer = str.length() - 1;
-        for (; oldPointer >= 0; oldPointer--) {
-            if (str.charAt(oldPointer) == ' ') {
-                str.setCharAt(newPointer--, '0');
-                str.setCharAt(newPointer--, '2');
-                str.setCharAt(newPointer--, '%');
-            } else {
-                str.setCharAt(newPointer--, str.charAt(oldPointer));
-            }
-        }
-        return str.toString();
-    }
-}
-```
-
-
-
 
 
 # 7. 重建二叉树
