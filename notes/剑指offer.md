@@ -194,6 +194,8 @@ Given target = 20, return false.
 
 1.row--后,col不用从零开始,因为`target>array[row][col]>array[row--][col]>array[row--][0到col-1]`
 
+2.注意判断数组越界
+
 ```java
 
 public class Solution {
@@ -265,36 +267,40 @@ public class Solution {
 
 ```
 
+
+
+
+
+改进:
+
 时间O(n) 空间O(1)
 
 **提前遍历一遍字符串,可以确定里面空格的个数,复杂度依然保持O(n)**
 
-在字符串尾部填充任意字符，使得字符串的长度等于替换之后的长度。因为一个空格要替换成三个字符（%20），因此当遍历到一个空格时，需要在尾部填充两个任意字符。
-
-令 P1 指向字符串原来的末尾位置，P2 指向字符串现在的末尾位置。P1 和 P2 从后向前遍历，当 P1 遍历到一个空格时，就需要令 P2 指向的位置依次填充 02%（注意是逆序的），否则就填充上 P1 指向字符的值。
-
-从后向前遍是为了在改变 P2 所指向的内容时，不会影响到 P1 遍历原来字符串的内容。
-
 ```java
-public String replaceSpace(StringBuffer str) {
-    int P1 = str.length() - 1;
-    for (int i = 0; i <= P1; i++)
-        if (str.charAt(i) == ' ')
-             //增加两个空格
-            str.append("  ");
-
-    int P2 = str.length() - 1;
-    while (P1 >= 0 && P2 > P1) {
-        char c = str.charAt(P1--);
-        if (c == ' ') {
-            str.setCharAt(P2--, '0');
-            str.setCharAt(P2--, '2');
-            str.setCharAt(P2--, '%');
-        } else {
-            str.setCharAt(P2--, c);
+public class Solution {
+    public String replaceSpace(StringBuffer str) {
+        //遍历,寻找空格个数,设置长度是空格数+2
+        //倒序遍历,空格处给str设置为%20
+        int oldPointer = str.length() - 1;
+        int newPointer;
+        for (int i = 0; i <= oldPointer; i++) {
+            if (str.charAt(i) == ' ') {
+                str.append("  ");
+            }
         }
+        newPointer = str.length() - 1;
+        for (; oldPointer >= 0; oldPointer--) {
+            if (str.charAt(oldPointer) == ' ') {
+                str.setCharAt(newPointer--, '0');
+                str.setCharAt(newPointer--, '2');
+                str.setCharAt(newPointer--, '%');
+            } else {
+                str.setCharAt(newPointer--, str.charAt(oldPointer));
+            }
+        }
+        return str.toString();
     }
-    return str.toString();
 }
 ```
 
