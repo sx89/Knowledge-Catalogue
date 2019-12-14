@@ -100,10 +100,17 @@ Output:
 ```
 
 
+改进
 
+1.数组判空
+
+2.for循环改成while更符合逻辑
 
 ```java
     public boolean duplicate(int numbers[], int length, int[] duplication) {
+         if (numbers == null || length < 0) {
+                    return false;
+         }
         //遍历数组
         //数字放到对应下标处
         //做交换
@@ -114,7 +121,6 @@ Output:
         for (int i = 0; i < length; ) {
             if (numbers[i] != i) {
                 idx = numbers[i];
-
                 if (numbers[idx] == idx) {
                     duplication[0] = idx;
                     return true;
@@ -182,6 +188,45 @@ Given target = 20, return false.
         return  false;
     }
 ```
+
+
+改进
+
+1.row--后,col不用从零开始,因为`target>array[row][col]>array[row--][col]>array[row--][0到col-1]`
+
+```java
+
+public class Solution {
+    public boolean Find(int target, int[][] array) {
+        //先画图
+
+        //判空
+        //从左下角开始
+        //比上面大  行--
+        //比左边大  列++
+        //到头了没找到就退出
+        int row = array.length - 1, col = 0;
+        int rowSize = array.length;
+        int colSize = array[0].length;
+        while (row >= 0 && col < colSize) {
+            while (row >= 0 && col < colSize && target < array[row][0]) {
+                row--;
+            }
+            while (row >= 0 && col < colSize && target > array[row][col]) {
+                col++;
+            }
+            if (row >= 0 && col < colSize && target == array[row][col]) {
+                return true;
+            }
+            row--;
+        }
+        return false;
+    }
+}
+```
+
+
+
 # 5. 替换空格
 
 [NowCoder](https://www.nowcoder.com/practice/4060ac7e3e404ad1a894ef3e17650423?tpId=13&tqId=11155&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
