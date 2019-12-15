@@ -39,6 +39,75 @@
 <!-- /TOC -->
 
 
+
+# 如何写算法
+
+## 职业选手的培养方法
+
+1.知识体系(链表数组栈队列,树图,bitmap,动态规划,排序...)
+
+2.刻意练习(那里不熟练哪里,每道题五遍以上)
+
+3.注意反馈(主动反馈:算法选手直播,代码范例   被动反馈:codereview)
+
+## 面试五步
+
+1.搞清楚问题是什么,跟面试官复述一遍,确定一些边界(空,格式错误,百万以上的大数)
+
+2.可能的解法有多种,都跟面试官说明一下,分析他们的时间空间复杂度.
+
+3.确定整体思路
+
+4.着手写代码
+
+5.自己写testCase来做测试
+
+## 五遍刷题
+
+<img src="./pictures/jianzhi-offer/Snipaste_2019-12-15_12-55-12.png" style="zoom:50%;" />
+
+
+
+<img src="./pictures/jianzhi-offer/Snipaste_2019-12-15_12-58-34.png" style="zoom:50%;" />
+
+
+
+
+
+第三遍一天后再刷
+
+第四遍一周后再刷
+
+第五遍考前适应性训练
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 3. 数组中重复的数字
 
 [NowCoder](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -328,6 +397,35 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
     }
     return ret;
 }
+
+
+改进:
+从头到尾的逆序 考虑用递归或者栈
+2N的复杂度依然是O(N)
+ArrayList的addAll函数
+前面写了接收类型,后面可不写:
+ArrayList<Integer> reverseList = new ArrayList<>();
+在本层判断本层的listNode!=null;而不是判断下一层 if (listNode.next != null) 
+    
+
+public class Solution {
+    public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
+        //创建一个链表
+        //如果还有后续节点,就调用后续,并把结果放到当前链表上
+        //返回当前链表
+        if (listNode == null) {
+            return new ArrayList<Integer>();
+        }
+        ArrayList<Integer> reverseList = new ArrayList<>();
+
+        if (listNode.next != null) {
+            ArrayList<Integer> ret = printListFromTailToHead(listNode.next);
+            reverseList.addAll(ret);
+        }
+        reverseList.add(listNode.val);
+        return reverseList;
+    }
+}
 ```
 
 ### 使用头插法
@@ -367,6 +465,10 @@ public class Solution {
         return arrayList;
     }
 }
+
+
+改进:
+arrayList有add(0,value)的函数,可以实现头插
 ```
 或者
 ```java
@@ -388,6 +490,9 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
     }
     return ret;
 }
+
+改进
+    头插的链表放到list里面的时候,记得的第一个head节点给跳过	head = head.next;
 ```
 
 ### 使用栈
@@ -414,8 +519,6 @@ public class Solution {
     }
 }
 ```
-
-
 
 
 
