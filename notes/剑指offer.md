@@ -64,6 +64,8 @@
 
 ## 五遍刷题
 
+第一遍,没有思路就直接看解法
+
 <img src="./pictures/jianzhi-offer/Snipaste_2019-12-15_12-55-12.png" style="zoom:50%;" />
 
 
@@ -79,34 +81,6 @@
 第四遍一周后再刷
 
 第五遍考前适应性训练
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # 3. 数组中重复的数字
 
@@ -575,6 +549,77 @@ public class Solution {
         return tree;
     }
 }
+
+
+改进点
+    命名的规范清晰,为逻辑的编写 和 debug提供了极大的方便,继续保持
+    要利用函数重载的技巧,缩减重复写的代码
+    利用map记录下了每个点的位置,parentLoc的定位会减少计算量
+    
+    
+    public class Solution {
+    public TreeNode reConstructBinaryTree(int[] pre, int[] in) {
+        //如果前序数组长度为0,则返回
+        //递归
+        //前序确定根节点
+        //中序拆分左右子树
+        //将返回的结果放入左右子树
+
+        //重复上述步骤
+        int parentLoc = 0;
+        int leftChildLength = 0;
+        int rightChildLength = 0;
+        int inL = 0;
+        int inR = in.length - 1;
+        int preL = 0;
+        int preR = pre.length - 1;
+
+
+        if (pre.length <= 0) {
+            return null;
+        }
+        TreeNode parent = new TreeNode(pre[preL]);
+        for (int i = inL; i <= inR; i++) {
+            if (in[i] == parent.val) {
+                parentLoc = i;
+                break;
+            }
+        }
+        leftChildLength = parentLoc - inL;
+        rightChildLength = inR - parentLoc;
+
+        parent.left = reConstructBinaryTree(pre, preL + 1, preL + leftChildLength, in, inL, inL + leftChildLength);
+        parent.right = reConstructBinaryTree(pre, preL + leftChildLength + 1, preR, in, parentLoc + 1, inR);
+
+        parent = reConstructBinaryTree(pre, preL, preR, in, inL, inR);
+        return parent;
+
+    }
+
+    private TreeNode reConstructBinaryTree(int[] pre, int preL, int preR, int[] in, int inL, int inR) {
+        int parentLoc = 0;
+        int leftChildLength = 0;
+        int rightChildLength = 0;
+
+        if (preR < preL || inR < inL) {
+            return null;
+        }
+        TreeNode parent = new TreeNode(pre[preL]);
+        for (int i = inL; i <= inR; i++) {
+            if (in[i] == parent.val) {
+                parentLoc = i;
+                break;
+            }
+        }
+        leftChildLength = parentLoc - inL;
+        rightChildLength = inR - parentLoc;
+
+        parent.left = reConstructBinaryTree(pre, preL + 1, preL + leftChildLength, in, inL, inL + leftChildLength);
+        parent.right = reConstructBinaryTree(pre, preL + leftChildLength + 1, preR, in, parentLoc + 1, inR);
+        return parent;
+    }
+}
+
 ```
 
 # 8. 二叉树的下一个结点
@@ -628,6 +673,9 @@ class TreeLinkNode {
         this.val = val;
     }
 }
+
+改进:
+思路很重要,如果没有右子树,就找该node作为父亲节点左子节点的父亲节点
 ```
 
 
@@ -934,6 +982,29 @@ public int JumpFloorII(int target) {
             }
         }
         return array[l];
+    }
+}
+
+
+改进:
+整体有序要考虑二分查找
+ 
+
+
+
+import java.util.ArrayList;
+public class Solution {
+    public int minNumberInRotateArray(int [] array) {
+        if(array.length==0){
+            return 0;
+        }
+        
+        for(int i = 0;i<array.length-1;i++){
+            if(array[i]>array[i+1]){
+                return array[i+1];
+            }
+        }
+        return array[0];
     }
 }
 ```
