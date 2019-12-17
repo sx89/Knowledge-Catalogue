@@ -724,12 +724,10 @@ public int pop() throws Exception {
 求斐波那契数列的第 n 项，n <= 39。
 
 <div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}0&&{n=0}\\1&&{n=1}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br>
-
 ## 解题思路
 
 如果使用递归求解，会重复计算一些子问题。例如，计算 f(4) 需要计算 f(3) 和 f(2)，计算 f(3) 需要计算 f(2) 和 f(1)，可以看到 f(2) 被重复计算了。
 <div align="center"> <img src="pics/c13e2a3d-b01c-4a08-a69b-db2c4e821e09.png" width="350px"/> </div><br>
-
 递归是将一个问题划分成多个子问题求解，动态规划也是如此，但是动态规划会把子问题的解缓存起来，从而避免重复求解子问题。
 
 ```java
@@ -826,7 +824,6 @@ public int RectCover2(int target) {
 跳 n 阶台阶，可以先跳 1 阶台阶，再跳 n-1 阶台阶；或者先跳 2 阶台阶，再跳 n-2 阶台阶。而 n-1 和 n-2 阶台阶的跳法可以看成子问题，该问题的递推公式为：
 
 <div align="center"> <img src="pics/508c6e52-9f93-44ed-b6b9-e69050e14807.jpg" width="350px"> </div><br>
-
 递归写法:
 ```java
  public int JumpFloor(int target) {
@@ -1033,13 +1030,11 @@ public class Solution {
 例如下面的矩阵包含了一条 bfce 路径。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/1db1c7ea-0443-478b-8df9-7e33b1336cc4.png" width="200px"> </div><br>
-
 ## 解题思路
 
 使用回溯法（backtracking）进行求解，它是一种暴力搜索方法，通过搜索所有可能的结果来求解问题。回溯法在一次搜索结束时需要进行回溯（回退），将这一次搜索过程中设置的状态进行清除，从而开始一次新的搜索过程。例如下图示例中，从 f 开始，下一步有 4 种搜索可能，如果先搜索 b，需要将 b 标记为已经使用，防止重复使用。在这一次搜索结束之后，需要将 b 的已经使用状态清除，并搜索 c。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/dc964b86-7a08-4bde-a3d9-e6ddceb29f98.png" width="200px"> </div><br>
-
 本题的输入是数组而不是矩阵（二维数组），因此需要先将数组转换成矩阵。
 
 ```java
@@ -1255,7 +1250,6 @@ public int NumberOf1(int n) {
 <!--<div align="center"><img src="https://latex.codecogs.com/gif.latex?x^n=\left\{\begin{array}{rcl}(x*x)^{n/2}&&{n\%2=0}\\x*(x*x)^{n/2}&&{n\%2=1}\end{array}\right." class="mathjax-pic"/></div> <br>-->
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/48b1d459-8832-4e92-938a-728aae730739.jpg" width="330px"> </div><br>
-
 因为 (x\*x)<sup>n/2</sup> 可以通过递归求解，并且每次递归 n 都减小一半，因此整个算法的时间复杂度为 O(logN)。
 
 ```java
@@ -1324,11 +1318,9 @@ private void printNumber(char[] number) {
 ① 如果该节点不是尾节点，那么可以直接将下一个节点的值赋给该节点，然后令该节点指向下下个节点，再删除下一个节点，时间复杂度为 O(1)。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/1176f9e1-3442-4808-a47a-76fbaea1b806.png" width="600"/> </div><br>
-
 ② 否则，就需要先遍历链表，找到节点的前一个节点，然后让前一个节点指向 null，时间复杂度为 O(N)。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/4bf8d0ba-36f0-459e-83a0-f15278a5a157.png" width="600"/> </div><br>
-
 综上，如果进行 N 次操作，那么大约需要操作节点的次数为 N-1+N=2N-1，其中 N-1 表示 N-1 个不是尾节点的每个节点以 O(1) 的时间复杂度操作节点的总次数，N 表示 1 个尾节点以 O(N) 的时间复杂度操作节点的总次数。(2N-1)/N \~ 2，因此该算法的平均时间复杂度为 O(1)。
 
 ```java
@@ -1362,7 +1354,6 @@ public ListNode deleteNode(ListNode head, ListNode tobeDelete) {
 ## 题目描述
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/17e301df-52e8-4886-b593-841a16d13e44.png" width="450"/> </div><br>
-
 ## 解题描述
 
 ```java
@@ -1471,6 +1462,67 @@ public boolean isNumeric(char[] str) {
     if (str == null || str.length == 0)
         return false;
     return new String(str).matches("[+-]?\\d*(\\.\\d+)?([eE][+-]?\\d+)?");
+}
+```
+
+# 21. 调整数组顺序使奇数位于偶数前面
+
+[NowCoder](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&tqId=11166&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+需要保证奇数和奇数，偶数和偶数之间的相对位置不变，这和书本不太一样。
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d03a2efa-ef19-4c96-97e8-ff61df8061d3.png" width="200px"> </div><br>
+
+## 解题思路
+
+方法一：创建一个新数组，时间复杂度 O(N)，空间复杂度 O(N)。
+
+```java
+public void reOrderArray(int[] nums) {
+    // 奇数个数
+    int oddCnt = 0;
+    for (int x : nums)
+        if (!isEven(x))
+            oddCnt++;
+    int[] copy = nums.clone();
+    int i = 0, j = oddCnt;
+    for (int num : copy) {
+        if (num % 2 == 1)
+            nums[i++] = num;
+        else
+            nums[j++] = num;
+    }
+}
+
+private boolean isEven(int x) {
+    return x % 2 == 0;
+}
+```
+
+方法二：使用冒泡思想，每次都当前偶数上浮到当前最右边。时间复杂度 O(N<sup>2</sup>)，空间复杂度 O(1)，时间换空间。
+
+```java
+public void reOrderArray(int[] nums) {
+    int N = nums.length;
+    for (int i = N - 1; i > 0; i--) {
+        for (int j = 0; j < i; j++) {
+            if (isEven(nums[j]) && !isEven(nums[j + 1])) {
+                swap(nums, j, j + 1);
+            }
+        }
+    }
+}
+
+private boolean isEven(int x) {
+    return x % 2 == 0;
+}
+
+private void swap(int[] nums, int i, int j) {
+    int t = nums[i];
+    nums[i] = nums[j];
+    nums[j] = t;
 }
 ```
 
