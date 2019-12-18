@@ -1080,6 +1080,67 @@ private char[][] buildMatrix(char[] array) {
             matrix[r][c] = array[idx++];
     return matrix;
 }
+
+
+改进:
+
+public class Solution {
+    private static int[][] next ={{-1,0},{0,1},{1,0},{0,-1}};
+    private int rows;
+    private int cols;
+    public boolean hasPath(char[] array, int rows, int cols, char[] str)
+    {
+        this.rows=rows;
+        this.cols=cols;
+        //制造矩阵
+        boolean[][] marked=new boolean[rows][cols];
+        char[][] matrix=buildMatrix(array,rows,cols);
+        
+        //进行回溯
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<cols;j++){
+                if(backing(matrix,marked,i,j,str,0)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    //回溯代码
+    private boolean backing(char[][] matrix,boolean [][] marked,int r,int c,
+                              char [] str,int pathLen){
+        if (pathLen==str.length){
+            return true;
+        }
+        
+        if(r<0||r>=rows||c<0||c>=cols||marked[r][c]||matrix[r][c]!=str[pathLen])
+            return false;
+        if(str[pathLen]==matrix[r][c]){
+            return true;
+        }
+        marked[r][c]=true;
+        for(int[] temp:next){
+            if(backing(matrix,marked,r+temp[0],c+temp[1],str,pathLen+1)){
+                return true;
+            }
+        }
+        marked[r][c]=false;
+        return false;
+    } 
+    //制造矩阵
+    private char[][] buildMatrix(char[] array,int rows,int cols){
+        char[][] matrix = new char[rows][cols];
+        for (int i=0,idx=0;i<rows;i++){
+            for(int j =0;j<cols;j++){
+                matrix[i][j]=array[idx++];
+            }
+        }
+        return matrix;
+    }
+    
+
+
+}
 ```
 
 # 13. 机器人的运动范围
@@ -1474,7 +1535,6 @@ public boolean isNumeric(char[] str) {
 需要保证奇数和奇数，偶数和偶数之间的相对位置不变，这和书本不太一样。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d03a2efa-ef19-4c96-97e8-ff61df8061d3.png" width="200px"> </div><br>
-
 ## 解题思路
 
 方法一：创建一个新数组，时间复杂度 O(N)，空间复杂度 O(N)。
