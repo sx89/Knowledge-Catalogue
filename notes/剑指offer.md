@@ -1083,61 +1083,59 @@ private char[][] buildMatrix(char[] array) {
 
 
 改进:
+backTracing里面,返回的条件是str.length==pathLen;
+终止的条件有:row<0,row>rows,col<0,col>cols,matrix[i][j]!=str[pathLen]和marked[i][j]==false
+marked记得设置成true和false;
 
 public class Solution {
-    private static int[][] next ={{-1,0},{0,1},{1,0},{0,-1}};
-    private int rows;
-    private int cols;
-    public boolean hasPath(char[] array, int rows, int cols, char[] str)
-    {
-        this.rows=rows;
-        this.cols=cols;
-        //制造矩阵
-        boolean[][] marked=new boolean[rows][cols];
-        char[][] matrix=buildMatrix(array,rows,cols);
-        
-        //进行回溯
-        for(int i=0;i<rows;i++){
-            for(int j=0;j<cols;j++){
-                if(backing(matrix,marked,i,j,str,0)){
+    private int[][] next = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    private int rows, cols;
+
+    public boolean hasPath(char[] array, int rows, int cols, char[] str) {
+        this.rows = rows;
+        this.cols = cols;
+        //制作矩阵
+        boolean[][] marked = new boolean[rows][cols];
+        char[][] matrix = buildMatrix(array, rows, cols);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (backTracing(matrix, marked, i, j, str, 0))
                     return true;
-                }
             }
         }
         return false;
+        //回溯
     }
-    //回溯代码
-    private boolean backing(char[][] matrix,boolean [][] marked,int r,int c,
-                              char [] str,int pathLen){
-        if (pathLen==str.length){
+
+    private boolean backTracing(char[][] matrix, boolean[][] marked, int row,
+                                int col, char[] str, int pathLen) {
+        if (pathLen == str.length) {
             return true;
         }
-        
-        if(r<0||r>=rows||c<0||c>=cols||marked[r][c]||matrix[r][c]!=str[pathLen])
+        if (row < 0 || row >= rows || col < 0 || col >= cols || matrix[row][col] != str[pathLen] || marked[row][col]) {
             return false;
-        if(str[pathLen]==matrix[r][c]){
-            return true;
         }
-        marked[r][c]=true;
-        for(int[] temp:next){
-            if(backing(matrix,marked,r+temp[0],c+temp[1],str,pathLen+1)){
+        marked[row][col] = true;
+        for (int[] temp : next) {
+            if (backTracing(matrix, marked, row + temp[0], col + temp[1], str, pathLen + 1)) {
                 return true;
             }
         }
-        marked[r][c]=false;
+        marked[row][col] = false;
         return false;
-    } 
-    //制造矩阵
-    private char[][] buildMatrix(char[] array,int rows,int cols){
+
+    }
+
+    private char[][] buildMatrix(char[] array, int rows, int cols) {
         char[][] matrix = new char[rows][cols];
-        for (int i=0,idx=0;i<rows;i++){
-            for(int j =0;j<cols;j++){
-                matrix[i][j]=array[idx++];
+        for (int i = 0, idx = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j] = array[idx++];
             }
         }
         return matrix;
     }
-    
 
 
 }
@@ -1200,6 +1198,65 @@ private void initDigitSum() {
         for (int j = 0; j < this.cols; j++)
             this.digitSum[i][j] = digitSumOne[i] + digitSumOne[j];
 }
+
+
+改进:
+制作一个每个坐标的求和矩阵,方便和threshold做比较
+marked要传入bfs里面
+    
+public class Solution {
+    private int[][] locationSum;
+    private int rows, cols;
+    private int threshold;
+    private boolean[][] marked;
+    private int count = 0;
+    private int[][] next = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+
+    public int movingCount(int threshold, int rows, int cols) {
+        this.threshold = threshold;
+        this.cols = cols;
+        this.rows = rows;
+        marked = new boolean[rows][cols];
+        locationSum = getLocationSum(rows, cols);
+         //进入bfs
+        bfs(marked, 0, 0);
+        return count;
+    }
+
+    //bfs  不符合条件就退出,符合就继续往下走,走过的就不能走了(不走回头路)
+    private void bfs(boolean[][] marked, int row, int col) {
+        if (row < 0 || col < 0 || row >= rows || col >= cols || marked[row][col] || locationSum[row][col] > threshold) {
+            return;
+        }
+        count++;
+        marked[row][col] = true;
+        for (int[] temp : next) {
+            bfs(marked, row + temp[0], col + temp[1]);
+        }
+        return;
+    }
+    //制作每个方格的和
+    private int[][] getLocationSum(int rows, int cols) {
+        int maxLen = Math.max(rows, cols);
+        int[] sumOne = new int[maxLen];
+        for (int i = 0; i < maxLen; i++) {
+            int sum = 0;
+            int loc = i;
+            while (loc > 0) {
+                sum += loc % 10;
+                loc = loc / 10;
+            }
+            sumOne[i] = sum;
+        }
+        int[][] sumTwo = new int[maxLen][maxLen];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sumTwo[i][j] = sumOne[i] + sumOne[j];
+            }
+        }
+        return sumTwo;
+    }
+}
 ```
 
 # 14. 剪绳子
@@ -1253,6 +1310,12 @@ public int integerBreak(int n) {
             dp[i] = Math.max(dp[i], Math.max(j * (i - j), dp[j] * (i - j)));
     return dp[n];
 }
+
+思考:
+1.从i=2开始,我要求 dp[i]和dp[j]*(i-j)的乘积哪个更大
+  2.  另外dp[j]不包括 j不用分割,当前元素乘积就是最大的情况,因此也需要判断.
+    3.因为是从i之前的元素开始找最大值,所以无论j是 j=i-1;j>=0;j--  还是 j=1;j<i;j++都是没有区别的
+    
 ```
 
 # 15. 二进制中 1 的个数
@@ -1285,6 +1348,10 @@ public int NumberOf1(int n) {
     }
     return cnt;
 }
+
+思考:
+n&(n-1)该位运算去除 n 的位级表示中最低的那一位。
+    而且题目中的整数包含负数,所while(里面是n!=0 而不是n>0)
 ```
 
 
@@ -1648,4 +1715,6 @@ public ListNode EntryNodeOfLoop(ListNode pHead) {
 }
 ```
 
-#  
+
+
+# -+++  
