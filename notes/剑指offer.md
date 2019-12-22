@@ -1396,6 +1396,11 @@ public double Power(double base, int exponent) {
         pow = pow * base;
     return isNegative ? 1 / pow : pow;
 }
+
+改进:
+因为 (x\*x)n/2 可以通过递归求解，并且每次递归 n 都减小一半，因此整个算法的时间复杂度为 O(logN)。
+    如果for循环来求n遍的话,复杂度为O(N)
+    
 ```
 
 # 17. 打印从 1 到最大的 n 位数
@@ -1492,12 +1497,34 @@ public ListNode deleteDuplication(ListNode pHead) {
     if (pHead.val == next.val) {
         while (next != null && pHead.val == next.val)
             next = next.next;
-        return deleteDuplication(next);
+        return deleteDuplication(next); //返回的是从next开始的链表,所以pHead如果也是重复值,pHead也会被删掉
     } else {
         pHead.next = deleteDuplication(pHead.next);
         return pHead;
     }
 }
+
+改进:
+上面递归的方法比较绕,建议用下面的办法,精髓在于创建了一个头结点Head,在pHead也是重复元素的情况下,可以删除Head下的子节点pHead.
+  public ListNode deleteDuplication(ListNode pHead) {
+        ListNode Head = new ListNode(0);
+        Head.next = pHead;
+        ListNode pre = Head;
+        ListNode next = pre.next;
+        while (next != null) {
+            if (next.next != null && next.val == next.next.val) {
+                while (next.next != null && next.val == next.next.val) {
+                    next = next.next;
+                }
+                pre.next = next.next;
+                next = next.next;
+            } else {
+                pre = next;
+                next = next.next;
+            }
+        }
+        return Head.next;
+    }
 ```
 
 # 19. 正则表达式匹配
@@ -1717,4 +1744,41 @@ public ListNode EntryNodeOfLoop(ListNode pHead) {
 
 
 
-# -+++  
+# 24. 反转链表
+
+[NowCoder](https://www.nowcoder.com/practice/75e878df47f24fdc9dc3e400ec6058ca?tpId=13&tqId=11168&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 解题思路
+
+### 递归
+
+```java
+public ListNode ReverseList(ListNode head) {
+    if (head == null || head.next == null)
+        return head;
+    ListNode next = head.next;
+    head.next = null;
+    ListNode newHead = ReverseList(next);
+    next.next = head;
+    return newHead;
+}
+```
+
+### 迭代
+
+使用头插法。
+
+```java
+public ListNode ReverseList(ListNode head) {
+    ListNode newList = new ListNode(-1);
+    while (head != null) {
+        ListNode next = head.next;
+        head.next = newList.next;
+        newList.next = head;
+        head = next;
+    }
+    return newList.next;
+}
+```
+
+# 
