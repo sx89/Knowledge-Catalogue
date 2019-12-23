@@ -82,6 +82,53 @@
 
 第五遍考前适应性训练
 
+
+
+# 常见的数据结构的用法
+
+
+
+```
+map:
+HashMap<Integer,Integer> hm = new HashMap<Integer,Integer>();
+
+遍历:
+Set<Map.Entry<Integer,Integer>> entrySet = hm.entrySet();
+Iterator<Map.Entry<Integer,Integer>> it = entrySet.iterator();
+while(it.hasNext()){
+	Map.Entry<Integer,Integer> entry =it.next();
+	entry.getKey();
+	entry.getValue();
+}
+遍历2:
+for(Map.Entry<Integer,Integer> temp:hm.entrySet()){
+	temp.getKey();
+	temp.getValue();
+}
+
+队列和链表
+
+LinkedList<Integer> list = new LinkedList<Integer>();
+
+list.add(1111);
+list.add(0,111);//头插
+list.peek();//返回头结点,不删除
+list.poll(); //返回头结点,删除
+list.get(0);//获取0处的节点
+
+遍历1:
+Iterator<Integer> it = list.iterator();
+while(it.hasNext()){
+	int i = (int)it.next();
+}
+遍历2:
+for(Integer temp:list){
+	int a  =temp;
+}
+```
+
+
+
 # 3. 数组中重复的数字
 
 [NowCoder](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -1506,6 +1553,8 @@ public ListNode deleteDuplication(ListNode pHead) {
 
 改进:
 上面递归的方法比较绕,建议用下面的办法,精髓在于创建了一个头结点Head,在pHead也是重复元素的情况下,可以删除Head下的子节点pHead.
+    
+    各种next比较绕,要重新做几遍
   public ListNode deleteDuplication(ListNode pHead) {
         ListNode Head = new ListNode(0);
         Head.next = pHead;
@@ -1565,6 +1614,62 @@ public boolean match(char[] str, char[] pattern) {
                     dp[i][j] = dp[i][j - 2];   // a* only counts as empty
 
     return dp[m][n];
+}
+
+改进:
+用下面的思路 比较清晰
+
+当模式中的第二个字符不是“*”时：
+1、如果字符串第一个字符和模式中的第一个字符相匹配，那么字符串和模式都后移一个字符，然后匹配剩余的。
+2、如果 字符串第一个字符和模式中的第一个字符相不匹配，直接返回false。
+
+而当模式中的第二个字符是“*”时：
+如果字符串第一个字符跟模式第一个字符不匹配，则模式后移2个字符，继续匹配。如果字符串第一个字符跟模式第一个字符匹配，可以有3种匹配方式：
+1、模式后移2字符，相当于x*被忽略；
+2、字符串后移1字符，模式后移2字符；
+3、字符串后移1字符，模式不变，即继续匹配字符下一位，因为*可以匹配多位；
+
+这里需要注意的是：Java里，要时刻检验数组是否越界。
+
+
+链接：https://www.nowcoder.com/questionTerminal/45327ae22b7b413ea21df13ee7d6429c?f=discussion
+来源：牛客网
+
+public class Solution {
+    public boolean match(char[] str, char[] pattern) {
+    if (str == null || pattern == null) {
+        return false;
+    }
+    int strIndex = 0;
+    int patternIndex = 0;
+    return matchCore(str, strIndex, pattern, patternIndex);
+}
+  
+public boolean matchCore(char[] str, int strIndex, char[] pattern, int patternIndex) {
+    //有效性检验：str到尾，pattern到尾，匹配成功
+    if (strIndex == str.length && patternIndex == pattern.length) {
+        return true;
+    }
+    //pattern先到尾，匹配失败
+    if (strIndex != str.length && patternIndex == pattern.length) {
+        return false;
+    }
+    //模式第2个是*，且字符串第1个跟模式第1个匹配,分3种匹配模式；如不匹配，模式后移2位
+    if (patternIndex + 1 < pattern.length && pattern[patternIndex + 1] == '*') {
+        if ((strIndex != str.length && pattern[patternIndex] == str[strIndex]) || (pattern[patternIndex] == '.' && strIndex != str.length)) {
+            return matchCore(str, strIndex, pattern, patternIndex + 2)//模式后移2，视为x*匹配0个字符
+                    || matchCore(str, strIndex + 1, pattern, patternIndex + 2)//视为模式匹配1个字符
+                    || matchCore(str, strIndex + 1, pattern, patternIndex);//*匹配1个，再匹配str中的下一个
+        } else {
+            return matchCore(str, strIndex, pattern, patternIndex + 2);
+        }
+    }
+    //模式第2个不是*，且字符串第1个跟模式第1个匹配，则都后移1位，否则直接返回false
+    if ((strIndex != str.length && pattern[patternIndex] == str[strIndex]) || (pattern[patternIndex] == '.' && strIndex != str.length)) {
+        return matchCore(str, strIndex + 1, pattern, patternIndex + 1);
+    }
+    return false;
+    }
 }
 ```
 
@@ -1653,6 +1758,39 @@ public void reOrderArray(int[] nums) {
 private boolean isEven(int x) {
     return x % 2 == 0;
 }
+
+
+
+改进 : 
+没改进,熟悉了一下LinkedList而已
+    
+public void reOrderArray(int[] array) {
+        LinkedList<Integer> oddList = new LinkedList<Integer>();
+        LinkedList<Integer> evenList = new LinkedList<Integer>();
+        for (int i = 0; i < array.length; i++) {
+            if (isOdd(array[i])) {
+                oddList.add(array[i]);
+                continue;
+            }
+            evenList.add(array[i]);
+        }
+        int index = 0;
+        for (Integer temp : oddList) {
+            array[index++] = temp;
+        }
+        for (Integer temp : evenList) {
+            array[index++] = temp;
+        }
+        return;
+    }
+
+    //奇数判断
+    private boolean isOdd(int num) {
+        if (num % 2 == 1) {
+            return true;
+        }
+        return false;
+    }
 ```
 
 方法二：使用冒泡思想，每次都当前偶数上浮到当前最右边。时间复杂度 O(N<sup>2</sup>)，空间复杂度 O(1)，时间换空间。
@@ -1678,6 +1816,9 @@ private void swap(int[] nums, int i, int j) {
     nums[i] = nums[j];
     nums[j] = t;
 }
+
+
+
 ```
 
 # 22. 链表中倒数第 K 个结点
