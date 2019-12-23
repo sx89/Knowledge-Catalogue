@@ -1816,7 +1816,10 @@ private void swap(int[] nums, int i, int j) {
     nums[i] = nums[j];
     nums[j] = t;
 }
-
+改进 
+    第一个循环是 n-1次循环即可
+    第二个循环是  第一次:j为 0~n-2 的array[j]与array[j+1]作比较
+        		第二次: j为 0~n-3 的array[j]与array[j+1]作比较
 
 
 ```
