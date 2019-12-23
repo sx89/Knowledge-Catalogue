@@ -1828,6 +1828,8 @@ private void swap(int[] nums, int i, int j) {
 
 [NowCoder](https://www.nowcoder.com/practice/529d3ae5a407492994ad2a246518148a?tpId=13&tqId=11167&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
+输入一个链表，输出该链表中倒数第k个结点
+
 ## 解题思路
 
 设链表的长度为 N。设置两个指针 P1 和 P2，先让 P1 移动 K 个节点，则还有 N - K 个节点可以移动。此时让 P1 和 P2 同时移动，可以知道当 P1 移动到链表结尾时，P2 移动到第 N - K 个节点处，该位置就是倒数第 K 个节点。
@@ -1850,6 +1852,26 @@ public ListNode FindKthToTail(ListNode head, int k) {
     }
     return P2;
 }
+
+改进:没啥好改进的
+public ListNode FindKthToTail(ListNode head, int k) {
+        //p1 先走k
+        //p2 和 p1 一起走
+        //返回p2
+        ListNode p1 = head;
+        ListNode p2 = head;
+        for (int i = 0; i < k; i++) {
+            if (p1 == null) {
+                return null;
+            }
+            p1 = p1.next;
+        }
+        while (p1 != null) {
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        return p2;
+    }
 ```
 
 # 23. 链表中环的入口结点
