@@ -1884,7 +1884,7 @@ public ListNode FindKthToTail(ListNode head, int k) {
 
 ## 解题思路
 
-使用双指针，一个指针 fast 每次移动两个节点，一个指针 slow 每次移动一个节点。因为存在环，所以两个指针必定相遇在环中的某个节点上。假设相遇点在下图的 z1 位置，此时 fast 移动的节点数为 x+2y+z，slow 为 x+y，由于 fast 速度比 slow 快一倍，因此 x+2y+z=2(x+y)，得到 x=z。
+使用双指针，一个指针 fast 每次移动两个节点，一个指针 slow 每次移动一个节点。因为存在环，所以两个指针必定相遇在环中的某个节点上。假设相遇点在下图的 z1 位置，此时 fast 移动的节点数为 x+y+z+y，slow 为 x+y，由于 fast 速度比 slow 快一倍，因此 x+2y+z=2(x+y)，得到 x=z。
 
 在相遇点，slow 要到环的入口点还需要移动 z 个节点，如果让 fast 重新从头开始移动，并且速度变为每次移动一个节点，那么它到环入口点还需要移动 x 个节点。在上面已经推导出 x=z，因此 fast 和 slow 将在环入口点相遇。
 
@@ -1906,6 +1906,10 @@ public ListNode EntryNodeOfLoop(ListNode pHead) {
     }
     return slow;
 }
+
+改进: 
+	记住环形入口的结论
+    记住代码
 ```
 
 
@@ -1944,6 +1948,161 @@ public ListNode ReverseList(ListNode head) {
         head = next;
     }
     return newList.next;
+}
+
+改进:
+先判断head==null  来保证  ListNode next = head.next;不会报空指针
+
+    
+    
+ public ListNode ReverseList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode reverseHead = new ListNode(-1);
+        ListNode node = head;
+        ListNode next = head.next;
+        while (node != null) {
+            next = node.next;
+            node.next = reverseHead.next;
+            reverseHead.next = node;
+            node = next;
+        }
+        return reverseHead.next;
+    }
+```
+
+# 25. 合并两个排序的链表
+
+[NowCoder](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/c094d2bc-ec75-444b-af77-d369dfb6b3b4.png" width="400"/> </div><br>
+
+## 解题思路
+
+### 递归
+
+```java
+public ListNode Merge(ListNode list1, ListNode list2) {
+    if (list1 == null)
+        return list2;
+    if (list2 == null)
+        return list1;
+    if (list1.val <= list2.val) {
+        list1.next = Merge(list1.next, list2);
+        return list1;
+    } else {
+        list2.next = Merge(list1, list2.next);
+        return list2;
+    }
+}
+```
+
+### 迭代
+
+```java
+public ListNode Merge(ListNode list1, ListNode list2) {
+    ListNode head = new ListNode(-1);
+    ListNode cur = head;
+    while (list1 != null && list2 != null) {
+        if (list1.val <= list2.val) {
+            cur.next = list1;
+            list1 = list1.next;
+        } else {
+            cur.next = list2;
+            list2 = list2.next;
+        }
+        cur = cur.next;
+    }
+    if (list1 != null)
+        cur.next = list1;
+    if (list2 != null)
+        cur.next = list2;
+    return head.next;
+}
+```
+
+# 26. 树的子结构
+
+[NowCoder](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&tqId=11170&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/84a5b15a-86c5-4d8e-9439-d9fd5a4699a1.jpg" width="450"/> </div><br>
+
+## 解题思路
+
+```java
+public boolean HasSubtree(TreeNode root1, TreeNode root2) {
+    if (root1 == null || root2 == null)
+        return false;
+    return isSubtreeWithRoot(root1, root2) || HasSubtree(root1.left, root2) || HasSubtree(root1.right, root2);
+}
+
+private boolean isSubtreeWithRoot(TreeNode root1, TreeNode root2) {
+    if (root2 == null)
+        return true;
+    if (root1 == null)
+        return false;
+    if (root1.val != root2.val)
+        return false;
+    return isSubtreeWithRoot(root1.left, root2.left) && isSubtreeWithRoot(root1.right, root2.right);
+}
+```
+
+# 27. 二叉树的镜像
+
+[NowCoder](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
+
+## 解题思路
+
+```java
+public void Mirror(TreeNode root) {
+    if (root == null)
+        return;
+    swap(root);
+    Mirror(root.left);
+    Mirror(root.right);
+}
+
+private void swap(TreeNode root) {
+    TreeNode t = root.left;
+    root.left = root.right;
+    root.right = t;
+}
+```
+
+# 28 对称的二叉树
+
+[NowCoder](https://www.nowcoder.com/practice/ff05d44dfdb04e1d83bdbdab320efbcb?tpId=13&tqId=11211&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
+
+## 解题思路
+
+```java
+boolean isSymmetrical(TreeNode pRoot) {
+    if (pRoot == null)
+        return true;
+    return isSymmetrical(pRoot.left, pRoot.right);
+}
+
+boolean isSymmetrical(TreeNode t1, TreeNode t2) {
+    if (t1 == null && t2 == null)
+        return true;
+    if (t1 == null || t2 == null)
+        return false;
+    if (t1.val != t2.val)
+        return false;
+    return isSymmetrical(t1.left, t2.right) && isSymmetrical(t1.right, t2.left);
 }
 ```
 
