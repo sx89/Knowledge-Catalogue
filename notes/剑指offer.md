@@ -147,6 +147,27 @@ stack1.pop();
 stack1.push(1);
 stack1.peek();
 stack1.isEmpty();
+
+ArrayList<Integer> list = new ArrayList<Integer>(Arrays.asList(integers));
+
+
+ArrayList
+
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        list.add(0);
+        list.add(0, 1);
+
+        list.get(0);
+
+        list.remove(1);
+        list.remove(new Integer(1));
+
+list转array
+        Object[] objects = list.toArray();
+        Integer[] integers = list.toArray(new Integer[list.size()]);
+array转list
+        ArrayList<Integer> integers1 = new ArrayList<>(Arrays.asList(integers));
 ```
 
 
@@ -2225,6 +2246,26 @@ public boolean IsPopOrder(int[] pushSequence, int[] popSequence) {
     }
     return stack.isEmpty();
 }
+
+改进
+    最后一句 return 可以简化为上面return stack.isEmpty();
+
+
+   public boolean IsPopOrder(int[] pushA, int[] popA) {
+        int n = pushA.length;
+        Stack<Integer> stack = new Stack<Integer>();
+        for (int pushIndex = 0, popIndex = 0; pushIndex < n; pushIndex++) {
+            stack.push(pushA[pushIndex]);
+            while (popIndex < n && !stack.isEmpty() && stack.peek() == popA[popIndex]) {
+                stack.pop();
+                popIndex++;
+            }
+        }
+        if (stack.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 ```
 
 # 32.1 从上往下打印二叉树
@@ -2263,6 +2304,28 @@ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
     }
     return ret;
 }
+
+
+ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        if (root == null) {
+            return list;
+        }
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            list.add(node.val);
+            if (node.left != null) {
+                queue.add(node.left);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+            }
+
+        }
+        return list;
+    }
 ```
 
 # 32.2 把二叉树打印成多行
@@ -2296,6 +2359,10 @@ ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     }
     return ret;
 }
+
+改进:
+while (cnt-- > 0) 是最重要的一步,分割了两层树的节点
+
 ```
 
 # 32.3 按之字形顺序打印二叉树
@@ -2309,30 +2376,39 @@ ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
 ## 解题思路
 
 ```java
+改进: 注意如果用队列和栈来做, 第一行正序,第二行逆序,第三行因为第二行原本就是逆序,所以顺序不好控制了
 public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
-    ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
-    Queue<TreeNode> queue = new LinkedList<>();
-    queue.add(pRoot);
-    boolean reverse = false;
-    while (!queue.isEmpty()) {
-        ArrayList<Integer> list = new ArrayList<>();
-        int cnt = queue.size();
-        while (cnt-- > 0) {
-            TreeNode node = queue.poll();
-            if (node == null)
-                continue;
-            list.add(node.val);
-            queue.add(node.left);
-            queue.add(node.right);
+        ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>>();
+        if (pRoot == null) {
+            return listSum;
         }
-        if (reverse)
-            Collections.reverse(list);
-        reverse = !reverse;
-        if (list.size() != 0)
-            ret.add(list);
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        int count = 1;
+        queue.add(pRoot);
+        while (!queue.isEmpty()) {
+            ArrayList<Integer> list = new ArrayList<Integer>();
+            int size = queue.size();
+            while (size > 0) {
+                TreeNode node = queue.poll();
+                if (count % 2 == 1) {
+                    list.add(node.val);
+                } else {
+                    list.add(0, node.val);
+                }
+
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+                size--;
+            }
+            count++;
+            listSum.add(list);
+        }
+        return listSum;
     }
-    return ret;
-}
 ```
 
 # 33. 二叉搜索树的后序遍历序列
@@ -2368,6 +2444,15 @@ private boolean verify(int[] sequence, int first, int last) {
             return false;
     return verify(sequence, first, cutIndex - 1) && verify(sequence, cutIndex, last - 1);
 }
+
+改进:
+寻找左右子树分界    while (cutIndex < last && sequence[cutIndex] <= rootVal)
+
+判断右子树符不符合规则,这个很重要.
+    for (int i = cutIndex; i < last; i++)
+        if (sequence[i] < rootVal)
+            return false;
+
 ```
 
 # 34. 二叉树中和为某一值的路径
@@ -2619,3 +2704,86 @@ public int MoreThanHalfNum_Solution(int[] nums) {
 }
 ```
 
+# 40. 最小的 K 个数
+
+[NowCoder](https://www.nowcoder.com/practice/6a296eb82cf844ca8539b57c23e6e9bf?tpId=13&tqId=11182&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 解题思路
+
+### 快速选择
+
+- 复杂度：O(N) + O(1)
+- 只有当允许修改数组元素时才可以使用
+
+快速排序的 partition() 方法，会返回一个整数 j 使得 a[l..j-1] 小于等于 a[j]，且 a[j+1..h] 大于等于 a[j]，此时 a[j] 就是数组的第 j 大元素。可以利用这个特性找出数组的第 K 个元素，这种找第 K 个元素的算法称为快速选择算法。
+
+```java
+public ArrayList<Integer> GetLeastNumbers_Solution(int[] nums, int k) {
+    ArrayList<Integer> ret = new ArrayList<>();
+    if (k > nums.length || k <= 0)
+        return ret;
+    findKthSmallest(nums, k - 1);
+    /* findKthSmallest 会改变数组，使得前 k 个数都是最小的 k 个数 */
+    for (int i = 0; i < k; i++)
+        ret.add(nums[i]);
+    return ret;
+}
+
+public void findKthSmallest(int[] nums, int k) {
+    int l = 0, h = nums.length - 1;
+    while (l < h) {
+        int j = partition(nums, l, h);
+        if (j == k)
+            break;
+        if (j > k)
+            h = j - 1;
+        else
+            l = j + 1;
+    }
+}
+
+private int partition(int[] nums, int l, int h) {
+    int p = nums[l];     /* 切分元素 */
+    int i = l, j = h + 1;
+    while (true) {
+        while (i != h && nums[++i] < p) ;
+        while (j != l && nums[--j] > p) ;
+        if (i >= j)
+            break;
+        swap(nums, i, j);
+    }
+    swap(nums, l, j);
+    return j;
+}
+
+private void swap(int[] nums, int i, int j) {
+    int t = nums[i];
+    nums[i] = nums[j];
+    nums[j] = t;
+}
+```
+
+### 大小为 K 的最小堆
+
+- 复杂度：O(NlogK) + O(K)
+- 特别适合处理海量数据
+
+应该使用大顶堆来维护最小堆，而不能直接创建一个小顶堆并设置一个大小，企图让小顶堆中的元素都是最小元素。
+
+维护一个大小为 K 的最小堆过程如下：在添加一个元素之后，如果大顶堆的大小大于 K，那么需要将大顶堆的堆顶元素去除。
+
+```java
+public ArrayList<Integer> GetLeastNumbers_Solution(int[] nums, int k) {
+    if (k > nums.length || k <= 0)
+        return new ArrayList<>();
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1);
+    for (int num : nums) {
+        maxHeap.add(num);
+        if (maxHeap.size() > k)
+            maxHeap.poll();
+    }
+    return new ArrayList<>(maxHeap);
+}
+```
+
+# 
