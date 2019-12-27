@@ -1878,7 +1878,6 @@ private void swap(int[] nums, int i, int j) {
 设链表的长度为 N。设置两个指针 P1 和 P2，先让 P1 移动 K 个节点，则还有 N - K 个节点可以移动。此时让 P1 和 P2 同时移动，可以知道当 P1 移动到链表结尾时，P2 移动到第 N - K 个节点处，该位置就是倒数第 K 个节点。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/6b504f1f-bf76-4aab-a146-a9c7a58c2029.png" width="500"/> </div><br>
-
 ```java
 public ListNode FindKthToTail(ListNode head, int k) {
     if (head == null)
@@ -1932,7 +1931,6 @@ public ListNode FindKthToTail(ListNode head, int k) {
 在相遇点，slow 要到环的入口点还需要移动 z 个节点，如果让 fast 重新从头开始移动，并且速度变为每次移动一个节点，那么它到环入口点还需要移动 x 个节点。在上面已经推导出 x=z，因此 fast 和 slow 将在环入口点相遇。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/bb7fc182-98c2-4860-8ea3-630e27a5f29f.png" width="500"/> </div><br>
-
 ```java
 public ListNode EntryNodeOfLoop(ListNode pHead) {
     if (pHead == null || pHead.next == null)
@@ -2022,7 +2020,6 @@ public ListNode ReverseList(ListNode head) {
 ## 题目描述
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/c094d2bc-ec75-444b-af77-d369dfb6b3b4.png" width="400"/> </div><br>
-
 ## 解题思路
 
 ### 递归
@@ -2074,7 +2071,6 @@ public ListNode Merge(ListNode list1, ListNode list2) {
 ## 题目描述
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/84a5b15a-86c5-4d8e-9439-d9fd5a4699a1.jpg" width="450"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2104,7 +2100,6 @@ private boolean isSubtreeWithRoot(TreeNode root1, TreeNode root2) {
 操作给定的二叉树，将其变换为源二叉树的镜像。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2130,7 +2125,6 @@ private void swap(TreeNode root) {
 ## 题目描述
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2160,7 +2154,6 @@ boolean isSymmetrical(TreeNode t1, TreeNode t2) {
 下图的矩阵顺时针打印结果为：1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/48517227-324c-4664-bd26-a2d2cffe2bfe.png" width="200px"> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2279,7 +2272,6 @@ public boolean IsPopOrder(int[] pushSequence, int[] popSequence) {
 例如，以下二叉树层次遍历的结果为：1,2,3,4,5,6,7
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d5e838cf-d8a2-49af-90df-1b2a714ee676.jpg" width="250"/> </div><br>
-
 ## 解题思路
 
 使用队列来进行层次遍历。
@@ -2422,7 +2414,6 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
 例如，下图是后序遍历序列 1,3,2 所对应的二叉搜索树。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/13454fa1-23a8-4578-9663-2b13a6af564a.jpg" width="150"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2466,7 +2457,6 @@ private boolean verify(int[] sequence, int first, int last) {
 下图的二叉树有两条和为 22 的路径：10, 5, 7 和 10, 12
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ed77b0e6-38d9-4a34-844f-724f3ffa2c12.jpg" width="200"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2490,6 +2480,35 @@ private void backtracking(TreeNode node, int target, ArrayList<Integer> path) {
     }
     path.remove(path.size() - 1);
 }
+改进
+    listSum.add(path)的时候 add的是new ArrayList<>(path);  不新创建一个的话,后面paht的修改会影响listSum里面的内容
+private ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>>();
+    public ArrayList<ArrayList<Integer>> FindPath(TreeNode root, int target) {
+        if (root == null) {
+            return listSum;
+        }
+        findPath(root, target, 0, new ArrayList<Integer>());
+        return listSum;
+    }
+    private void findPath(TreeNode root, int target, int sum, ArrayList<Integer> path) {
+        if (root == null) {
+            return;
+        }
+        path.add(root.val);
+        sum += root.val;
+        if (sum > target) {
+            path.remove(path.size() - 1);
+            return;
+        }
+        if (sum == target && root.left == null && root.right == null) {
+            listSum.add(new ArrayList<>(path));
+            path.remove(path.size() - 1);
+            return;
+        }
+        findPath(root.left, target, sum, path);
+        findPath(root.right, target, sum, path);
+        path.remove(path.size() - 1);
+    }
 ```
 
 # 35. 复杂链表的复制
@@ -2513,21 +2532,17 @@ public class RandomListNode {
 ```
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/66a01953-5303-43b1-8646-0c77b825e980.png" width="300"/> </div><br>
-
 ## 解题思路
 
 第一步，在每个节点的后面插入复制的节点。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/dfd5d3f8-673c-486b-8ecf-d2082107b67b.png" width="600"/> </div><br>
-
 第二步，对复制节点的 random 链接进行赋值。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/cafbfeb8-7dfe-4c0a-a3c9-750eeb824068.png" width="600"/> </div><br>
-
 第三步，拆分。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e151b5df-5390-4365-b66e-b130cd253c12.png" width="600"/> </div><br>
-
 ```java
 public RandomListNode Clone(RandomListNode pHead) {
     if (pHead == null)
@@ -2558,6 +2573,44 @@ public RandomListNode Clone(RandomListNode pHead) {
     }
     return pCloneHead;
 }
+改进:
+下面的拆分更好理解.
+
+
+
+ public RandomListNode Clone(RandomListNode pHead) {
+        if (pHead == null) {
+            return null;
+        }
+        RandomListNode cur = pHead;
+        while (cur != null) {
+            RandomListNode clone = new RandomListNode(cur.label);
+            clone.next = cur.next;
+            cur.next = clone;
+            cur = cur.next.next;
+        }
+        
+        cur = pHead;
+        while (cur != null) {
+            RandomListNode clone = cur.next;
+            if (cur.random != null) {
+                clone.random = cur.random.next;//为什么判空
+
+            }
+            cur = clone.next;
+        }
+        //拆分
+        cur = pHead;
+        RandomListNode cloneHead = pHead.next;
+        while (cur != null) {
+            RandomListNode cloneCur = cur.next;
+            cur.next = cloneCur.next;
+            cloneCur.next = cloneCur.next == null ? null : cloneCur.next.next;
+            //cloneCur=cloneCur.next;
+            cur = cur.next;
+        }
+        return cloneHead;
+ }
 ```
 
 # 36. 二叉搜索树与双向链表
@@ -2569,7 +2622,6 @@ public RandomListNode Clone(RandomListNode pHead) {
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/05a08f2e-9914-4a77-92ef-aebeaecf4f66.jpg" width="400"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -2593,6 +2645,68 @@ private void inOrder(TreeNode node) {
         head = node;
     inOrder(node.right);
 }
+
+改进:
+pre.right = root;
+root.left = pre;
+pre = root;
+
+  private TreeNode pre = null;
+    private TreeNode head = null;
+
+    public TreeNode Convert(TreeNode pRootOfTree) {
+        inOrder(pRootOfTree);
+        return head;
+    }
+
+    private void inOrder(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        inOrder(root.left);
+        if (pre == null) {
+            pre = root;
+        } else {
+            pre.right = root;
+            root.left = pre;
+            pre = root;
+        }
+
+        if (head == null) {
+            head = root;
+        }
+        inOrder(root.right);
+    }
+
+改进:非递归写法
+    
+    private TreeNode head = null;
+    private TreeNode pre = null;
+
+    public TreeNode Convert(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode p = root;
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        while (p != null || !stack.isEmpty()) {
+            while (p != null) {
+                stack.push(p);
+                p = p.left;
+            }
+            p = stack.pop();
+            if (pre == null) {
+                pre = p;
+                head = p;
+            } else {
+                pre.right = p;
+                p.left = pre;
+                pre = p;
+            }
+            p = p.right;
+        }
+        return head;
+    }
 ```
 
 # 37. 序列化二叉树
@@ -2633,6 +2747,43 @@ private TreeNode Deserialize() {
     t.right = Deserialize();
     return t;
 }
+
+改进:
+
+string 转化int    Integer.valueOf(string)
+string相等:   string.equals(string)
+string长度   string.length()
+    
+    
+
+    String Serialize(TreeNode root) {
+        if (root == null) {
+            return "#";
+        }
+        return root.val + " " + Serialize(root.left) + " " + Serialize(root.right);
+
+    }
+
+    private String data;
+    TreeNode Deserialize(String str) {
+        data = str;
+        return Dstr();
+    }
+    private TreeNode Dstr() {
+        if (data.length() == 0) {
+            return null;
+        }
+        int index = data.indexOf(" ");
+        String node = index == -1 ? data : data.substring(0, index);
+        data = index == -1 ? "" : data.substring(index + 1);
+        if (node.equals("#")) {
+            return null;
+        }
+        TreeNode t = new TreeNode(Integer.valueOf(node));
+        t.left = Dstr();
+        t.right = Dstr();
+        return t;
+    }
 ```
 
 # 38. 字符串的排列
@@ -2674,6 +2825,16 @@ private void backtracking(char[] chars, boolean[] hasUsed, StringBuilder s) {
         hasUsed[i] = false;
     }
 }
+
+改进
+    
+    StringBuilder s :       
+	s.append(char c) 		s.deleteCharAt(s.length()-1)
+    导入包:                  自带不用导入
+	化为字符串                s.toString()
+    字符串化成Array:          str.toCharArray()
+        
+    排序函数                  Arrays.sort(array);
 ```
 
 # 39. 数组中出现次数超过一半的数字
