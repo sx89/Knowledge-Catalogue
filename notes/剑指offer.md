@@ -2797,44 +2797,59 @@ string长度   string.length()
 ## 解题思路
 
 ```java
-private ArrayList<String> ret = new ArrayList<>();
-
-public ArrayList<String> Permutation(String str) {
-    if (str.length() == 0)
+    private StringBuilder sb ;
+    private boolean[] hasUsed;
+    private char[]   chars;
+    private Set<String> retSet;
+    private ArrayList<String>  ret;
+    public ArrayList<String> Permutation(String str) {
+       if(str==null||str.length()==0){
+           return new ArrayList<String>();
+       }
+        
+        sb = new StringBuilder();
+        int length = str.length();
+        hasUsed =new  boolean[length];
+        chars = str.toCharArray();
+        retSet =new HashSet<String>();
+        
+        
+        backtracing();
+        ret = new ArrayList<String>(retSet);
+        Collections.sort(ret);
         return ret;
-    char[] chars = str.toCharArray();
-    Arrays.sort(chars);
-    backtracking(chars, new boolean[chars.length], new StringBuilder());
-    return ret;
-}
-
-private void backtracking(char[] chars, boolean[] hasUsed, StringBuilder s) {
-    if (s.length() == chars.length) {
-        ret.add(s.toString());
-        return;
     }
-    for (int i = 0; i < chars.length; i++) {
-        if (hasUsed[i])
-            continue;
-        if (i != 0 && chars[i] == chars[i - 1] && !hasUsed[i - 1]) /* 保证不重复 */
-            continue;
-        hasUsed[i] = true;
-        s.append(chars[i]);
-        backtracking(chars, hasUsed, s);
-        s.deleteCharAt(s.length() - 1);
-        hasUsed[i] = false;
+    
+    private void backtracing(){
+        if(sb.length()==chars.length){
+            retSet.add(sb.toString());
+            return ;
+        }
+        for(int i= 0;i<chars.length;i++){
+            if(hasUsed[i]){
+                continue;
+            }
+            hasUsed[i]=true;
+            sb.append(chars[i]);
+            backtracing();
+            hasUsed[i]=false;
+            sb.deleteCharAt(sb.length()-1);
+        }
     }
-}
 
 改进
     
     StringBuilder s :       
 	s.append(char c) 		s.deleteCharAt(s.length()-1)
-    导入包:                  自带不用导入
+    导入包:                  import java.util.*;
 	化为字符串                s.toString()
     字符串化成Array:          str.toCharArray()
         
-    排序函数                  Arrays.sort(array);
+    排序函数                  
+    Arrays.sort(array);
+	Collections.sort( arraylist);
+	new ArrayList(HashSet<String> ret);
+	
 ```
 
 # 39. 数组中出现次数超过一半的数字
