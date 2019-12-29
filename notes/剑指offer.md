@@ -3127,6 +3127,11 @@ public void Insert(char ch) {
 public char FirstAppearingOnce() {
     return queue.isEmpty() ? '#' : queue.peek();
 }
+
+改进 : 
+有队列来记录最早的符合条件的node
+queue用linkedList来实现.   最早的节点在头上,最晚的节点在尾巴,poll的时候从头上取.
+用数组的下标来作为key.cnts[ch]++;
 ```
 
 # 42. 连续子数组的最大和
@@ -3136,6 +3141,8 @@ public char FirstAppearingOnce() {
 ## 题目描述
 
 {6, -3, -2, 7, -15, 1, 2, 2}，连续子数组的最大和为 8（从第 0 个开始，到第 3 个为止）。
+
+注意: 并不是一定要从0开始,可以是数组中间的一段连续子数组.
 
 ## 解题思路
 
@@ -3151,6 +3158,11 @@ public int FindGreatestSumOfSubArray(int[] nums) {
     }
     return greatestSum;
 }
+
+改进:
+Integer.MIN_VALUE;
+Math.max(,);
+
 ```
 
 # 43. 从 1 到 n 整数中 1 出现的次数
