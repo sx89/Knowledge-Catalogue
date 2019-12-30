@@ -3172,14 +3172,44 @@ Math.max(,);
 ## 解题思路
 
 ```java
-public int NumberOf1Between1AndN_Solution(int n) {
-    int cnt = 0;
-    for (int m = 1; m <= n; m *= 10) {
-        int a = n / m, b = n % m;
-        cnt += (a + 8) / 10 * m + (a % 10 == 1 ? b + 1 : 0);
+    public int NumberOf1Between1AndN_Solution(int num) {
+
+//            以i=10的循环为例,解释上面的代码:
+//            i=10,假设num=317,
+//            oneInI: 计算十位上是1,等时候出现的数字个数
+//                    num除以100,得出来的是3,
+//                    也就是3个100,每个100里面,十位上是1都有10次出现的机会.
+//                    所以(num / i * 10) * i的末尾再乘以 i,也就是乘以10.
+//                    得出317的oneInI等于30
+//            oneInRemain是300~317之间出现1的次数.
+//            分三种情况.如果17大于19(20~99),如果17小于10(0~9),如果17在10~19之间(10~19)
+//            对应的1的个数分别是10个           0个                    17-10+1个
+//			所以最后317在十位上的1的个数为: 317/(10*10)*10+(17-10+1) = 38
+
+        if (num <= 0)
+            return 0;
+        int countSum = 0;
+        long oneInRemain = 0;
+        long oneInI = 0;
+        //i=1时,计算的是个位里面1的个数
+        //i=10时,计算的是十位里1的个数
+        for (long i = 1; i <= num; i *= 10) {
+            //计算OneInI
+            oneInI = (num / (i * 10)) * i;
+
+            //计算OnInRemain
+            long remain = num % (i * 10);
+            if (remain > i * 2 - 1)
+                oneInRemain = i;
+            else if (remain < i)
+                oneInRemain = 0;
+            else
+                oneInRemain = remain - i + 1;
+            //计算总的countSum
+            countSum += oneInI + oneInRemain;
+        }
+        return countSum;
     }
-    return cnt;
-}
 ```
 
 > [Leetcode : 233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/discuss/64381/4+-lines-O(log-n)-C++JavaPython)
@@ -3252,19 +3282,31 @@ private int getDigitAtIndex(int index, int place) {
 可以看成是一个排序问题，在比较两个字符串 S1 和 S2 的大小时，应该比较的是 S1+S2 和 S2+S1 的大小，如果 S1+S2 < S2+S1，那么应该把 S1 排在前面，否则应该把 S2 排在前面。
 
 ```java
-public String PrintMinNumber(int[] numbers) {
-    if (numbers == null || numbers.length == 0)
-        return "";
-    int n = numbers.length;
-    String[] nums = new String[n];
-    for (int i = 0; i < n; i++)
-        nums[i] = numbers[i] + "";
-    Arrays.sort(nums, (s1, s2) -> (s1 + s2).compareTo(s2 + s1));
-    String ret = "";
-    for (String str : nums)
-        ret += str;
-    return ret;
-}
+    public String PrintMinNumber(int[] numbers) {
+        if (numbers.length == 0 || numbers == null) {
+            return "";
+        }
+        String[] numStr = new String[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            numStr[i] = numbers[i] + "";
+        }
+        Comparator<String> c = new Comparator<String>() {
+            public int compare(String s1, String s2) {
+                return (s1 + s2).compareTo(s2 + s1);
+            }
+        };
+        Arrays.sort(numStr, c);
+        String ret = "";
+        for (String temp : numStr) {
+            ret += temp;
+        }
+        return ret;
+    }
+
+改进: 
+String 的比较 str.compareTo(s2)
+Array.sort(nums,comparator);
+此题的核心在于s1 和 s2的 大小是由 s1+s2 ,s2+s1 的大小来决定的.
 ```
 
 # 46. 把数字翻译成字符串
