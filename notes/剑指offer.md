@@ -3339,6 +3339,12 @@ public int numDecodings(String s) {
     }
     return dp[n];
 }
+
+改进: 难懂的代码,把数字带进去,仔细读懂每一句.
+    dp[0]是边界条件,dp[1]是第一个字符的组合数,dp[2]是第二个字符的组合数
+    substring,charAt的下标是从0开始的.
+    Integer.valueOf
+    
 ```
 
 # 47. 礼物的最大价值
