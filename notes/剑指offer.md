@@ -3578,13 +3578,13 @@ public int FirstNotRepeatingChar(String str) {
 
 ```java
 public int FirstNotRepeatingChar2(String str) {
-    BitSet bs1 = new BitSet(256);
-    BitSet bs2 = new BitSet(256);
+    BitSet bs1 = new BitSet(256);//是否存在
+    BitSet bs2 = new BitSet(256);//是否多次
     for (char c : str.toCharArray()) {
         if (!bs1.get(c) && !bs2.get(c))
-            bs1.set(c);     // 0 0 -> 0 1
-        else if (bs1.get(c) && !bs2.get(c))
-            bs2.set(c);     // 0 1 -> 1 1
+            bs1.set(c);     // 0 0 -> 1 0   不存在,        改成存在,但不是多次
+        else if (bs1.get(c) && !bs2.get(c)) 
+            bs2.set(c);     // 1 0 -> 1 1 存在,但不是多次  改成存在,且多次
     }
     for (int i = 0; i < str.length(); i++) {
         char c = str.charAt(i);
@@ -3593,6 +3593,10 @@ public int FirstNotRepeatingChar2(String str) {
     }
     return -1;
 }
+
+改进: 字符有256个
+    int[] flags = new int[256];//字符
+	int[] flags = new int[26];//字母
 ```
 
 # 51. 数组中的逆序对
