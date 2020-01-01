@@ -3610,42 +3610,65 @@ public int FirstNotRepeatingChar2(String str) {
 ## 解题思路
 
 ```java
-private long cnt = 0;
-private int[] tmp;  // 在这里声明辅助数组，而不是在 merge() 递归函数中声明
+改进:
 
-public int InversePairs(int[] nums) {
-    tmp = new int[nums.length];
-    mergeSort(nums, 0, nums.length - 1);
-    return (int) (cnt % 1000000007);
-}
+归并排序学习
 
-private void mergeSort(int[] nums, int l, int h) {
-    if (h - l < 1)
-        return;
-    int m = l + (h - l) / 2;
-    mergeSort(nums, l, m);
-    mergeSort(nums, m + 1, h);
-    merge(nums, l, m, h);
-}
+int	-2147483648～2147483647  10位,最高位为2
+long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
+    
+一般编程题模1000000007(十位,质数)1000000007 是最小的十位质数。模1000000007，可以保证值永远在int的范围内。
 
-private void merge(int[] nums, int l, int m, int h) {
-    int i = l, j = m + 1, k = l;
-    while (i <= m || j <= h) {
-        if (i > m)
-            tmp[k] = nums[j++];
-        else if (j > h)
-            tmp[k] = nums[i++];
-        else if (nums[i] <= nums[j])
-            tmp[k] = nums[i++];
-        else {
-            tmp[k] = nums[j++];
-            this.cnt += m - i + 1;  // nums[i] > nums[j]，说明 nums[i...mid] 都大于 nums[j]
-        }
-        k++;
+模1000000007的原因是:
+1. 1000000007是一个质数
+2. int32位的最大值为2147483647，所以对于int32位来说1000000007足够大
+3. int64位的最大值为2^63-1，对于1000000007来说它的平方不会在int64中溢出 所以在大数相乘的时候，因为(a∗b)%c=((a%c)∗(b%c))%c，所以相乘时两边都对1000000007取模，再保存在int64里面不会溢出
+
+    
+    
+ private long count = 0;
+    private int[] tmp;
+
+
+    public int InversePairs(int[] array) {
+
+        tmp = new int[array.length];
+        mergeSort(array, 0, array.length - 1);
+        return (int) (count % 1000000007);
     }
-    for (k = l; k <= h; k++)
-        nums[k] = tmp[k];
-}
+
+    private void mergeSort(int[] array, int low, int high) {
+        if (high - low < 1) {
+            //改进: high-low<1
+            return;
+        }
+//        int mid = (low + high) / 2;
+        int mid = low + (high - low) / 2;
+        //改进: low+(high-low)/2
+        mergeSort(array, low, mid);
+        mergeSort(array, mid + 1, high);
+        merge(array, low, mid, high);
+    }
+
+    private void merge(int[] array, int low, int mid, int high) {
+        int leftIdx = low, rightIdx = mid + 1, tempIdx = low;
+        while (leftIdx <= mid || rightIdx <= high) {
+            if (leftIdx > mid) {
+                tmp[tempIdx] = array[rightIdx++];
+            } else if (rightIdx > high) {
+                tmp[tempIdx] = array[leftIdx++];
+            } else if (array[leftIdx] <= array[rightIdx]) {
+                tmp[tempIdx] = array[leftIdx++];
+            } else {
+                tmp[tempIdx] = array[rightIdx++];
+                this.count += mid - leftIdx + 1;
+            }
+            tempIdx++;
+        }
+        for (tempIdx = low; tempIdx <= high; tempIdx++) {
+            array[tempIdx] = tmp[tempIdx];
+        }
+    }
 ```
 
 # 52. 两个链表的第一个公共结点
