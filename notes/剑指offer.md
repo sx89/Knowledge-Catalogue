@@ -3694,6 +3694,44 @@ public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
     }
     return l1;
 }
+
+改进:
+下面的方法好理解求size1 size2   和 deta差.
+    让长的先走deta差.
+ public ListNode FindFirstCommonNode(ListNode p1, ListNode p2) {
+        int size1 = 0;
+        int size2 = 0;
+        ListNode pHead1 = p1;
+        ListNode pHead2 = p2;
+        while (pHead1 != null) {
+            pHead1 = pHead1.next;
+            size1++;
+        }
+        while (pHead2 != null) {
+            pHead2 = pHead2.next;
+            size2++;
+        }
+        int diff = Math.abs(size1 - size2);
+
+        if (size1 > size2) {
+            pHead1 = p1;
+            pHead2 = p2;
+        } else {
+            pHead1 = p2;
+            pHead2 = p1;
+        }
+        for (int i = 0; i < diff; i++) {
+            pHead1 = pHead1.next;
+        }
+        while (pHead1 != null) {
+            if (pHead1.val == pHead2.val) {
+                return pHead1;
+            }
+            pHead1 = pHead1.next;
+            pHead2 = pHead2.next;
+        }
+        return pHead1;
+    }
 ```
 
 # 53. 数字在排序数组中出现的次数
