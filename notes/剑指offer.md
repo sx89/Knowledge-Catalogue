@@ -3343,7 +3343,8 @@ public int numDecodings(String s) {
 改进: 难懂的代码,把数字带进去,仔细读懂每一句.
     dp[0]是边界条件,dp[1]是第一个字符的组合数,dp[2]是第二个字符的组合数
     substring,charAt的下标是从0开始的.
-    Integer.valueOf
+    Integer.valueOf(s.substring(1,2))  根据字符串代表的数字返回int        '0' 返回 0
+    Integer.valueOf(s.charAt(1))       根据Character对应的int值返回int: '0' 返回 48  
     
 ```
 
@@ -3381,6 +3382,30 @@ public int getMost(int[][] values) {
     }
     return dp[n - 1];
 }
+
+
+改进: 二维数组的长和宽不一定相等,要分开考虑
+    public int getMost(int[][] board) {
+        // write code here
+        int row = board.length;
+        int col = board[0].length;
+        int[][] dp = new int[row][col];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (i == 0 && j == 0) {
+                    dp[0][0] = board[0][0];
+                } else if (i == 0) {
+                    dp[i][j] = board[i][j] + dp[i][j - 1];
+                } else if (j == 0) {
+                    dp[i][j] = board[i][j] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = board[i][j] + Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+
+            }
+        }
+        return dp[row - 1][col - 1];
+    }
 ```
 
 # 48. 最长不含重复字符的子字符串
@@ -3411,6 +3436,40 @@ public int longestSubStringWithoutDuplication(String str) {
     maxLen = Math.max(maxLen, curLen);
     return maxLen;
 }
+改进:
+int m = 5 + 4 > 3 ? 1 : 6;  会被当成 9>3?1:6来做,所以m=1.
+思路:
+dp[n]只由dp[n-1]决定,
+如果dp[n-1]所代表的子串内,没有dp[n-1]的重复则dp[n]=dp[n-1]+1;
+如果dp[n-1]所代表的的子串内,从后往前,在k处发现了与dp[n]对应的重复,则dp[n]=n-k;
+ public int func(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        int len = s.length();
+        int[] dp = new int[len];
+        dp[0] = 1;
+        int maxLen = 0;
+        for (int i = 1; i < len; i++) {
+            int preLongest = dp[i - 1];
+            int startPre = i - preLongest;
+            int repeatIndex = -1;
+            for (int j = i - 1; j >= startPre; j--) {
+                if (s.charAt(j) == s.charAt(i)) {
+                    repeatIndex = j;
+                    break;
+                }
+            }
+            if (repeatIndex < 0) {
+                dp[i] = dp[i - 1] + 1;
+                maxLen = Math.max(dp[i], maxLen);
+            } else {
+                dp[i] = i - repeatIndex;
+                maxLen = Math.max(dp[i], maxLen);
+            }
+        }
+        return maxLen;
+    }
 ```
 
 # 49. 丑数
@@ -3420,6 +3479,15 @@ public int longestSubStringWithoutDuplication(String str) {
 ## 题目描述
 
 把只包含因子 2、3 和 5 的数称作丑数（Ugly Number）。例如 6、8 都是丑数，但 14 不是，因为它包含因子 7。习惯上我们把 1 当做是第一个丑数。求按从小到大的顺序的第 N 个丑数。
+
+
+
+解题思路:
+
+链接：https://www.nowcoder.com/questionTerminal/6aa9e04fc3794f68acf8778237ba065b?f=discussion
+来源：牛客网
+
+首先从丑数的定义我们知道，一个丑数的因子只有2,3,5，那么丑数p = 2 ^ x * 3 ^ y * 5 ^ z，换句话说一个丑数一定由另一个丑数乘以2或者乘以3或者乘以5得到，那么我们从1开始乘以2,3,5，就得到2,3,5三个丑数，在从这三个丑数出发乘以2,3,5就得到4，6,10,6，
 
 ## 解题思路
 
@@ -3442,5 +3510,430 @@ public int GetUglyNumber_Solution(int N) {
     }
     return dp[N - 1];
 }
+
+改进:
+next2,next3,next4 是候选数,候选数的计算方式很重要.
+    如果当前选择的是next2,则下一次的next2是 ret.get(idx2)*2;
+	最重要的是 idx2 idx3 idx5使用的是独立下标!!!
+public int GetUglyNumber_Solution(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        int idx2 = 0;
+        int idx3 = 0;
+        int idx5 = 0;
+        ret.add(1);
+
+        for (int i = 2; i <= n; i++) {
+            int next2 = ret.get(idx2) * 2;
+            int next3 = ret.get(idx3) * 3;
+            int next5 = ret.get(idx5) * 5;
+            int next = Math.min(next2, Math.min(next3, next5));
+            ret.add(next);
+            if (next == next2) {
+                idx2++;
+            }
+            if (next == next3) {
+                idx3++;
+            }
+            if (next == next5) {
+                idx5++;
+            }
+        }
+        return ret.get(n - 1);
+    }
 ```
 
+# 50. 第一个只出现一次的字符位置
+
+[NowCoder](https://www.nowcoder.com/practice/1c82e8cf713b4bbeb2a5b31cf5b0417c?tpId=13&tqId=11187&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+在一个字符串中找到第一个只出现一次的字符，并返回它的位置。
+
+```
+Input: abacc
+Output: b
+```
+
+## 解题思路
+
+最直观的解法是使用 HashMap 对出现次数进行统计，但是考虑到要统计的字符范围有限，因此可以使用整型数组代替 HashMap，从而将空间复杂度由 O(N) 降低为 O(1)。
+
+```java
+public int FirstNotRepeatingChar(String str) {
+    int[] cnts = new int[256];
+    for (int i = 0; i < str.length(); i++)
+        cnts[str.charAt(i)]++;
+    for (int i = 0; i < str.length(); i++)
+        if (cnts[str.charAt(i)] == 1)
+            return i;
+    return -1;
+}
+```
+
+以上实现的空间复杂度还不是最优的。考虑到只需要找到只出现一次的字符，那么需要统计的次数信息只有 0,1,更大，使用两个比特位就能存储这些信息。
+
+```java
+public int FirstNotRepeatingChar2(String str) {
+    BitSet bs1 = new BitSet(256);
+    BitSet bs2 = new BitSet(256);
+    for (char c : str.toCharArray()) {
+        if (!bs1.get(c) && !bs2.get(c))
+            bs1.set(c);     // 0 0 -> 0 1
+        else if (bs1.get(c) && !bs2.get(c))
+            bs2.set(c);     // 0 1 -> 1 1
+    }
+    for (int i = 0; i < str.length(); i++) {
+        char c = str.charAt(i);
+        if (bs1.get(c) && !bs2.get(c))  // 0 1
+            return i;
+    }
+    return -1;
+}
+```
+
+# 51. 数组中的逆序对
+
+[NowCoder](https://www.nowcoder.com/practice/96bd6684e04a44eb80e6a68efc0ec6c5?tpId=13&tqId=11188&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+
+## 解题思路
+
+```java
+private long cnt = 0;
+private int[] tmp;  // 在这里声明辅助数组，而不是在 merge() 递归函数中声明
+
+public int InversePairs(int[] nums) {
+    tmp = new int[nums.length];
+    mergeSort(nums, 0, nums.length - 1);
+    return (int) (cnt % 1000000007);
+}
+
+private void mergeSort(int[] nums, int l, int h) {
+    if (h - l < 1)
+        return;
+    int m = l + (h - l) / 2;
+    mergeSort(nums, l, m);
+    mergeSort(nums, m + 1, h);
+    merge(nums, l, m, h);
+}
+
+private void merge(int[] nums, int l, int m, int h) {
+    int i = l, j = m + 1, k = l;
+    while (i <= m || j <= h) {
+        if (i > m)
+            tmp[k] = nums[j++];
+        else if (j > h)
+            tmp[k] = nums[i++];
+        else if (nums[i] <= nums[j])
+            tmp[k] = nums[i++];
+        else {
+            tmp[k] = nums[j++];
+            this.cnt += m - i + 1;  // nums[i] > nums[j]，说明 nums[i...mid] 都大于 nums[j]
+        }
+        k++;
+    }
+    for (k = l; k <= h; k++)
+        nums[k] = tmp[k];
+}
+```
+
+# 52. 两个链表的第一个公共结点
+
+[NowCoder](https://www.nowcoder.com/practice/6ab1d9a29e88450685099d45c9e31e46?tpId=13&tqId=11189&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/5f1cb999-cb9a-4f6c-a0af-d90377295ab8.png" width="500"/> </div><br>
+
+## 解题思路
+
+设 A 的长度为 a + c，B 的长度为 b + c，其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
+
+当访问链表 A 的指针访问到链表尾部时，令它从链表 B 的头部重新开始访问链表 B；同样地，当访问链表 B 的指针访问到链表尾部时，令它从链表 A 的头部重新开始访问链表 A。这样就能控制访问 A 和 B 两个链表的指针能同时访问到交点。
+
+```java
+public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+    ListNode l1 = pHead1, l2 = pHead2;
+    while (l1 != l2) {
+        l1 = (l1 == null) ? pHead2 : l1.next;
+        l2 = (l2 == null) ? pHead1 : l2.next;
+    }
+    return l1;
+}
+```
+
+# 53. 数字在排序数组中出现的次数
+
+[NowCoder](https://www.nowcoder.com/practice/70610bf967994b22bb1c26f9ae901fa2?tpId=13&tqId=11190&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+```html
+Input:
+nums = 1, 2, 3, 3, 3, 3, 4, 6
+K = 3
+
+Output:
+4
+```
+
+## 解题思路
+
+```java
+public int GetNumberOfK(int[] nums, int K) {
+    int first = binarySearch(nums, K);
+    int last = binarySearch(nums, K + 1);
+    return (first == nums.length || nums[first] != K) ? 0 : last - first;
+}
+
+private int binarySearch(int[] nums, int K) {
+    int l = 0, h = nums.length;
+    while (l < h) {
+        int m = l + (h - l) / 2;
+        if (nums[m] >= K)
+            h = m;
+        else
+            l = m + 1;
+    }
+    return l;
+}
+```
+
+# 54. 二叉查找树的第 K 个结点
+
+[NowCoder](https://www.nowcoder.com/practice/ef068f602dde4d28aab2b210e859150a?tpId=13&tqId=11215&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 解题思路
+
+利用二叉查找树中序遍历有序的特点。
+
+```java
+private TreeNode ret;
+private int cnt = 0;
+
+public TreeNode KthNode(TreeNode pRoot, int k) {
+    inOrder(pRoot, k);
+    return ret;
+}
+
+private void inOrder(TreeNode root, int k) {
+    if (root == null || cnt >= k)
+        return;
+    inOrder(root.left, k);
+    cnt++;
+    if (cnt == k)
+        ret = root;
+    inOrder(root.right, k);
+}
+```
+
+# 55.1 二叉树的深度
+
+[NowCoder](https://www.nowcoder.com/practice/435fb86331474282a3499955f0a41e8b?tpId=13&tqId=11191&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ba355101-4a93-4c71-94fb-1da83639727b.jpg" width="350px"/> </div><br>
+
+## 解题思路
+
+```java
+public int TreeDepth(TreeNode root) {
+    return root == null ? 0 : 1 + Math.max(TreeDepth(root.left), TreeDepth(root.right));
+}
+```
+
+# 55.2 平衡二叉树
+
+[NowCoder](https://www.nowcoder.com/practice/8b3b95850edb4115918ecebdf1b4d222?tpId=13&tqId=11192&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+平衡二叉树左右子树高度差不超过 1。
+
+<div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/af1d1166-63af-47b6-9aa3-2bf2bd37bd03.jpg" width="250px"/> </div><br>
+
+## 解题思路
+
+```java
+private boolean isBalanced = true;
+
+public boolean IsBalanced_Solution(TreeNode root) {
+    height(root);
+    return isBalanced;
+}
+
+private int height(TreeNode root) {
+    if (root == null || !isBalanced)
+        return 0;
+    int left = height(root.left);
+    int right = height(root.right);
+    if (Math.abs(left - right) > 1)
+        isBalanced = false;
+    return 1 + Math.max(left, right);
+}
+```
+
+# 56. 数组中只出现一次的数字
+
+[NowCoder](https://www.nowcoder.com/practice/e02fdb54d7524710a7d664d082bb7811?tpId=13&tqId=11193&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+一个整型数组里除了两个数字之外，其他的数字都出现了两次，找出这两个数。
+
+## 解题思路
+
+两个不相等的元素在位级表示上必定会有一位存在不同，将数组的所有元素异或得到的结果为不存在重复的两个元素异或的结果。
+
+diff &= -diff 得到出 diff 最右侧不为 0 的位，也就是不存在重复的两个元素在位级表示上最右侧不同的那一位，利用这一位就可以将两个元素区分开来。
+
+```java
+public void FindNumsAppearOnce(int[] nums, int num1[], int num2[]) {
+    int diff = 0;
+    for (int num : nums)
+        diff ^= num;
+    diff &= -diff;
+    for (int num : nums) {
+        if ((num & diff) == 0)
+            num1[0] ^= num;
+        else
+            num2[0] ^= num;
+    }
+}
+```
+
+# 57.1 和为 S 的两个数字
+
+[NowCoder](https://www.nowcoder.com/practice/390da4f7a00f44bea7c2f3d19491311b?tpId=13&tqId=11195&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+输入一个递增排序的数组和一个数字 S，在数组中查找两个数，使得他们的和正好是 S。如果有多对数字的和等于 S，输出两个数的乘积最小的。
+
+## 解题思路
+
+使用双指针，一个指针指向元素较小的值，一个指针指向元素较大的值。指向较小元素的指针从头向尾遍历，指向较大元素的指针从尾向头遍历。
+
+- 如果两个指针指向元素的和 sum == target，那么得到要求的结果；
+- 如果 sum > target，移动较大的元素，使 sum 变小一些；
+- 如果 sum < target，移动较小的元素，使 sum 变大一些。
+
+```java
+public ArrayList<Integer> FindNumbersWithSum(int[] array, int sum) {
+    int i = 0, j = array.length - 1;
+    while (i < j) {
+        int cur = array[i] + array[j];
+        if (cur == sum)
+            return new ArrayList<>(Arrays.asList(array[i], array[j]));
+        if (cur < sum)
+            i++;
+        else
+            j--;
+    }
+    return new ArrayList<>();
+}
+```
+
+# 57.2 和为 S 的连续正数序列
+
+[NowCoder](https://www.nowcoder.com/practice/c451a3fd84b64cb19485dad758a55ebe?tpId=13&tqId=11194&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+输出所有和为 S 的连续正数序列。
+
+例如和为 100 的连续序列有：
+
+```
+[9, 10, 11, 12, 13, 14, 15, 16]
+[18, 19, 20, 21, 22]。
+```
+
+## 解题思路
+
+```java
+public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
+    ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
+    int start = 1, end = 2;
+    int curSum = 3;
+    while (end < sum) {
+        if (curSum > sum) {
+            curSum -= start;
+            start++;
+        } else if (curSum < sum) {
+            end++;
+            curSum += end;
+        } else {
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i = start; i <= end; i++)
+                list.add(i);
+            ret.add(list);
+            curSum -= start;
+            start++;
+            end++;
+            curSum += end;
+        }
+    }
+    return ret;
+}
+```
+
+# 58.1 翻转单词顺序列
+
+[NowCoder](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+```html
+Input:
+"I am a student."
+
+Output:
+"student. a am I"
+```
+
+## 解题思路
+
+题目应该有一个隐含条件，就是不能用额外的空间。虽然 Java 的题目输入参数为 String 类型，需要先创建一个字符数组使得空间复杂度为 O(N)，但是正确的参数类型应该和原书一样，为字符数组，并且只能使用该字符数组的空间。任何使用了额外空间的解法在面试时都会大打折扣，包括递归解法。
+
+正确的解法应该是和书上一样，先旋转每个单词，再旋转整个字符串。
+
+```java
+public String ReverseSentence(String str) {
+    int n = str.length();
+    char[] chars = str.toCharArray();
+    int i = 0, j = 0;
+    while (j <= n) {
+        if (j == n || chars[j] == ' ') {
+            reverse(chars, i, j - 1);
+            i = j + 1;
+        }
+        j++;
+    }
+    reverse(chars, 0, n - 1);
+    return new String(chars);
+}
+
+private void reverse(char[] c, int i, int j) {
+    while (i < j)
+        swap(c, i++, j--);
+}
+
+private void swap(char[] c, int i, int j) {
+    char t = c[i];
+    c[i] = c[j];
+    c[j] = t;
+}
+```
+
+# 
