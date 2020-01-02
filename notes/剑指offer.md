@@ -4113,36 +4113,42 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
 
 ```
 [9, 10, 11, 12, 13, 14, 15, 16]
-[18, 19, 20, 21, 22]。	
+[18, 19, 20, 21, 22]	
 ```
 
 ## 解题思路
 
 ```java
-public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
-    ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
-    int start = 1, end = 2;
-    int curSum = 3;
-    while (end < sum) {
-        if (curSum > sum) {
-            curSum -= start;
-            start++;
-        } else if (curSum < sum) {
-            end++;
-            curSum += end;
-        } else {
-            ArrayList<Integer> list = new ArrayList<>();
-            for (int i = start; i <= end; i++)
-                list.add(i);
-            ret.add(list);
-            curSum -= start;
-            start++;
-            end++;
-            curSum += end;
+ ArrayList<ArrayList<Integer>> ret = new ArrayList<ArrayList<Integer>>();
+
+    public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
+        if (sum <= 0) {
+            return ret;
         }
-    }
-    return ret;
-}
+        int start = 1, end = 1;
+        int addSum = 1;
+        while (end < sum) {
+            if (addSum < sum) {
+                end++;
+                addSum += end;
+            } else if (addSum > sum) {
+                addSum -= start;
+                start++;
+            } else {
+                int temp = start;
+                ArrayList<Integer> list = new ArrayList<Integer>();
+                while (start <= end) {
+                    list.add(start);
+                    start++;
+                }
+                start = temp + 1;
+                end = start;
+                addSum = end;
+                ret.add(list);
+            }
+        }
+        return ret;
+    }  
 ```
 
 # 58.1 翻转单词顺序列
