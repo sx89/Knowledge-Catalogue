@@ -3769,6 +3769,74 @@ private int binarySearch(int[] nums, int K) {
     }
     return l;
 }
+
+
+
+
+
+改进: upper, lower的写法
+    getupper返回的是high ,因为在最后阶段,low和high和mid都会落在一个大于k的值上,只有high会再经历减一,回到k
+    最后一次出现的地方.
+    
+    getlower返回的是low,理由同上.
+
+  public int GetNumberOfK(int[] array, int k) {
+        int end = getUpper(array, k);
+        int start = getLower(array, k);
+        return end - start + 1;
+    }
+
+    private int getUpper(int[] array, int k) {
+        int low = 0, high = array.length - 1;
+        int mid = (low + high) / 2;
+        while (low <= high) {
+            if (array[mid] > k) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+            mid = (low + high) / 2;
+        }
+        return high;//mid不行
+    }
+
+    private int getLower(int[] array, int k) {
+        int low = 0, high = array.length - 1;
+        int mid = (low + high) / 2;
+        while (low <= high) {
+            if (array[mid] >= k) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+            mid = (low + high) / 2;
+        }
+        return low;//mid不行
+    }
+
+改进: k-0.5 与 k+0.5
+
+//因为data中都是整数，所以可以稍微变一下，不是搜索k的两个位置，而是搜索k-0.5和k+0.5
+//这两个数应该插入的位置，然后相减即可。
+class Solution {
+public:
+    int GetNumberOfK(vector<int> data ,int k) {
+        return biSearch(data, k+0.5) - biSearch(data, k-0.5) ;
+    }
+private:
+    int biSearch(const vector<int> & data, double num){
+        int s = 0, e = data.size()-1;     
+        while(s <= e){
+            int mid = (e - s)/2 + s;
+            if(data[mid] < num)
+                s = mid + 1;
+            else if(data[mid] > num)
+                e = mid - 1;
+        }
+        return s;
+    }
+};
+
 ```
 
 # 54. 二叉查找树的第 K 个结点
