@@ -3848,23 +3848,35 @@ private:
 利用二叉查找树中序遍历有序的特点。
 
 ```java
-private TreeNode ret;
-private int cnt = 0;
+  改进:
+如果是节点顺序的cont,count++写在节点处.
+    如果是节点层次遍历,count++和count--把 midOrder(left),midOrder(right)包起来 ;其实相当于回溯. 
 
-public TreeNode KthNode(TreeNode pRoot, int k) {
-    inOrder(pRoot, k);
-    return ret;
-}
 
-private void inOrder(TreeNode root, int k) {
-    if (root == null || cnt >= k)
-        return;
-    inOrder(root.left, k);
-    cnt++;
-    if (cnt == k)
-        ret = root;
-    inOrder(root.right, k);
-}
+private int count = 0;
+    private TreeNode val = null;
+
+    TreeNode KthNode(TreeNode pRoot, int k) {
+        if (pRoot == null) {
+            return null;
+        }
+        midOrder(pRoot, k);
+        return val;
+    }
+
+    private void midOrder(TreeNode root, int k) {
+        if (root == null) {
+            return;
+        }
+
+        midOrder(root.left, k);
+        count++;
+        if (count == k) {
+            val = root;
+            return;
+        }
+        midOrder(root.right, k);
+    }
 ```
 
 # 55.1 二叉树的深度
