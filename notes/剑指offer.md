@@ -3895,6 +3895,28 @@ private int count = 0;
 public int TreeDepth(TreeNode root) {
     return root == null ? 0 : 1 + Math.max(TreeDepth(root.left), TreeDepth(root.right));
 }
+改进:
+private int max = 0;
+    private int depth = 0;
+
+    public int TreeDepth(TreeNode root) {
+        midOrder(root);
+        return max;
+    }
+
+    public void midOrder(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        depth++;
+        midOrder(root.left);
+
+        if (depth > max) {
+            max = depth;
+        }
+        midOrder(root.right);
+        depth--;
+    }
 ```
 
 # 55.2 平衡二叉树
@@ -3910,22 +3932,27 @@ public int TreeDepth(TreeNode root) {
 ## 解题思路
 
 ```java
-private boolean isBalanced = true;
+private boolean isBalance = true;
 
-public boolean IsBalanced_Solution(TreeNode root) {
-    height(root);
-    return isBalanced;
-}
+    public boolean IsBalanced_Solution(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        judgeBalance(root);
+        return isBalance;
+    }
 
-private int height(TreeNode root) {
-    if (root == null || !isBalanced)
-        return 0;
-    int left = height(root.left);
-    int right = height(root.right);
-    if (Math.abs(left - right) > 1)
-        isBalanced = false;
-    return 1 + Math.max(left, right);
-}
+    private int judgeBalance(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int leftHight = judgeBalance(root.left);
+        int rightHight = judgeBalance(root.right);
+        if (Math.abs(leftHight - rightHight) > 1) {
+            isBalance = false;
+        }
+        return Math.max(leftHight, rightHight) + 1;
+    }
 ```
 
 # 56. 数组中只出现一次的数字
