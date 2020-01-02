@@ -166,8 +166,36 @@ ArrayList
 list转array
         Object[] objects = list.toArray();
         Integer[] integers = list.toArray(new Integer[list.size()]);
+        
+        
 array转list
-        ArrayList<Integer> integers1 = new ArrayList<>(Arrays.asList(integers));
+方法1.  ArrayList<Integer> integers1 = new ArrayList<>(Arrays.asList(1,2,3,4,5));
+	但是缺点如下:
+	此处asList里面放的是 不定数量的数字,而不是array数组   public static <T> List<T> asList(T... a) 
+	而且无法对int[] array这种数组进行转换,只能转换Integer
+	
+方法2.   	String[] strArray = new String[2];
+        ArrayList< String> arrayList = new ArrayList<String>(strArray.length);
+        Collections.addAll(arrayList, strArray);
+        arrayList.add("1");
+        System.out.println(arrayList);
+     注意:无法对int[] array这种数组进行转换,只能转换Integer
+     
+  
+  
+Collections.sort();
+Collections.binarySearch();
+Collections.addAll();
+
+Arrays.sort();
+Arrays.asList();
+Arrays.toString();
+Arrays.binarySearch();
+
+String 转 char[]   str.toCharArray()
+str.substring();
+str.charAt();
+ch1.equals(ch2);
 ```
 
 
@@ -4049,6 +4077,28 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int sum) {
     }
     return new ArrayList<>();
 }
+
+
+public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
+        if (array == null || array.length == 0) {
+            return new ArrayList<Integer>();
+        }
+        int low = 0, high = array.length - 1;
+        while (low < high) {
+            int sum = array[low] + array[high];
+            if (sum == target) {
+                ArrayList<Integer> ret = new ArrayList<Integer>();
+                ret.add(array[low]);
+                ret.add(array[high]);
+                return ret;
+            } else if (sum > target) {
+                high--;
+            } else {
+                low++;
+            }
+        }
+        return new ArrayList<Integer>();
+    }
 ```
 
 # 57.2 和为 S 的连续正数序列
