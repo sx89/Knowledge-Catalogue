@@ -4373,28 +4373,37 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 ## 解题思路
 
 ```java
-public boolean isContinuous(int[] nums) {
-
-    if (nums.length < 5)
-        return false;
-
-    Arrays.sort(nums);
-
-    // 统计癞子数量
-    int cnt = 0;
-    for (int num : nums)
-        if (num == 0)
-            cnt++;
-
-    // 使用癞子去补全不连续的顺子
-    for (int i = cnt; i < nums.length - 1; i++) {
-        if (nums[i + 1] == nums[i])
+改进:
+思路不难,小心的是 deta 可能让count(癞子数量)正负抵消. 当numbers[i + 1] == numbers[i],deta为负
+    							当numbers[i + 1] > numbers[i]+1 deta为正
+    public boolean isContinuous(int[] numbers) {
+        if (numbers == null || numbers.length == 0) {
             return false;
-        cnt -= nums[i + 1] - nums[i] - 1;
+        }
+        Arrays.sort(numbers);
+        int count = 0;
+        for (int temp : numbers) {
+            if (temp == 0) {
+                count++;
+            }
+        }
+        for (int i = 0; i <= numbers.length - 2; i++) {
+            if (numbers[i] == 0) {
+                continue;
+            }
+            if (numbers[i + 1] == numbers[i]) {
+                return false;
+            } else {
+                int deta = numbers[i + 1] - 1 - numbers[i];
+                count -= deta;
+                if (count < 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    return cnt >= 0;
-}
 ```
 
 # 62. 圆圈中最后剩下的数
