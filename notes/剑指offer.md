@@ -4173,30 +4173,113 @@ Output:
 
 ```java
 public String ReverseSentence(String str) {
-    int n = str.length();
-    char[] chars = str.toCharArray();
-    int i = 0, j = 0;
-    while (j <= n) {
-        if (j == n || chars[j] == ' ') {
-            reverse(chars, i, j - 1);
-            i = j + 1;
+        if (str == null || str.length() == 0) {
+            return "";
         }
-        j++;
+        int len = str.length();
+        char[] chars = str.toCharArray();
+        for (int fast = 0, slow = 0; fast < len; fast++) {
+            if (chars[fast] == ' ') {
+                reverse(chars, slow, fast - 1);
+                slow = fast + 1;
+            } else if (fast == len - 1) {
+                reverse(chars, slow, fast);
+                slow = fast + 1;
+            }
+
+        }
+        reverse(chars, 0, len - 1);
+        return new String(chars);
+
     }
+
+    private void reverse(char[] chars, int slow, int fast) {
+        while (slow < fast) {
+            char temp = chars[slow];
+            chars[slow] = chars[fast];
+            chars[fast] = temp;
+            slow++;
+            fast--;
+        }
+        return;
+    }
+```
+
+# 58.2 左旋转字符串
+
+[NowCoder](https://www.nowcoder.com/practice/12d959b108cb42b1ab72cef4d36af5ec?tpId=13&tqId=11196&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+```html
+Input:
+S="abcXYZdef"
+K=3
+
+Output:
+"XYZdefabc"
+```
+
+## 解题思路
+
+先将 "abc" 和 "XYZdef" 分别翻转，得到 "cbafedZYX"，然后再把整个字符串翻转得到 "XYZdefabc"。
+
+```java
+public String LeftRotateString(String str, int n) {
+    if (n >= str.length())
+        return str;
+    char[] chars = str.toCharArray();
     reverse(chars, 0, n - 1);
+    reverse(chars, n, chars.length - 1);
+    reverse(chars, 0, chars.length - 1);
     return new String(chars);
 }
 
-private void reverse(char[] c, int i, int j) {
+private void reverse(char[] chars, int i, int j) {
     while (i < j)
-        swap(c, i++, j--);
+        swap(chars, i++, j--);
 }
 
-private void swap(char[] c, int i, int j) {
-    char t = c[i];
-    c[i] = c[j];
-    c[j] = t;
+private void swap(char[] chars, int i, int j) {
+    char t = chars[i];
+    chars[i] = chars[j];
+    chars[j] = t;
 }
 ```
 
-# 
+# 59. 滑动窗口的最大值
+
+[NowCoder](https://www.nowcoder.com/practice/1624bc35a45c42c0bc17d17fa0cba788?tpId=13&tqId=11217&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
+
+## 题目描述
+
+给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。
+
+例如，如果输入数组 {2, 3, 4, 2, 6, 2, 5, 1} 及滑动窗口的大小 3，那么一共存在 6 个滑动窗口，他们的最大值分别为 {4, 4, 6, 6, 6, 5}。
+
+## 解题思路
+
+```java
+public ArrayList<Integer> maxInWindows(int[] num, int size) {
+    ArrayList<Integer> ret = new ArrayList<>();
+    if (size > num.length || size < 1)
+        return ret;
+    PriorityQueue<Integer> heap = new PriorityQueue<>((o1, o2) -> o2 - o1);  /* 大顶堆 */
+    for (int i = 0; i < size; i++)
+        heap.add(num[i]);
+    ret.add(heap.peek());
+    for (int i = 0, j = i + size; j < num.length; i++, j++) {            /* 维护一个大小为 size 的大顶堆 */
+        heap.remove(num[i]);
+        heap.add(num[j]);
+        ret.add(heap.peek());
+    }
+    return ret;
+}
+```
+
+
+
+
+
+
+
