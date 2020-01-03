@@ -4172,6 +4172,11 @@ Output:
 正确的解法应该是和书上一样，先旋转每个单词，再旋转整个字符串。
 
 ```java
+改进:
+String  和 array之间的转换
+    str.toCharArray();
+	new String(chars[]);
+
 public String ReverseSentence(String str) {
         if (str == null || str.length() == 0) {
             return "";
@@ -4225,26 +4230,31 @@ Output:
 先将 "abc" 和 "XYZdef" 分别翻转，得到 "cbafedZYX"，然后再把整个字符串翻转得到 "XYZdefabc"。
 
 ```java
-public String LeftRotateString(String str, int n) {
-    if (n >= str.length())
-        return str;
-    char[] chars = str.toCharArray();
-    reverse(chars, 0, n - 1);
-    reverse(chars, n, chars.length - 1);
-    reverse(chars, 0, chars.length - 1);
-    return new String(chars);
-}
+ public String LeftRotateString(String str, int n) {
+        if (str == null || str.length() == 0) {
+            return "";
+        }
+        int len = str.length();
+        n = n % len;
+        char[] chars = str.toCharArray();
+        reverse(chars, 0, n - 1);
+        reverse(chars, n, len - 1);
+        reverse(chars, 0, len - 1);
+        return new String(chars);
 
-private void reverse(char[] chars, int i, int j) {
-    while (i < j)
-        swap(chars, i++, j--);
-}
+    }
 
-private void swap(char[] chars, int i, int j) {
-    char t = chars[i];
-    chars[i] = chars[j];
-    chars[j] = t;
-}
+    private void reverse(char[] chars, int start, int end) {
+        while (start < end) {
+            char temp = chars[start];
+            chars[start] = chars[end];
+            chars[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+
 ```
 
 # 59. 滑动窗口的最大值
