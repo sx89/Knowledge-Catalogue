@@ -4426,6 +4426,29 @@ public int LastRemaining_Solution(int n, int m) {
         return 0;
     return (LastRemaining_Solution(n - 1, m) + m) % n;
 }
+
+改进:
+初始位置是begin = 0;
+每一次被点到的同学的位置是(begin+m-1)%list.size();
+begin是开始位置, 往后移动m-1 
+
+
+public int LastRemaining_Solution(int n, int m) {
+        if (n <= 0) {
+            return -1;
+        }
+        LinkedList<Integer> list = new LinkedList<Integer>();
+        for (int i = 0; i < n; i++) {
+            list.add(i);
+        }
+        int begin = 0;
+        while (list.size() > 1) {
+            bt = (begin + m - 1) % n;
+            list.remove(begin);
+            n = n - 1;
+        }
+        return list.get(0);
+    }
 ```
 
 # 63. 股票的最大利润
