@@ -4466,6 +4466,8 @@ public int LastRemaining_Solution(int n, int m) {
 使用贪心策略，假设第 i 轮进行卖出操作，买入操作价格应该在 i 之前并且价格最低。
 
 ```java
+
+
 public int maxProfit(int[] prices) {
     if (prices == null || prices.length == 0)
         return 0;
@@ -4477,6 +4479,46 @@ public int maxProfit(int[] prices) {
     }
     return maxProfit;
 }
+改进:
+动态规划问题.
+    第i天的获利 =  max(   第i-1天卖出+第i到第i-1天的利润(i-1天买入,第i天卖出)   ,    0       )
+    dp[i] = max(0,dp[i-1]+diff[i])
+    
+    
+  public int maxProfit(int[] prices) {
+        int  len = prices.length;
+        int[] diff = new int[len];
+        for(int i = 1;i<len;i++){
+            diff[i] =prices[i]-prices[i-1];
+        }
+        int[] dp = new int[len];
+        int maxProfit = 0;
+        for(int i = 1;i<len;i++){
+            dp[i] = Math.max(0,dp[i-1]+diff[i]);
+            maxProfit = Math.max(maxProfit,dp[i]);
+        }
+        return maxProfit;
+        
+    }
+
+改进:
+当只与前一天的状态有关的时候,dp数组可以用一个int来表示
+    
+public int maxProfit1(int[] prices) {
+        int len = prices.length;
+        int[] diff = new int[len];
+        for (int i = 1; i < len; i++) {
+            diff[i] = prices[i] - prices[i - 1];
+        }
+        int[] dp = new int[len];
+        int maxProfit = 0;
+        int last = 0;
+        for (int i = 1; i < len; i++) {
+            last = Math.max(0, last + diff[i]);
+            maxProfit = Math.max(maxProfit, last);
+        }
+        return maxProfit;
+    }
 ```
 
 # 64. 求 1+2+3+...+n
