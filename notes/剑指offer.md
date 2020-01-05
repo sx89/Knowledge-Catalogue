@@ -2191,24 +2191,85 @@ boolean isSymmetrical(TreeNode t1, TreeNode t2) {
 ## 解题思路
 
 ```java
+
+改进:
+这个思路更好,
+用rowStart,rowEnd,colStart,colEnd来控制范围
+注意 rowEnd = matrix.length-1;
+if (rowEnd != rowStart) {//如果边界只有一行的话,那第一个for循环来打印就好了
+    
+    
+    
 public ArrayList<Integer> printMatrix(int[][] matrix) {
-    ArrayList<Integer> ret = new ArrayList<>();
-    int r1 = 0, r2 = matrix.length - 1, c1 = 0, c2 = matrix[0].length - 1;
-    while (r1 <= r2 && c1 <= c2) {
-        for (int i = c1; i <= c2; i++)
-            ret.add(matrix[r1][i]);
-        for (int i = r1 + 1; i <= r2; i++)
-            ret.add(matrix[i][c2]);
-        if (r1 != r2)
-            for (int i = c2 - 1; i >= c1; i--)
-                ret.add(matrix[r2][i]);
-        if (c1 != c2)
-            for (int i = r2 - 1; i > r1; i--)
-                ret.add(matrix[i][c1]);
-        r1++; r2--; c1++; c2--;
+        int rowEnd = matrix.length - 1;   //
+        int colEnd = matrix[0].length - 1;
+        int rowStart = 0;
+        int colStart = 0;
+
+        ArrayList<Integer> ret = new ArrayList<>();
+        while (rowStart <= rowEnd && colStart <= colEnd) {
+            for (int i = colStart; i <= colEnd; i++) {
+                ret.add(matrix[rowStart][i]);
+
+            }
+            for (int i = rowStart + 1; i <= rowEnd; i++) {
+                ret.add(matrix[i][colEnd]);
+            }
+            if (rowEnd != rowStart) {//如果边界只有一行的话,那第一个for循环来打印就好了.
+                for (int i = colEnd - 1; i >= colStart; i--) {
+                    ret.add(matrix[rowEnd][i]);
+                }
+            }
+            if (colEnd != colStart) {
+                for (int i = rowEnd - 1; i >= rowStart + 1; i--) {
+                    ret.add(matrix[i][colStart]);
+                }
+            }
+            rowStart++;
+            rowEnd--;
+            colStart++;
+            colEnd--;
+        }
+        return ret;
     }
-    return ret;
-}
+
+改进:
+上面的做法更好.
+    
+rowLocationBound = matrix.length
+colLocationBound = matrix[0].length;
+用layer来控制每一层
+如果count>sum了,则不要再继续循环
+
+ public ArrayList<Integer> printMatrix(int[][] matrix) {
+        int colLocationBound = matrix[0].length;
+        int rowLocationBound = matrix.length;
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        int layer = 0;//从0开始
+        int count = 0;//从1开始
+        int sum = rowLocationBound * colLocationBound;
+        while (count < rowLocationBound * colLocationBound) {
+            for (int i = layer; i < colLocationBound - layer && count < sum; i++) {
+                ret.add(matrix[layer][i]);
+                count++;
+            }
+            for (int j = layer + 1; j < rowLocationBound - 1 - layer && count < sum; j++) {
+                ret.add(matrix[j][colLocationBound - layer - 1]);
+                count++;
+            }
+
+            for (int i = colLocationBound - layer - 1; i >= layer && count < sum; i--) {
+                ret.add(matrix[rowLocationBound - layer - 1][i]);
+                count++;
+            }
+            for (int i = rowLocationBound - 1 - layer - 1; i >= layer + 1 && count < sum; i--) {
+                ret.add(matrix[i][layer]);
+                count++;
+            }
+            layer++;
+        }
+        return ret;
+    }
 ```
 
 # 30. 包含 min 函数的栈
