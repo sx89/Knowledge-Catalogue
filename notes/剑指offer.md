@@ -4578,15 +4578,27 @@ public int Add(int a, int b) {
 ## 解题思路
 
 ```java
+ 改进: 第i个数组 等于 i左边所有数字的累乘  再乘以i右边数字的累乘
+
 public int[] multiply(int[] A) {
-    int n = A.length;
-    int[] B = new int[n];
-    for (int i = 0, product = 1; i < n; product *= A[i], i++)       /* 从左往右累乘 */
-        B[i] = product;
-    for (int i = n - 1, product = 1; i >= 0; product *= A[i], i--)  /* 从右往左累乘 */
-        B[i] *= product;
-    return B;
-}
+        int len = A.length;
+        if (A == null || len == 0) {
+            return null;
+        }
+        int[] B = new int[len];
+        int base = 1;
+        B[0] = 1;
+        for (int i = 0; i < len - 1; i++) {
+            base *= A[i];
+            B[i + 1] = base;
+        }
+        base = 1;
+        for (int i = len - 1; i >= 1; i--) {
+            base *= A[i];
+            B[i - 1] *= base;
+        }
+        return B;
+    }
 ```
 
 # 67. 把字符串转换成整数
@@ -4609,22 +4621,68 @@ Output:
 
 ## 解题思路
 
+在越界的情况下,2147483647比-2147483648要小!!!
+
+![](/Users/sunxu/mycode/Java-notes/notes/pictures/jianzhi-offer/Snipaste_2020-01-05_14-03-41.png)
+
 ```java
-public int StrToInt(String str) {
-    if (str == null || str.length() == 0)
+改进:
+字符串转换成int 要注意 1.越界问题,如果越界正负号会改变   2.+0,-0(在我的代码里没考虑也没问题) 3.只有正负号的问题
+    
+思路:判断有无正负号,如果是正数,边界是-Integer.MAX_VALUE,即正数的最大值的相反数!!!!
+    如果是负数,边界是Integer.MIN_VALUE
+    然后无论正负,都按照负数的计算方式来计算result.
+    同时用下面两个方法来判断是否越界
+    littleLimit = limit/10;
+    if (result < littleLimit)
+                return 0;
+    if (result * 10 < limit + digit)
+        //注意!!!!!!!
+        //这里不可以写result*10-digit < limit  左边会越界,影响比较大小的真实逻辑
         return 0;
-    boolean isNegative = str.charAt(0) == '-';
-    int ret = 0;
-    for (int i = 0; i < str.length(); i++) {
-        char c = str.charAt(i);
-        if (i == 0 && (c == '+' || c == '-'))  /* 符号判定 */
-            continue;
-        if (c < '0' || c > '9')                /* 非法输入 */
+   
+    
+ public int StrToInt(String str) {
+        if (str == null || str.length() == 0)
             return 0;
-        ret = ret * 10 + (c - '0');
+        int len = str.length();
+        boolean isNegative = false;
+        boolean firstSign = false;
+        char[] chars = str.toCharArray();
+
+        int limit = 0;//用正数最大值的相反数作限制
+        if (chars[0] == '-') {
+            isNegative = true;
+            firstSign = true;
+            limit = Integer.MIN_VALUE;
+        } else if (chars[0] == '+') {
+            isNegative = false;
+            firstSign = true;
+            limit = -Integer.MAX_VALUE;
+        } else {
+            isNegative = false;
+            firstSign = false;
+            limit = -Integer.MAX_VALUE;
+        }
+
+        int littleLimit = limit / 10;
+        int digit = 0;
+        int result = 0;
+        for (int i = firstSign ? 1 : 0; i < len; i++) {
+            if (!(chars[i] >= '0' && chars[i] <= '9'))
+                return 0;
+            digit = chars[i] - '0';
+            if (result < littleLimit)
+                return 0;
+            if (result * 10 < limit + digit)
+                //注意!!!!!!!改进!!!!!!
+                //这里不可以写result*10-digit < limit  左边会越界,影响比较大小的真实逻辑
+                return 0;
+            result = result * 10 - digit;
+        }
+        return isNegative ? result : -result;
+
     }
-    return isNegative ? -ret : ret;
-}
 ```
 
 # 68. 树中两个节点的最低公共祖先
@@ -4649,6 +4707,24 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         return lowestCommonAncestor(root.right, p, q);
     return root;
 }
+改进 :迭代方法
+    
+     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null)
+            return null;
+        int pVal = p.val;
+        int qVal = q.val;
+        TreeNode node = root;
+        while (node != null) {
+            if (node.val > pVal && node.val > qVal)
+                node = node.left;
+            else if (node.val < pVal && node.val < qVal)
+                node = node.right;
+            else
+                return node;
+        }
+        return node;
+    }
 ```
 
 ### 普通二叉树
