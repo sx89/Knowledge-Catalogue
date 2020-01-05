@@ -196,6 +196,12 @@ String 转 char[]   str.toCharArray()
 str.substring();
 str.charAt();
 ch1.equals(ch2);
+
+双端队列
+ArrayDeque<Integer> deque = New ArrayDeque<Integer>();
+deque.getFirst();deque.getLast();
+deque.removeFirst();deque.removeLast();
+deque.addFirst();deque.addLast();
 ```
 
 
@@ -4285,6 +4291,32 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
     }
     return ret;
 }
+
+改进
+    维护一个双端队列,队头放窗口内的最大值,当有num[i]>deque.getLast()的时候,删除deque中所有比num[i]小的节点的index,让num[i]的i成为队或者原来的deque.getFirst()保持队头.
+    
+public ArrayList<Integer> maxInWindows(int[] num, int size) {
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        if (num == null || num.length == 0 || size == 0 || size > num.length)
+            return ret;
+        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
+        for (int i = 0; i < num.length; i++) {
+            int begin = i - size + 1;
+            if (deque.isEmpty())
+                deque.add(i);
+            else if (begin > deque.getFirst()) {
+                deque.removeFirst();
+            }
+
+            while (!deque.isEmpty() && num[i] >= num[deque.getLast()])
+                deque.removeLast();
+            deque.add(i);
+            if (begin >= 0)
+                ret.add(num[deque.getFirst()]);
+
+        }
+        return ret;
+    }
 ```
 
 # 60. n 个骰子的点数
@@ -4731,18 +4763,76 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 [Leetcode : 236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/)
 
-在左右子树中查找是否存在 p 或者 q，如果 p 和 q 分别在两个子树中，那么就说明根节点就是最低公共祖先。
+
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d27c99f0-7881-4f2d-9675-c75cbdee3acd.jpg" width="250"/> </div><br>
 
 ```java
+  改进:
+	在左右子树中查找是否存在 p 或者 q，如果 p 和 q 分别在两个子树中，那么就说明根节点就是最低公共祖先。
+
 public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-    if (root == null || root == p || root == q)
-        return root;
-    TreeNode left = lowestCommonAncestor(root.left, p, q);
-    TreeNode right = lowestCommonAncestor(root.right, p, q);
-    return left == null ? right : right == null ? left : root;
-}
+        if(root==null||root==p||root==q)
+            return root;
+        TreeNode left = lowestCommonAncestor(root.left,p,q);
+        TreeNode right = lowestCommonAncestor(root.right,p,q);
+        if(left==null){
+            return right;
+        }else{
+            if(right==null)
+                 return left;
+            else
+                return root;
+        }
+    }
+改进:
+非递归的办法, 用stack来遍历整个树,用parentMap来记录路径,用qParentSet和parentMap来存储q的路径节点, 用parentMap来逐层向上得到p的父亲节点,并看看是否在qParentSet里面
+    
+ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null)
+            return null;
+        Stack<TreeNode> stack = new Stack<>();
+        HashMap<TreeNode, TreeNode> parentMap = new HashMap<>();
+        parentMap.put(root, null);
+        stack.push(root);
+        boolean findP = false;
+        boolean findQ = false;
+        while (!stack.isEmpty()) {
+            //
+            root = stack.pop();
+
+            if (root == p)
+                findP = true;
+            else if (root == q)
+                findQ = true;
+
+            if (findP && findQ) {
+                HashSet<TreeNode> qParent = new HashSet<>();
+                while (q != null) {
+                    qParent.add(q);
+                    q = parentMap.get(q);
+                }
+                while (p != null) {
+                    if (qParent.contains(p)) {
+                        return p;
+                    }
+                    p = parentMap.get(p);
+                }
+            }
+
+            if (root.right != null) {
+                parentMap.put(root.right, root);
+                stack.push(root.right);
+            }
+            if (root.left != null) {
+                parentMap.put(root.left, root);
+                stack.push(root.left);
+            }
+        }
+        return null;
+    }
+
+
 ```
 
 
