@@ -3261,7 +3261,101 @@ public int FindGreatestSumOfSubArray(int[] nums) {
 Integer.MIN_VALUE;
 Math.max(,);
 
+
+
+
+
 ```
+
+
+
+
+
+
+
+# 42.2二维矩阵中的最大子矩阵
+
+题目描述:
+
+链接：https://www.nowcoder.com/questionTerminal/a5a0b05f0505406ca837a3a76a5419b3?f=discussion
+来源：牛客网
+
+已知矩阵的大小定义为矩阵中所有元素的和。给定一个矩阵，你的任务是找到最大的非空(大小至少是1 * 1)子矩阵。 比如，如下4 * 4的矩阵 0 -2 -7 0 9 2 -6 2 -4 1 -4 1 -1 8 0 -2 的最大子矩阵是 9 2 -4 1 -1 8 这个子矩阵的大小是15。
+
+##### **输入描述:**
+
+```
+输入是一个N * N的矩阵。输入的第一行给出N (0 < N <= 100)。
+再后面的若干行中，依次（首先从左到右给出第一行的N个整数，再从左到右给出第二行的N个整数……）给出矩阵中的N2个整数，整数之间由空白字符分隔（空格或者空行）。
+已知矩阵中整数的范围都在[-127, 127]。
+```
+
+##### **输出描述:**
+
+```
+测试数据可能有多组，对于每组测试数据，输出最大子矩阵的大小。
+```
+
+
+
+```java
+改进:
+思路: 
+把所有的行的组合 都 累加成一行试一试,在一行上求最大连续子序列.最终的max,就是 第i到第j行的组合下,某几列的连续子序列.
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[][] array = new int[n][n];
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                array[i][j] = sc.nextInt();
+
+        System.out.println(getMaxSub(array, n));
+    }
+
+
+    public static int getMaxSub(int[][] matrix, int n) {
+        int max = Integer.MIN_VALUE;
+        int[] cumulation = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                getCumulation(matrix, cumulation, i, j, n);
+                int temp = dpFunc(cumulation);
+                max = Math.max(temp, max);
+            }
+        }
+        return max;
+    }
+
+    private static int dpFunc(int[] cumulation) {
+        int len = cumulation.length;
+        int[] dp = new int[len];
+
+        dp[0] = cumulation[0];
+        int max = dp[0];
+        for (int i = 1; i < len; i++) {
+            dp[i] = Math.max(dp[i - 1] + cumulation[i], cumulation[i]);
+            max = Math.max(dp[i], max);
+        }
+        return max;
+    }
+
+    private static void getCumulation(int[][] matrix, int[] cumulation, int begin, int end, int n) {
+        for (int i = 0; i < n; i++)
+            cumulation[i] = 0;
+        for (int i = begin; i <= end; i++) {
+            for (int j = 0; j < n; j++) {
+                cumulation[j] += matrix[i][j];
+            }
+        }
+    }
+}
+```
+
+
 
 # 43. 从 1 到 n 整数中 1 出现的次数
 
