@@ -4995,7 +4995,86 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 
+# 不用加减乘除做加法
+
+写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+
+https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking&from=cyc_github
 
 
 
+首先看十进制是如何做的： 5+7=12，三步走 第一步：相加各位的值，不算进位，得到2。 第二步：计算进位值，得到10. 如果这一步的进位值为0，那么第一步得到的值就是最终结果。 第三步：重复上述两步，只是相加的值变成上述两步的得到的结果2和10，得到12。 同样我们可以用三步走的方式计算二进制值相加： 5-101，7-111 第一步：相加各位的值，不算进位，得到010，二进制每位相加就相当于各位做异或操作，101^111。 第二步：计算进位值，得到1010，相当于各位做与操作得到101，再向左移一位得到1010，(101&111)<<1。 第三步重复上述两步， 各位相加 010^1010=1000，进位值为100=(010&1010)<<1。     继续重复上述两步：1000^100 = 1100，进位值为0，跳出循环，1100为最终结果。
+
+```java
+ public int Add(int num1, int num2) {
+        while (num2 != 0) {
+            int xiangJia = num1 ^ num2; //异或求出来的是每一位相加的结果
+            int jinWei = (num1 & num2) << 1;  //与 +  左移一位   求出来的是每一位的进位情况
+            
+            num1 = xiangJia;
+            num2 = jinWei;
+        }
+        return num1;
+    }
+```
+
+
+
+# 对称的二叉树
+
+```java
+改进思路  private boolean isSymmerical(TreeNode r1, TreeNode r2) {
+    
+    
+    
+boolean isSymmetrical(TreeNode pRoot) {
+        return isSymmerical(pRoot, pRoot);
+    }
+
+    private boolean isSymmerical(TreeNode r1, TreeNode r2) {
+        if (r1 == null && r1 == null) {
+            return true;
+        } else if (r1 == null || r2 == null) {
+            return false;
+        }
+        if (r1.val == r2.val) {
+            return isSymmerical(r1.left, r2.right) && isSymmerical(r1.right, r2.left);
+        }
+        return false;
+    }
+
+非递归的写法
+    改进思路  	     queue.add(left.left);
+                    queue.add(right.right);
+                    queue.add(left.right);
+                    queue.add(right.left);
+
+    boolean isSymmetrical(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        if (root == null)
+            return true;
+        queue.add(root.left);
+        queue.add(root.right);
+        while (!queue.isEmpty()) {
+            TreeNode left = queue.poll();
+            TreeNode right = queue.poll();
+            if (left == null && right == null) {
+
+            } else if (left != null && right != null) {
+                if (left.val != right.val) {
+                    return false;
+                } else {
+                    queue.add(left.left);
+                    queue.add(right.right);
+                    queue.add(left.right);
+                    queue.add(right.left);
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+```
 
