@@ -5078,3 +5078,52 @@ boolean isSymmetrical(TreeNode pRoot) {
 
 ```
 
+# 数据流中的中位数
+
+
+
+```java
+改进思路:
+以中位数为界,大顶堆装左边的数,小顶堆装右边的数.
+
+Comparator<Integer> c1 = new Comparator<Integer>() {
+        @Override
+        public int compare(Integer i1, Integer i2) {
+            return i1 - i2;//从小到大
+        }
+    };
+    Comparator<Integer> c2 = new Comparator<Integer>() {
+        public int compare(Integer i1, Integer i2) {
+            return i2 - i1;
+        }
+    };
+    private PriorityQueue<Integer> daDingDui = new PriorityQueue<>(16, c2);
+    private PriorityQueue<Integer> xiaoDingdui = new PriorityQueue<>(16, c1);
+    int count = 0;
+
+    public void Insert(Integer num) {
+        //num的奇偶
+        count++;
+        if (count % 2 == 0) {
+            //往1上面插数据
+            daDingDui.add(num);
+            xiaoDingdui.add(daDingDui.poll());
+
+        } else {
+            //往2上查数据
+            xiaoDingdui.add(num);
+            daDingDui.add(xiaoDingdui.poll());
+        }
+    }
+
+    public Double GetMedian() {
+
+        if (count % 2 == 0) {
+            return (double) (daDingDui.peek() + xiaoDingdui.peek()) / 2;
+        } else {
+            return (double) daDingDui.peek();
+        }
+
+    }
+```
+
