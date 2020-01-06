@@ -202,6 +202,9 @@ ArrayDeque<Integer> deque = New ArrayDeque<Integer>();
 deque.getFirst();deque.getLast();
 deque.removeFirst();deque.removeLast();
 deque.addFirst();deque.addLast();
+
+数组是引用传递,函数内部修改后,函数外部也会收到变化.
+
 ```
 
 
