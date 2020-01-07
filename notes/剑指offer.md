@@ -1390,6 +1390,8 @@ public class Solution {
 
 [Leetcode](https://leetcode.com/problems/integer-break/description/)
 
+[NowCode](https://www.nowcoder.com/questionTerminal/57d85990ba5b440ab888fc72b0751bf8?answerType=1&f=discussion)
+
 ## 题目描述
 
 把一根绳子剪成多段，并且使得每段的长度乘积最大。
@@ -5124,6 +5126,158 @@ Comparator<Integer> c1 = new Comparator<Integer>() {
             return (double) daDingDui.peek();
         }
 
+    }
+```
+
+
+
+# 表示数值的字符串
+
+https://www.nowcoder.com/questionTerminal/6f8c901d091949a5837e24bb82a731f2?f=discussion
+
+
+
+```java
+改进:
+正则表达式语法:
+?  0或1次
++  1到多次
+*  0次1次或者多次
+{n} 或 {n,} 或 {n,m}  最少n次,最多m次
+
+特殊字符参与匹配要加转义  比如*  如果要匹配,就用\*.
+
+[1-9]设置第一个数字不是 0
+[0-9]* 表示任意多个数字
+.  匹配字符串中的各种打印或非打印字符( 数字字母必然可以)，只有一个字符例外。这个例外就是换行符 (\n)。
+x|y  x或y
+[xyz]  匹配任意一个
+[a-z]	 范围内的任意一个
+\b   匹配一个单词边界，也就是指单词和空格间的位置。例如， 'er\b' 可以匹配"never" 中的 'er'，但不能匹配 "verb" 中的 'er'。
+\d  匹配一个数字字符。等价于 [0-9]。
+\D  匹配一个非数字字符。等价于 [^0-9]。
+^abc   表示字符串的开头处,匹配abc    [^abc]   表示不匹配a,b,c这三个字母
+bucket$   字符串的末尾处匹配
+^bucket$  精准匹配
+[a-z] //匹配所有的小写字母 
+[A-Z] //匹配所有的大写字母 
+[a-zA-Z] //匹配所有的字母 
+[0-9] //匹配所有的数字 
+[0-9\.\-] //匹配所有的数字，句号和减号 
+[ \f\r\t\n] //匹配所有的白字符
+
+
+
+/[1-9][0-9]?/  和 /[1-9][0-9]{0,1}/ 等价, 匹配1~99.    /[0-9]{1,2}/不行,会匹配开头是0
+
+
+[\+\-]?\d*(\.\d+)?([eE][\+\-]?\d+)?
+
+
+public boolean isNumeric(char[] str) {
+        String s= new String(str);
+        return s.matches("[\\+\\-]?\\d*(\\.\\d+)?([eE][\\+\\-]?\\d+)?");
+        
+    }
+
+把 +123.567E+89分成被'E'和'.' 划开的三部分   +123  .  567  E   +89
+其中+123 和 +89  又可以转换成跟567 一样的无符号数.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    第一遍写的时候的垃圾代码
+        
+        private int len = 0;
+    private boolean firstSign = false;
+    private boolean hasE = false;
+    private int index = 0;
+
+    public boolean isNumeric(char[] str) {
+        // String s= new String(str);
+        //return s.matches("[\\+\\-]?\\d*(\\.\\d+)?([eE][\\+\\-]?\\d+)?");
+
+        len = str.length;
+        if (str[0] == '+' || str[0] == '-') {
+            index++;
+
+        }
+        boolean b1 = judgeFirst(index, str);
+
+
+        return b1;
+
+    }
+
+    private boolean judgeTwice(int begin, char[] str) {
+        if(begin>=len)
+            return false;
+        if (str[begin] == '+' || str[begin] == '-') {
+            begin++;
+            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+                return false;
+            }
+        }else {
+            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+                return false;
+            }
+        }
+        while (begin < len) {
+            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+                return false;
+            }
+            begin++;
+        }
+        return true;
+    }
+
+    private boolean judgeFirst(int begin, char[] str) {
+        
+        boolean hasXiaoShu = false;
+//        if (!(str[begin] >= '0' && str[begin] <= '9')) {
+//            return false;
+//        }
+        while (begin < len) {
+            if (str[begin] == '.') {
+                begin++;
+                hasXiaoShu = true;
+                break;
+            }
+            if (str[begin] != 'e' && str[begin] != 'E' && !(str[begin] >= '0' && str[begin] <= '9')) {
+                return false;
+            } else if (str[begin] == 'e' || str[begin] == 'E') {
+                hasE = true;
+                begin++;
+                boolean b = judgeTwice(begin, str);
+                return b;
+            }
+            begin++;
+        }
+        if (hasXiaoShu) {
+            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+                return false;
+            }
+            begin++;
+            while (begin < len) {
+                if (str[begin] != 'e' && str[begin] != 'E' && !(str[begin] >= '0' && str[begin] <= '9')) {
+                    return false;
+                } else if (str[begin] == 'e' || str[begin] == 'E') {
+                    hasE = true;
+                    begin++;
+                    boolean b = judgeTwice(begin, str);
+                    return b;
+                }
+                begin++;
+            }
+        }
+        return true;
     }
 ```
 
