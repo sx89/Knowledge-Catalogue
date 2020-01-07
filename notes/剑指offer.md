@@ -5180,104 +5180,60 @@ public boolean isNumeric(char[] str) {
         
     }
 
+改进:
 把 +123.567E+89分成被'E'和'.' 划开的三部分   +123  .  567  E   +89
 其中+123 和 +89  又可以转换成跟567 一样的无符号数.
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    第一遍写的时候的垃圾代码
-        
-        private int len = 0;
-    private boolean firstSign = false;
-    private boolean hasE = false;
-    private int index = 0;
+
+  private int index = 0;
+    private int len = 0;
+    private boolean hasOtherWord = false;
 
     public boolean isNumeric(char[] str) {
-        // String s= new String(str);
-        //return s.matches("[\\+\\-]?\\d*(\\.\\d+)?([eE][\\+\\-]?\\d+)?");
-
-        len = str.length;
-        if (str[0] == '+' || str[0] == '-') {
-            index++;
-
-        }
-        boolean b1 = judgeFirst(index, str);
-
-
-        return b1;
-
-    }
-
-    private boolean judgeTwice(int begin, char[] str) {
-        if(begin>=len)
+        if (str == null || str.length == 0)
             return false;
-        if (str[begin] == '+' || str[begin] == '-') {
-            begin++;
-            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+        len = str.length;
+        int count1 = 0, count2 = 0, count3 = 0;
+        count1 = judgeNum(str);
+        if (index < len && str[index] == '.') {
+            index++;
+            count2 = judgeUnsignNum(str);
+            if (count2 < 1)
                 return false;
-            }
-        }else {
-            if (!(str[begin] >= '0' && str[begin] <= '9')) {
-                return false;
-            }
         }
-        while (begin < len) {
-            if (!(str[begin] >= '0' && str[begin] <= '9')) {
+        if (index < len && (str[index] == 'E' || str[index] == 'e')) {
+            index++;
+            count3 = judgeNum(str);
+            if (count3 < 1)
                 return false;
-            }
-            begin++;
         }
-        return true;
+        return !hasOtherWord && index == len;
     }
 
-    private boolean judgeFirst(int begin, char[] str) {
-        
-        boolean hasXiaoShu = false;
-//        if (!(str[begin] >= '0' && str[begin] <= '9')) {
-//            return false;
-//        }
-        while (begin < len) {
-            if (str[begin] == '.') {
-                begin++;
-                hasXiaoShu = true;
-                break;
-            }
-            if (str[begin] != 'e' && str[begin] != 'E' && !(str[begin] >= '0' && str[begin] <= '9')) {
-                return false;
-            } else if (str[begin] == 'e' || str[begin] == 'E') {
-                hasE = true;
-                begin++;
-                boolean b = judgeTwice(begin, str);
-                return b;
-            }
-            begin++;
+    private int judgeNum(char[] str) {
+        if (index >= len) {
+            return 0;
         }
-        if (hasXiaoShu) {
-            if (!(str[begin] >= '0' && str[begin] <= '9')) {
-                return false;
-            }
-            begin++;
-            while (begin < len) {
-                if (str[begin] != 'e' && str[begin] != 'E' && !(str[begin] >= '0' && str[begin] <= '9')) {
-                    return false;
-                } else if (str[begin] == 'e' || str[begin] == 'E') {
-                    hasE = true;
-                    begin++;
-                    boolean b = judgeTwice(begin, str);
-                    return b;
-                }
-                begin++;
-            }
+        if (str[index] == '+' || str[index] == '-') {
+            index++;
         }
-        return true;
+        return judgeUnsignNum(str);
     }
+
+    private int judgeUnsignNum(char[] str) {
+        int start = index;
+        while (index < len) {
+            if (str[index] >= '0' && str[index] <= '9') {
+                index++;
+            } else if (str[index] == '.' || str[index] == 'e' || str[index] == 'E') {
+                return index - start;
+            } else {
+                hasOtherWord = true;
+                return -1;
+            }
+        }
+        return index - start;
+    }
+    
+    
 ```
 
