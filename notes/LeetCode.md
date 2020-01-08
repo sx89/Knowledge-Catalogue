@@ -206,3 +206,88 @@ public int majorityElement(int[] nums) {
     }
 ```
 
+
+
+#### [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+
+```java
+public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode last = new ListNode(-1);
+        ListNode pHead = last;
+        while (l1 != null || l2 != null) {
+
+            if (l1 == null && l2 != null) {
+                l1 = l2;
+                l2 = null;
+            }
+            while (l2 == null && l1 != null) {
+                ListNode next = l1.next;
+                l1.next = last.next;
+                last.next = l1;
+                l1 = next;
+                last = last.next;
+            }
+            while (l1 != null && l2 != null) {
+                ListNode min = null;
+                if (l1.val <= l2.val) {
+                    min = l1;
+                    l1 = l1.next;
+                } else {
+                    min = l2;
+                    l2 = l2.next;
+                }
+                min.next = last.next;
+                last.next = min;
+                last = last.next;
+            }
+        }
+        return pHead.next;
+    }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
