@@ -245,9 +245,22 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     }
 ```
 
+#### [283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)
 
-
-
+```java
+改进:把前面index个位置填满正确的数,最后把index后面的位用0填充
+public void moveZeroes(int[] nums) {
+        int index = 0;
+        for(int temp:nums){
+            if(temp!=0){
+                nums[index++] = temp;
+            }
+        }
+        for(int i =index;i<nums.length;i++){
+            nums[i] = 0;
+        }
+    }
+```
 
 
 
