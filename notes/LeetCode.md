@@ -262,31 +262,119 @@ public void moveZeroes(int[] nums) {
     }
 ```
 
+#### [448. 找到所有数组中消失的数字](https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/)
+
+```java
+改进:
+一种意外情况需要考虑   数列: 3,2,3  i=0的时候的3应该放在下标为2的地方,也就是第二个3所在的地方,
+但如果一直交换的话,会陷入死循环,所以判断条件里加了一句   nums[i] != nums[index]  ,意思是i所
+在位置的值num[i],在index(num[i]-1]处已经存在值num[i]-1了.这个时候不做交换,直接跳过.
+                                                                                                                          
+  具体来说就是  i=0处 的3应该放在index=2处,但index=2处已经有3了,所以i++,继续往后计算.
+
+public List<Integer> findDisappearedNumbers(int[] nums) {
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        for (int i = 0; i < nums.length; ) {
+            int index = nums[i] - 1;
+            if (index != i && nums[i] != nums[index]) {
+                int temp = nums[index];
+                nums[index] = nums[i];
+                nums[i] = temp;
+            } else {
+                i++;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] - 1 != i) {
+                ret.add(i + 1);
+            }
+        }
+        return ret;
+    }
+                                                                                                                                         
+方法二:                                                                                                                                         HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], 1);
+        }
+        for (int j = 1; j <= nums.length; j++) {
+            if (map.get(j) == null) {
+                list.add(j);
+            }
+        }
+        return list;
+    }
+                                                                                                                                         
+                                                                                                                                         改进                                                                                                                               关于map的遍历                                                                                                                         Set<Map.Entry<Integer,Integer>> set = map.entrySet();                                                                                    Iterator<Map.Entry<Integer,Integer>> it = set.iterator();
+                                                                                                                                         
+```
+
+#### [160. 相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
+
+```java
+ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int lenA = 0;
+        int lenB = 0;
+        ListNode pA = headA;
+        ListNode pB = headB;
+        while (pA != null) {
+            lenA++;
+            pA = pA.next;
+        }
+        while (pB != null) {
+            lenB++;
+            pB = pB.next;
+        }
+        if (lenB > lenA) {
+            int temp = lenA;
+            lenA = lenB;
+            lenB = temp;
+            pA = headB;
+            pB = headA;
+        } else {
+            pA = headA;
+            pB = headB;
+        }
+        for (int i = 1; i <= lenA - lenB; i++) {
+            pA = pA.next;
+        }
+        while (pA != null) {
+            if (pA == pB) {
+                return pA;
+            }
+            pA = pA.next;
+            pB = pB.next;
+        }
+        return null;
+    }
+```
 
 
 
+```
+
+```
 
 
 
+```
+
+```
 
 
 
+```
 
 
 
+```
 
 
 
+```
 
-
-
-
-
-
-
-
-
-
+```
 
 
 
