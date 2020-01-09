@@ -350,31 +350,210 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     }
 ```
 
+#### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
+```java
+    public int maxSubArray(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        dp[0] = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < len; i++) {
+            dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
+            max = Math.max(dp[i], max);
+        }
+        return max;
+    }
+```
+
+#### [155. 最小栈](https://leetcode-cn.com/problems/min-stack/)
+
+```java
+	Stack<Integer> realStack = null;
+    Stack<Integer> minStack = null;
+    private int min = Integer.MAX_VALUE;
+
+    public MinStack() {
+        realStack = new Stack<>();
+        minStack = new Stack<>();
+    }
+
+    public void push(int x) {
+        realStack.push(x);
+        if (minStack.isEmpty()) {
+            minStack.push(x);
+        } else {
+            if (minStack.peek() < x) {
+                minStack.push(minStack.peek());
+            } else {
+                minStack.push(x);
+            }
+        }
+
+    }
+```
+
+#### [1. 两数之和](https://leetcode-cn.com/problems/two-sum/)
+
+```java
+这个题没有难度,重点:
+1.你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。  只对应一个答案的意思是,只有一对满足要求.
+2.如果[3,3] target =6; 判断第二个3跟第一个不同的办法是  map.containsKey(two) && map.get(two) != i
+public int[] twoSum(int[] nums, int target) {
+        if (nums == null || nums.length <= 1) {
+            return new int[]{};
+        }
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], i);
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int two = target - nums[i];
+
+            if (map.containsKey(two) && map.get(two) != i) {
+                int twoIndex = map.get(two);
+                return new int[]{i, twoIndex};
+            }
+        }
+        return new int[]{};
+    }
 
 ```
 
+#### [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+
+```java
+public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null)
+            return false;
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && slow != null) {
+            fast = fast.next;
+            if (fast == slow)
+                return true;
+            if (fast != null) {
+                fast = fast.next;
+            } else {
+                return false;
+            }
+            if (fast == slow)
+                return true;
+            slow = slow.next;
+        }
+        return false;
+    }
 ```
 
 
 
-```
-
-```
 
 
 
-```
 
 
 
-```
 
 
 
-```
 
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
