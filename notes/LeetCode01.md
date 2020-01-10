@@ -549,6 +549,93 @@ Stack<Character> stack = new Stack<>();
     }
 ```
 
+#### [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+
+```java
+private List<List<Integer>> ret = new ArrayList<>();
+    private List<Integer> list = new ArrayList<>();
+    int target = 0;
+    int len = 0;
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0 || target < 0) {
+            return ret;
+        }
+        len = candidates.length;
+        this.target = target;
+        backtracing(0, 0, candidates);
+        return ret;
+    }
+
+    private void backtracing(int begin, int sum, int[] candidates) {
+        if (sum == target) {
+            ret.add(new ArrayList(list));
+        } else if (sum > target) {
+            return;
+        }
+        for (int i = begin; i < len; i++) {
+            list.add(candidates[i]);
+            backtracing(i, sum + candidates[i], candidates);
+            list.remove(list.size() - 1);
+        }
+    }private List<List<Integer>> ret = new ArrayList<>();
+    private List<Integer> list = new ArrayList<>();
+    int target = 0;
+    int len = 0;
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0 || target < 0) {
+            return ret;
+        }
+        len = candidates.length;
+        this.target = target;
+        backtracing(0, 0, candidates);
+        return ret;
+    }
+
+    private void backtracing(int begin, int sum, int[] candidates) {
+        if (sum == target) {
+            ret.add(new ArrayList(list));
+        } else if (sum > target) {
+            return;
+        }
+        for (int i = begin; i < len; i++) {
+            list.add(candidates[i]);
+            backtracing(i, sum + candidates[i], candidates);
+            list.remove(list.size() - 1);
+        }
+    }
+```
+
+#### [22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+
+```java
+改进:
+String的回溯用String的拼接就比较好  temp+"sdf"; 因为String的删除比较麻烦,而StringBuilder的删除也很耗时,如果题目要求返回的是String而不是StringBuilder,那么不要用StringBuilder来做转化.
+
+
+List<String> ret = new ArrayList<String>();
+int max = 0;
+public List<String> generateParenthesis(int n) {
+    max = n;
+    backtracing(0, 0, "");
+    return ret;
+}
+
+private void backtracing(int left, int right, String temp) {
+    if (temp.length() == 2 * max && left == right) {
+        ret.add(temp);
+        return;
+    }
+    if (left >= right && left <= max) {
+        backtracing(left + 1, right, temp + "(");
+        backtracing(left, right + 1, temp + ")");
+    }
+}
+```
+
+
+
 
 
 
@@ -688,6 +775,68 @@ public int[] countBits(int num) {
             i = 0;
         }
         return ans;
+    }
+```
+
+
+
+#### 543. 二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+
+
+
+```java
+ private int maxLength = Integer.MIN_VALUE;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null)
+            return 0;
+        preOrder(root);
+        return maxLength;
+    }
+
+    private int preOrder(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int lenL = preOrder(root.left);
+        int lenR = preOrder(root.right);
+        int length = lenL + lenR; //root不算在总长度里面
+        maxLength = Math.max(maxLength, length);
+        return Math.max(lenL, lenR) + 1;
+    }
+```
+
+
+
+#### 543. [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+
+
+
+```java
+改进: 先根遍历/也是深度优先搜索 ,每个root求左右子树长度之和,注意最终的直径也许不会经过根节点,比如
+      2
+    3   1
+  6  4
+  9
+  8
+private int maxLength = Integer.MIN_VALUE;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null)
+            return 0;
+        preOrder(root);
+        return maxLength;
+    }
+
+    private int preOrder(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int lenL = preOrder(root.left);
+        int lenR = preOrder(root.right);
+        int length = lenL + lenR; //root不算在总长度里面
+        maxLength = Math.max(maxLength, length);
+        return Math.max(lenL, lenR) + 1;
     }
 ```
 
