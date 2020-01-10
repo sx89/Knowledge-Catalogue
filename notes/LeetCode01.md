@@ -423,6 +423,8 @@ public int[] twoSum(int[] nums, int target) {
 #### [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 
 ```java
+快慢指针法
+
 public boolean hasCycle(ListNode head) {
         if (head == null || head.next == null)
             return false;
@@ -442,6 +444,108 @@ public boolean hasCycle(ListNode head) {
             slow = slow.next;
         }
         return false;
+    }
+
+哈希map记录是否访问过
+    
+    private HashSet<ListNode> set = new HashSet<ListNode>();
+
+    public boolean hasCycle(ListNode head) {
+        while (head != null) {
+            if (set.contains(head)) {
+                return true;
+            } else {
+                set.add(head);
+            }
+            head = head.next;
+        }
+        return false;
+    }
+
+```
+
+#### [234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+
+```java
+改进:
+
+快慢指针分两种情况
+1 2 3 4 5 奇数个: 结束的标志是    fast fast.next=null;fast在5处 slow为3是唯一中点,slow的next为下一半的开始
+1 2 3 4	   偶数个: 结束的标志是   fast  fast =null  slow在3处是唯二的靠右边中点,slow即为下一半的开始
+public boolean isPalindrome(ListNode head) {
+       /* if (head == null) {
+            return true;
+        }
+        if (head.next == null) {
+            return true;
+        }
+        if (head.next.next == null) {
+            return head.val == head.next.val;
+        }*/
+        ListNode slow = head;
+        ListNode pre = head;
+        ListNode fast = head;
+        ListNode leftHead = new ListNode(0);
+        while (fast != null && fast.next != null) {
+            pre = slow;
+            slow = slow.next;
+
+            fast = fast.next.next;
+
+            pre.next = leftHead.next;
+            leftHead.next = pre;
+
+
+        }
+        ListNode left = leftHead.next;
+        ListNode right = null;
+        if (fast == null) {
+            right = slow;
+        } else {
+            right = slow.next;
+        }
+
+        while (left != null && right != null) {
+            if (left.val != right.val) {
+                return false;
+            }
+            left = left.next;
+            right = right.next;
+        }
+        return true;
+    }
+```
+
+
+
+#### [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+
+```java
+
+
+Stack<Character> stack = new Stack<>();
+    HashMap<Character, Character> map = new HashMap<>();
+
+    public boolean isValid(String s) {
+        map.put(')', '(');
+        map.put('}', '{');
+        map.put(']', '[');
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (stack.isEmpty()) {
+                stack.push(chars[i]);
+            } else {
+                if (map.get(chars[i]) == stack.peek()) {
+                    stack.pop();
+                } else {
+                    stack.push(chars[i]);
+                }
+            }
+        }
+        return stack.isEmpty();
     }
 ```
 
@@ -468,6 +572,124 @@ public boolean hasCycle(ListNode head) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 要再刷一遍
+
+
+
+#### [46. 全排列](https://leetcode-cn.com/problems/permutations/)
+
+```java
+改进  典型的回溯法问题,一定要熟练掌握.
+
+private List<List<Integer>> ret = new ArrayList<>();
+boolean[] visited;
+private List<Integer> path = new ArrayList<>();
+
+public List<List<Integer>> permute(int[] nums) {
+    int len = nums.length;
+    visited = new boolean[len];
+    backtracing(nums);
+
+    return ret;
+}
+
+private void backtracing(int[] nums) {
+    if (path.size() == nums.length) {
+        ret.add(new ArrayList(path));
+    }
+    for (int i = 0; i < nums.length; i++) {
+        if (visited[i])
+            continue;
+
+        path.add(nums[i]);
+        visited[i] = true;
+        backtracing(nums);
+        visited[i] = false;
+        path.remove(path.size() - 1);
+    }
+
+}
+```
+
+#### [78. 子集](https://leetcode-cn.com/problems/subsets/)
+
+```java
+   List<List<Integer>> ret = new ArrayList<>();
+    ArrayList<Integer> list = new ArrayList<>();
+    int len = 0;
+
+    public List<List<Integer>> subsets(int[] nums) {
+        len = nums.length;
+        backtracing(0, nums);
+        return ret;
+    }
+
+    private void backtracing(int begin, int[] nums) {
+        ret.add(new ArrayList(list));
+        for (int i = begin; i < len; i++) {
+            list.add(nums[i]);
+            backtracing(i + 1,nums);
+            list.remove(list.size()-1);
+        }
+    }
+```
+
+#### [338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+
+```java
+
+改进 动态规划的方法
+    0 可以得出 1               2^0
+    0 和 1 能得出  2 和 3       2^1
+    0 1 2 3 能得出  4 5 6 7    2^2
+public int[] countBits(int num) {
+        int[] ans = new int[num + 1];
+        ans[0] = 0;
+        int b = 1;
+        int i = 0;
+        while (b <= num) {
+            while (i < b && b + i <= num) {
+                ans[b + i] = ans[i] + 1;
+                i++;
+            }
+            b <<= 1;
+
+            i = 0;
+        }
+        return ans;
+    }
+```
 
 
 
