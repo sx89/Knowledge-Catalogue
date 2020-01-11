@@ -636,9 +636,32 @@ private void backtracing(int left, int right, String temp) {
 
 
 
+#### [105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
 
+```java
+ public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTree(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
 
-
+    private TreeNode buildTree(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd) {
+        if (preStart > preEnd || inStart > inEnd || preStart < 0 || preEnd >= preorder.length || inStart < 0 || inEnd >= inorder.length) {
+            return null;
+        }
+        int rootVal = preorder[preStart];
+        int cutIndex = 0;
+        for (int i = inStart; i <= inEnd; i++) {
+            if (inorder[i] == rootVal) {
+                cutIndex = i;
+                break;
+            }
+        }
+        int leftLen = cutIndex - inStart;
+        TreeNode root = new TreeNode(rootVal);
+        root.left = buildTree(preorder, preStart + 1, preStart + leftLen, inorder, inStart, cutIndex - 1);
+        root.right = buildTree(preorder, preStart + leftLen + 1, preEnd, inorder, cutIndex + 1, inEnd);
+        return root;
+    }
+```
 
 
 
@@ -843,7 +866,8 @@ public int numTrees(int n) {
 #### [64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
 
 ```java
- 
+	如果是求和,用动规. 如果求path的具体内容比如匹配路径字符串(abcd)则用回溯
+
 改进:用回溯法会超时;不过注意回溯法的用法:
 	不要用xy   x和y在数组的申请和定位数据的时候是反直觉的grid[y][x] new int[yBound][xBound]
     用row col  row和col的含义是第几row和 第几col
@@ -889,6 +913,9 @@ public int numTrees(int n) {
 
 
 改进:动态规划的做法
+    状态转移方程: dp(i,j)=grid(i,j)+min(dp(i+1,j),dp(i,j+1))
+        
+    时间复杂度O(mn)已经无法优化,空间复杂度O(mn)可以优化为O(1),就是用grid本身来做dp.
     
     public int minPathSum(int[][] grid) {
         int rowCount = grid.length;
@@ -912,19 +939,83 @@ public int numTrees(int n) {
 
 
 
+#### [437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+```java
+改进:双递归的题,有点难度.
+    pathSum的递归用于遍历所有节点,根节点是不断变化的
+    pathFromRoot的递归用于找到一条root为根节点,root的子节点为终止节点的路径
+
+public int pathSum(TreeNode root, int sum) {
+        if (root == null) {
+            return 0;
+        }
+        return pathFromRoot(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
+    }
+
+    private int pathFromRoot(TreeNode root, int sum) {
+        if (root == null) {
+            return 0;
+        }
+        int ret = 0;
+        if (root.val == sum) {
+            ret = 1;
+        }
+        ret += pathFromRoot(root.left, sum - root.val);
+        ret += pathFromRoot(root.right, sum - root.val);
+        return ret;
+    }
+```
 
 
 
+#### [238. 除自身以外数组的乘积](https://leetcode-cn.com/problems/product-of-array-except-self/)
 
+```java
+改进:空间复杂度O(1) 要么是在ret上做累加,要么是原数组nums上做修改
+	时间复杂度O(n)必然是之前计算的结果可以拿到后面用.
+	ret[i] 等于nums的 i左边的数 乘以 i右边的数
+public int[] productExceptSelf(int[] nums) {
+        int len = nums.length;
+        int[] ret = new int[len];
+        ret[0] = 1;
+        for (int i = 1; i < len; i++) {
+            ret[i] = ret[i - 1] * nums[i - 1];
+        }
+        int temp = 1;
+        for (int i = len - 1; i >= 0; i--) {
+            ret[i] = ret[i] * temp;
+            temp = temp * nums[i];
+        }
+        return ret;
+    }
+```
 
+#### [48. 旋转图像](https://leetcode-cn.com/problems/rotate-image/)
 
+```java
+改进: 先转置,在镜像翻转  =  往右旋转九十度
 
-
-
-
-
-
-
+public void rotate(int[][] matrix) {
+        int len = matrix.length;
+        //转置
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        //镜像翻转
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len / 2; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][len - j - 1];
+                matrix[i][len - j - 1] = temp;
+            }
+        }
+    }
+```
 
 
 
