@@ -1171,9 +1171,36 @@ public List<List<String>> groupAnagrams(String[] strs) {
 
 
 
+#### [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
+```java
+改进:逆序遍历,记录以往的温度的最大值,因为如果 倒数第二天温度是75, 最后一天温度是70,则倒数第三天的时候如果温度是76比75大,则继续往后找也找不到比76大的天气了,因为75是未来几天最大的温度.
 
+Stack<Integer> stack = new Stack<Integer>();
 
+    public int[] dailyTemperatures(int[] T) {
+
+        int len = T.length;
+        int[] ans = new int[len];
+        for (int i = len - 1; i >= 0; i--) {
+            int temp = T[i];
+            while (!stack.isEmpty()) {
+                if (T[stack.peek()] <= temp) {
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            if (stack.isEmpty()) {
+                ans[i] = 0;
+            } else {
+                ans[i] = stack.peek() - i;
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+```
 
 
 
