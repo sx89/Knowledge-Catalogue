@@ -627,7 +627,7 @@ private void backtracing(int left, int right, String temp) {
         ret.add(temp);
         return;
     }
-    if (left >= right && left <= max) {
+    if (left >= right && left <= max) { //只有左括号没有超出max;左括号大于等于左括号的个数的时候,才有必要尝试下去(剪枝)
         backtracing(left + 1, right, temp + "(");
         backtracing(left, right + 1, temp + ")");
     }
@@ -780,32 +780,6 @@ public int[] countBits(int num) {
 
 
 
-#### 543. 二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
-
-
-
-```java
- private int maxLength = Integer.MIN_VALUE;
-
-    public int diameterOfBinaryTree(TreeNode root) {
-        if (root == null)
-            return 0;
-        preOrder(root);
-        return maxLength;
-    }
-
-    private int preOrder(TreeNode root) {
-        if (root == null) {
-            return 0;
-        }
-        int lenL = preOrder(root.left);
-        int lenR = preOrder(root.right);
-        int length = lenL + lenR; //root不算在总长度里面
-        maxLength = Math.max(maxLength, length);
-        return Math.max(lenL, lenR) + 1;
-    }
-```
-
 
 
 #### 543. [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
@@ -842,15 +816,99 @@ private int maxLength = Integer.MIN_VALUE;
 
 
 
+#### [96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+
+```java
+改进: 从1~n,每个节点都可以当根来组成二叉搜索树.
+    如果1是根,则左右两边的节点数分别是0,n-1;能组成的搜索树个数为:dp[0]*dp[n-1]
+    如果2是根,则左右两边的节点数分别是1,n-2;能组成的搜索树个数为:dp[1]*dp[n-2]
+    所以第一个循环是从i=2求到i=n的dp[n]有多少种搜索树的组成
+    第二个循环是在求dp[i]的1~分别当根节点,组成的搜索树个数
+
+public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                dp[i] += dp[j - 1] * dp[i - j];
+            }
+        }
+        return dp[n];
+    }
+```
 
 
 
+#### [64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
+
+```java
+ 
+改进:用回溯法会超时;不过注意回溯法的用法:
+	不要用xy   x和y在数组的申请和定位数据的时候是反直觉的grid[y][x] new int[yBound][xBound]
+    用row col  row和col的含义是第几row和 第几col
+    grid[row][col] new int [row][col]    
+    
+    
+    boolean[][] visited = null;
+    int min = Integer.MAX_VALUE;
+    int[][] loc = new int[][]{{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+    int path = 0;
+    int targetRow = 0;
+    int targetCol = 0;
+
+    public int minPathSum(int[][] grid) {
+        int rowCount = grid.length;
+        int colCount = grid[0].length;
+        targetRow = rowCount - 1;
+        targetCol = colCount - 1;
+        visited = new boolean[rowCount][colCount];
+        visited[0][0] = true;
+        path = grid[0][0];
+        backtracing(grid, path, 0, 0);
+        return min;
+    }
+
+    private void backtracing(int[][] grid, int path, int row, int col) {
+
+        if (row == targetRow && col == targetCol) {
+            min = Math.min(min, path);
+        }
+        for (int i = 0; i < loc.length; i++) {
+            col = col + loc[i][1];
+            row = row + loc[i][0];
+            if (!(row < 0 || col < 0 || row > targetRow || col > targetCol || visited[row][col] == true)) {
+                visited[row][col] = true;
+                backtracing(grid, path + grid[row][col], row, col);
+                visited[row][col] = false;
+            }
+            col = col - loc[i][1];
+            row = row - loc[i][0];
+        }
+    }
 
 
-
-
-
-
+改进:动态规划的做法
+    
+    public int minPathSum(int[][] grid) {
+        int rowCount = grid.length;
+        int colCount = grid[0].length;
+        int[][] dp = new int[rowCount][colCount];
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < rowCount; i++) {
+            dp[i][0] = grid[i][0] + dp[i - 1][0];
+        }
+        for (int j = 1; j < colCount; j++) {
+            dp[0][j] = grid[0][j] + dp[0][j - 1];
+        }
+        for (int i = 1; i < rowCount; i++) {
+            for (int j = 1; j < colCount; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+            }
+        }
+        return dp[rowCount - 1][colCount - 1];
+    }
+```
 
 
 
