@@ -665,7 +665,77 @@ private void backtracing(int left, int right, String temp) {
 
 
 
+#### [102. 二叉树的层次遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 
+
+
+```java
+改进:
+思路有 1. 层次遍历(每层入队列的时候记录下一层有多少个子节点)for (int i = 0; i < levelCount; i++)
+      2.深度优先遍历(先根遍历)
+
+//层次遍历源码
+Queue<TreeNode> queue = new LinkedList<TreeNode>();
+
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> ret = new ArrayList<>();
+        if (root == null) {
+            return ret;
+        }
+        queue.add(root);
+        int levelCount = 1;
+
+        while (!queue.isEmpty()) {
+            List<Integer> list = new ArrayList<Integer>();
+            int temp = 0;
+            for (int i = 0; i < levelCount; i++) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) {
+                    queue.add(node.left);
+                    temp++;
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                    temp++;
+                }
+            }
+            levelCount = temp;
+            ret.add(list);
+        }
+        return ret;
+    }
+
+
+//深度优先源码
+
+List<List<Integer>> ret = new ArrayList<>();
+
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) {
+            return ret;
+        }
+        preOrder(root, 0);
+
+        return ret;
+
+    }
+
+    private void preOrder(TreeNode root, int level) {
+        if (root == null) {
+            return;
+        }
+        List<Integer> temp = null;
+        if (ret.size() <= level) {
+            temp = new ArrayList<Integer>();
+            ret.add(temp);
+        }
+        temp = ret.get(level);
+        temp.add(root.val);
+        preOrder(root.left, level + 1);
+        preOrder(root.right, level + 1);
+    }
+```
 
 
 
