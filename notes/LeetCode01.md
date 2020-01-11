@@ -1200,6 +1200,28 @@ Stack<Integer> stack = new Stack<Integer>();
         }
         return ans;
     }
+
+改进:获取比当前温度temp高的所有温度的日期,找距离当前日期最近的那个
+
+public int[] dailyTemperatures(int[] T) {
+        int len = T.length;
+        int[] ans = new int[len];
+        int[] next = new int[101];
+        for (int i = len - 1; i >= 0; i--) {
+            int temp = T[i];
+            next[temp] = i;
+            int warmerIndex = Integer.MAX_VALUE;
+            ans[i] = 0;
+            for (int j = temp + 1; j <= 100; j++) {
+                if (next[j] != 0) {
+                    warmerIndex = Math.min(next[j], warmerIndex);
+                    ans[i] = warmerIndex - i;
+                }
+            }
+
+        }
+        return ans;
+    }
 ```
 
 
