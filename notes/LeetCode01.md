@@ -1133,9 +1133,41 @@ public void rotate(int[][] matrix) {
     }
 ```
 
+#### [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
+```java
+改进:
+每个字符串"cba" 用排序之后的"abc"作为key存储在HashMap<String, ArrayList<String>>;
+key相同的字符串放在map的value即ArrayList里面
 
+public List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+        for (int i = 0; i < strs.length; i++) {
+            String str = strs[i];
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String strSort = new String(chars);
 
+            if (map.get(strSort) == null) {
+                ArrayList<String> list = new ArrayList<String>();
+                list.add(str);
+                map.put(strSort, list);
+            } else {
+                ArrayList<String> list = map.get(strSort);
+                list.add(str);
+                map.put(strSort, list);
+            }
+        }
+        List<List<String>> ret = new ArrayList<>();
+        Set<Map.Entry<String, ArrayList<String>>> s = map.entrySet();
+        Iterator<Map.Entry<String, ArrayList<String>>> it = s.iterator();
+        while (it.hasNext()) {
+            ret.add(it.next().getValue());
+        }
+        return ret;
+    }
+
+```
 
 
 
