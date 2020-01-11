@@ -739,6 +739,52 @@ List<List<Integer>> ret = new ArrayList<>();
 
 
 
+#### [347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+
+
+
+```java
+改进:
+map来记录出现次数
+小顶堆来记录topk
+
+注意比较器的写法:return map.get(i1) - map.get(i2);
+注意k不能决定堆得最大容量,堆会自动扩容,所以要在add元素进堆得时候进行大小判断,如果size()>k,则add之后poll一个出来
+
+
+    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        Comparator<Integer> c = new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return map.get(i1) - map.get(i2);
+            }
+        };
+        PriorityQueue<Integer> heap = new PriorityQueue<Integer>(k, c);
+        for (int temp : nums) {
+            if (map.get(temp) == null) {
+                map.put(temp, 1);
+            } else {
+                map.put(temp, map.get(temp) + 1);
+            }
+        }
+        Set<Map.Entry<Integer, Integer>> s = map.entrySet();
+        Iterator<Map.Entry<Integer, Integer>> i = s.iterator();
+        while (i.hasNext()) {
+            if (heap.size() < k) {
+                heap.add(i.next().getKey());
+            } else {
+                heap.add(i.next().getKey());
+                heap.poll();
+            }
+        }
+        List<Integer> list = new ArrayList<Integer>();
+        while (!heap.isEmpty()) {
+            list.add(heap.poll());
+        }
+        return list;
+    }
+```
+
 
 
 
