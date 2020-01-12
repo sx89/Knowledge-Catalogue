@@ -1292,8 +1292,34 @@ public int countSubstrings(String s) {
     }
     return ret;
 }
-改进: 从中间往两边扩展
-    
+改进: 从中间往两边扩展,注意拓展方式有两种,  aba 以b为对称线  和 aa以两个a之间为对称线
+    对应的代码是  int left = i;
+           		 int right = left;
+				left = i;
+           		 right = left + 1;
+	
+     public int countSubstrings(String s) {
+        int len = s.length();
+        int res = 0;
+        for (int i = 0; i < len; i++) {
+            int left = i;
+            int right = left;
+            while (left >= 0 && right < len && s.charAt(left) == s.charAt(right)) {
+                left--;
+                right++;
+                res++;
+            }
+            left = i;
+            right = left + 1;
+            while (left >= 0 && right < len && s.charAt(left) == s.charAt(right)) {
+                left--;
+                right++;
+                res++;
+            }
+
+        }
+        return res;
+    }
 ```
 
 
