@@ -1270,9 +1270,31 @@ public int maxArea(int[] height) {
 }
 ```
 
+#### [647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
 
-
-
+```java
+改进:动态规划的做法
+     i-j<2  在i-j为0的时候,i和j为同一个值;i-j为1的时候由于前面的
+     s.charAt(i)==s.charAt(j)也决定了它们是相等的
+public int countSubstrings(String s) {
+    int len = s.length();
+    boolean[][] dp = new boolean[len][len];
+    int ret = 0;
+    for (int i = 0; i < len; i++) {
+        for (int j = i; j >= 0; j--) {
+            //i-j<2  在i-j为0的时候,i和j为同一个值;i-j为1的时候由于前面的
+            //s.charAt(i)==s.charAt(j)也决定了它们是相等的
+            if (s.charAt(i) == s.charAt(j) && ((i - j < 2) || dp[i - 1][j + 1])) {
+                dp[i][j] = true;
+                ret++;
+            }
+        }
+    }
+    return ret;
+}
+改进: 从中间往两边扩展
+    
+```
 
 
 
