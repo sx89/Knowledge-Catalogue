@@ -1327,7 +1327,9 @@ public int countSubstrings(String s) {
 #### [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
 ```java
-改进:
+改进:动态规划类的题目,找好状态转义方程+定好不满足方程的边界条件就可以解出来
+
+
 dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]); 第i天的收获 = Max(昨天,前天+今天);
 关于边界处的思考: dp[0] = nums[0];dp[1] = Math.max(nums[0], nums[1]);也就是说dp[1]可以是nums[0]也可以是nums[1],我会有疑惑: 如果dp[1]选的是nums[0],那dp[2]在选dp[1]=nums[0]的时候还有必要隔一天吗?直接dp[2]=dp[1]+nums[2]不就好了
     
