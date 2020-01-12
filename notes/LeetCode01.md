@@ -787,9 +787,44 @@ map来记录出现次数
 
 
 
+#### [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 
+```java
+回溯,没啥好说的
 
+Map<String, String> numsAndLetters = new HashMap<String, String>() {{
+    put("2", "abc");
+    put("3", "def");
+    put("4", "ghi");
+    put("5", "jkl");
+    put("6", "mno");
+    put("7", "pqrs");
+    put("8", "tuv");
+    put("9", "wxyz");
+}};
+List<String> ret = new ArrayList<String>();
+int len = 0;
+public List<String> letterCombinations(String digits) {
+    if (digits == null || digits.length() == 0) {
+        return ret;
+    }
+    len = digits.length();
+    backtracing(0, "", digits);
+    return ret;
+}
 
+private void backtracing(Integer index, String path, String digits) {
+    if (index == len) {
+        ret.add(path);
+        return;
+    }
+    String numLetters = numsAndLetters.get(digits.substring(index, index + 1));
+    for (int i = 0; i < numLetters.length(); i++) {
+        String temp = numLetters.substring(i, i + 1);
+        backtracing(index + 1, path + temp, digits);
+    }
+}
+```
 
 
 
@@ -1357,13 +1392,82 @@ public int rob(int[] nums) {
 }
 ```
 
+#### [279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+
+```java
+改进:状态转移方程 dp[i] = Math.min(dp[i],dp[i-1],dp[i-4],dp[i-16],dp[i-j*j])
+
+public int numSquares(int n) {
+    int[] dp = new int[n + 1];
+    for (int i = 1; i <= n; i++) {
+        dp[i] = i;
+        for (int j = 1; i - j * j >= 0; j++) {
+            dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
+        }
+    }
+    return dp[n];
+}
 
 
+```
 
+#### [75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
 
+```java
+改进:统计每个颜色有几个,然后填到数组中
 
+//借助常数空间意味着在原来的数组上改动,并且用temp之类的变量来记录信息
+    public void sortColors(int[] nums) {
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int temp : nums) {
+            if (map.get(temp) == null) {
+                map.put(temp, 1);
+            } else {
+                map.put(temp, map.get(temp) + 1);
+            }
+        }
+        int color = -1;
+        int colorCount = 0;
+        for (int i = 0; i < nums.length; ) {
+            if (colorCount > 0) {
+                nums[i++] = color;
+                colorCount--;
+            } else {
+                color++;
+                if (map.get(color) == null) {
+                    colorCount = 0;
+                } else {
+                    colorCount = map.get(color);
+                }
+            }
+        }
+    }
 
-
+改进: 思路  left->   cur->   <-right
+ //常数空间(用一些小数据记录信息,temp交换数据))+一趟遍历(修改原数组)
+    public void sortColors(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        int cur = 0;
+        while (cur <= right) {
+            if (nums[cur] == 0) {
+                int temp = nums[cur];
+                nums[cur] = nums[left];
+                nums[left] = temp;
+                left++;
+                cur++;//left++的时候cur++是因为cur是从左边开始往右走,
+                //如果left++,代表cur的左边界往右走去了.这个时候cur++就又回到了左边界最开始的地方
+            } else if (nums[cur] == 2) {
+                int temp = nums[cur];
+                nums[cur] = nums[right];
+                nums[right] = temp;
+                right--;
+            } else {
+                cur++;
+            }
+        }
+    }
+```
 
 
 
