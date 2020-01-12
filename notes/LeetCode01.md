@@ -1226,17 +1226,49 @@ public int[] dailyTemperatures(int[] T) {
 
 
 
+#### [406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+
+```java
+改进:先根据身高从大到小,k从小到大来排数组,然后将排好序的数组往另一个数组里插入,插完就是想要的结果
+public int[][] reconstructQueue(int[][] people) {
+    Comparator c = new Comparator<int[]>() {
+        public int compare(int[] o1, int[] o2) {
+            return o1[0] == o2[0] ? o1[1] - o2[1] : o2[0] - o1[0];
+        }
+    };
+    Arrays.sort(people, c);
+    ArrayList<int[]> list = new ArrayList<>();
+    for (int[] temp : people) {
+        list.add(temp[1], temp);
+    }
+    return list.toArray(new int[list.size()][2]);
+}
+```
 
 
 
 
 
+#### [11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
 
-
-
-
-
-
+```java
+改进:
+思路是双指针法,左右两边的指针往中间移动
+public int maxArea(int[] height) {
+    int left = 0;
+    int right = height.length - 1;
+    int maxArea = 0;
+    while (left < right) {
+        maxArea = Math.max(maxArea, Math.min(height[left], height[right]) * (right - left));
+        if (height[left] > height[right]) {
+            right--;
+        } else {
+            left++;
+        }
+    }
+    return maxArea;
+}
+```
 
 
 
