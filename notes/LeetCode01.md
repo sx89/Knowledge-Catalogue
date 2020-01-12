@@ -1324,9 +1324,36 @@ public int countSubstrings(String s) {
 
 
 
+#### [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
+```java
+改进:
+dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]); 第i天的收获 = Max(昨天,前天+今天);
+关于边界处的思考: dp[0] = nums[0];dp[1] = Math.max(nums[0], nums[1]);也就是说dp[1]可以是nums[0]也可以是nums[1],我会有疑惑: 如果dp[1]选的是nums[0],那dp[2]在选dp[1]=nums[0]的时候还有必要隔一天吗?直接dp[2]=dp[1]+nums[2]不就好了
+    
+事实上,dp[1] =  nums[0]  或  nums[1]
+     dp[2] =  max(dp[1],dp[0]+nums[2])分下面两种情况
+    当dp[1] = nums[1]时
+		max(dp[1],dp[0]+nums[2])其实是  nums[1] 和 nums[0]+nums[2]比较大小
+     当dp[1] = nums[0]时
+    	 max(dp[1],dp[0]+nums[2])其实是  nums[0] 和 nums[0]+nums[2]比较大小;该情况下必选dp[0]+nums[2],所以上面疑惑的那种情况出现的时候,选dp[1]+nums[2](也就是dp[0]+nums[2])而非dp[1]是必然的,而且能满足隔一个房间.
 
-
+public int rob(int[] nums) {
+    int len = nums.length;
+    if (len == 0)
+        return 0;
+    if (len == 1) {
+        return nums[0];
+    }
+    int[] dp = new int[len];
+    dp[0] = nums[0];
+    dp[1] = Math.max(nums[0], nums[1]);
+    for (int i = 2; i < len; i++) {
+        dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+    }
+    return dp[len - 1];
+}
+```
 
 
 
