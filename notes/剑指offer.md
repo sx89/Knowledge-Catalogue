@@ -1990,6 +1990,7 @@ public ListNode EntryNodeOfLoop(ListNode pHead) {
 改进: 
 	记住环形入口的结论
     记住代码
+    本题没有包含不含环的情况,代码鲁棒性不行
 ```
 
 
@@ -3861,7 +3862,6 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
 ## 题目描述
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/5f1cb999-cb9a-4f6c-a0af-d90377295ab8.png" width="500"/> </div><br>
-
 ## 解题思路
 
 设 A 的长度为 a + c，B 的长度为 b + c，其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
@@ -4071,7 +4071,6 @@ private int count = 0;
 从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ba355101-4a93-4c71-94fb-1da83639727b.jpg" width="350px"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -4111,7 +4110,6 @@ private int max = 0;
 平衡二叉树左右子树高度差不超过 1。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/af1d1166-63af-47b6-9aa3-2bf2bd37bd03.jpg" width="250px"/> </div><br>
-
 ## 解题思路
 
 ```java
@@ -4477,7 +4475,6 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
 把 n 个骰子扔在地上，求点数和为 s 的概率。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/195f8693-5ec4-4987-8560-f25e365879dd.png" width="300px"> </div><br>
-
 ## 解题思路
 
 ### 动态规划
@@ -4550,7 +4547,6 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 五张牌，其中大小鬼为癞子，牌面为 0。判断这五张牌是否能组成顺子。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/eaa506b6-0747-4bee-81f8-3cda795d8154.png" width="350px"> </div><br>
-
 ## 解题思路
 
 ```java
@@ -4641,7 +4637,6 @@ public int LastRemaining_Solution(int n, int m) {
 可以有一次买入和一次卖出，买入必须在前。求最大收益。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/42661013-750f-420b-b3c1-437e9a11fb65.png" width="220px"> </div><br>
-
 ## 解题思路
 
 使用贪心策略，假设第 i 轮进行卖出操作，买入操作价格应该在 i 之前并且价格最低。
@@ -4755,7 +4750,6 @@ public int Add(int a, int b) {
 给定一个数组 A[0, 1,..., n-1]，请构建一个数组 B[0, 1,..., n-1]，其中 B 中的元素 B[i]=A[0]\*A[1]\*...\*A[i-1]\*A[i+1]\*...\*A[n-1]。要求不能使用除法。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/4240a69f-4d51-4d16-b797-2dfe110f30bd.png" width="250px"> </div><br>
-
 ## 解题思路
 
 ```java
@@ -4877,7 +4871,6 @@ Output:
 二叉查找树中，两个节点 p, q 的公共祖先 root 满足 root.val >= p.val && root.val <= q.val。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/047faac4-a368-4565-8331-2b66253080d3.jpg" width="220"/> </div><br>
-
 ```java
 public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
     if (root == null)
@@ -4915,7 +4908,6 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d27c99f0-7881-4f2d-9675-c75cbdee3acd.jpg" width="250"/> </div><br>
-
 ```java
   改进:
 	在左右子树中查找是否存在 p 或者 q，如果 p 和 q 分别在两个子树中，那么就说明根节点就是最低公共祖先。

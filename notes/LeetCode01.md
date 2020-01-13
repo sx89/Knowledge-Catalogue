@@ -1471,9 +1471,42 @@ public int numSquares(int n) {
 
 
 
+#### [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
+```java
+改进:公式  x + y+ z + y = 2(x+y)推出  x = z 所以这个时候把快指针放到phead处,走x;慢指针走z;两个指针就会在
+    环入口处相遇
+    
+    注意代码的逻辑上有几个要注意的问题
 
-
+public ListNode detectCycle(ListNode head) {
+    if (head == null) {
+        return null;
+    }
+    if (head.next == null) {
+        return null;
+    }
+    ListNode fast = head;
+    ListNode slow = head;
+    while (fast != null && fast.next != null) {//走两步必备的判空
+        fast = fast.next.next;
+        slow = slow.next;
+        if (fast == slow) {
+            break;
+        }
+    }
+    if (fast == null || fast.next == null) {  //如果fast是因为空指针跳出while循环则不存在环
+        return null;
+    }
+    fast = head;
+    while (fast != slow) {                  //如果fast不是因为空指针跳出while循环,fast和slow分别在
+        									//走了x 和 z步后相遇(x=z)
+        fast = fast.next;
+        slow = slow.next;
+    }
+    return slow;
+}
+```
 
 
 
