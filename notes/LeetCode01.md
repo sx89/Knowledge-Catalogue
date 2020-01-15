@@ -1754,37 +1754,88 @@ public int leastInterval(char[] tasks, int n) {
 改进:LinkedHashMap 可以在构造的时候指定,是否按照访问顺序来存储节点(key)
     访问的时候,从链表中拿到key,在用key从map中拿到value
 
-class LRUCache extends LinkedHashMap<Integer, Integer> {
-    private int capacity;
+    class LRUCache {
+        private LinkedHashMap<Integer, Integer> map;
 
-    public LRUCache(int capacity) {
-        super(capacity, 0.75F, true);
-        this.capacity = capacity;
-    }
+        public LRUCache(int capacity) {
+            map = new LinkedHashMap<Integer, Integer>(capacity, 0.75F, true) {
+                public boolean removeEldestEntry(Map.Entry<Integer, Integer> entry) {
+                    return size() > capacity;
+                }
+            };
+        }
 
-    public int get(int key) {
-        return super.getOrDefault(key, -1);
-    }
+        public int get(int key) {
+            return map.getOrDefault(key, -1);
+        }
 
-    public void put(int key, int value) {
-        super.put(key, value);
+        public void put(int key, int value) {
+            map.put(key, value);
+        }
     }
+```
 
-    public boolean removeEldestEntry(Map.Entry<Integer, Integer> entry) {
-        return size() > capacity;
+#### [416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+
+```java
+改进:01背包问题
+public boolean canPartition(int[] nums) {
+    int sum = 0;
+    for (int temp : nums) {
+        sum += temp;
     }
+    int target = sum / 2;
+    if (sum % 2 == 1) {
+        return false;
+    }
+    boolean[][] dp = new boolean[nums.length][target + 1];
+    if (nums[0] <= target) {
+        dp[0][nums[0]] = true;
+    }
+    for (int i = 1; i < nums.length; i++) {
+        for (int j = 0; j <= target; j++) {
+            //如果j为0,记得把选择(要还是不要)第i个物品后,恰好总和为0的情况设置为true
+            //只要一个都不选,则dp[i][0]永远为true
+            //设置成true是为了 nums[i]==j的时候用
+            if (j == 0) {
+                dp[i][j] = true;
+                continue;
+            }
+            //只有nums[i]<=j的时候,背包的总和才有可能刚好等于j
+            if (nums[i] <= j) {
+                //状态转移方程
+                dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i]];
+            }
+        }
+    }
+    return dp[nums.length - 1][target];
 }
 ```
 
 
 
+#### [300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
+```java
+public int lengthOfLIS(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return 0;
+    }
+    int len = nums.length;
+    int[] dp = new int[len];
+    int max = 0;
+    for (int i = 0; i < len; i++) {
+        dp[i] = 1;
+        for (int j = 0; j < i; j++) {
+            if (nums[i] > nums[j])
+                dp[i] = Math.max(dp[i], dp[j] + 1);
 
-
-
-
-
-
+        }
+        max = Math.max(dp[i], max);
+    }
+    return max;
+}
+```
 
 
 
