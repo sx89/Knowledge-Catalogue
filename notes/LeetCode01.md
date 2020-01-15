@@ -1689,5 +1689,62 @@ public int maxProfit(int[] prices) {
 }
 ```
 
+#### [621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
 
+
+
+```java
+改进:
+容易出错的地方:
+1.当queue是空并且list里面也没有候选,要提前退出,cpu不需要走完完整的一个轮回(n+1)个任务
+    if (frequencyOfChar.isEmpty() && frequencyDcreByOneList.size() == 0)
+                    break;
+
+
+public int leastInterval(char[] tasks, int n) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        Comparator<Integer> com = new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return i2 - i1;
+            }
+        };
+        PriorityQueue<Integer> frequencyOfChar = new PriorityQueue<Integer>(26, com);
+        for (char c : tasks) {
+            if (map.get(c) == null) {
+                map.put(c, 1);
+            } else {
+                map.put(c, map.get(c) + 1);
+            }
+        }
+        for (Map.Entry<Character, Integer> temp : map.entrySet()) {
+            frequencyOfChar.add(temp.getValue());
+        }
+        int taskTimeSum = 0;
+
+        while (!frequencyOfChar.isEmpty()) {
+            int i = 0;
+            LinkedList<Integer> frequencyDcreByOneList = new LinkedList<Integer>();
+            while (i <= n) {//小于等于是因为 每个任务的后续冷却是n,所以加上自身的时间,一个轮回是n+1次
+                if (!frequencyOfChar.isEmpty()) {
+                    if (frequencyOfChar.peek() > 1) {
+                        frequencyDcreByOneList.add(frequencyOfChar.poll() - 1);
+                    } else {
+                        frequencyOfChar.poll();
+                    }
+                }
+                taskTimeSum++;
+                i++;
+                if (frequencyOfChar.isEmpty() && frequencyDcreByOneList.size() == 0)
+                    break;
+
+            }
+            for (int temp : frequencyDcreByOneList) {
+                frequencyOfChar.add(temp);
+            }
+
+        }
+        return taskTimeSum;
+    }
+
+```
 
