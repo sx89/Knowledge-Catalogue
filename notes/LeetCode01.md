@@ -1841,7 +1841,46 @@ public int lengthOfLIS(int[] nums) {
 
 
 
+```java
+改进: map.put(0,1)放入,是为了sum本身就等于 k,即 sum-k = 0;
+		map中先搜索sum-k再放入sum   是为了防止k=0的情况,此时先放入sum-0,再搜索sum,是一种混淆. 本身sum放入map是给下一次累加的sum使用的,而非本次累加.
 
+HashMap<Integer, Integer> map = new HashMap<>();
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        int sum = 0;
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum - k)) {
+                count += map.get(sum - k);
+            }
+            if (map.containsKey(sum)) {
+                map.put(sum, map.get(sum) + 1);
+            } else {
+                map.put(sum, 1);
+            }
+        }
+        return count;
+    }
+
+public int subarraySum(int[] nums, int k) {
+    int left = 0;
+    int right = 0;
+    int sum = 0;
+    int count = 0;
+    for (left = 0; left < nums.length; left++) {
+        sum = 0;
+        for (right = left; right < nums.length; right++) {
+            sum += nums[right];
+            if (sum == k) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+```
 
 
 
