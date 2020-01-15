@@ -1748,3 +1748,107 @@ public int leastInterval(char[] tasks, int n) {
 
 ```
 
+#### [146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+
+```java
+改进:LinkedHashMap 可以在构造的时候指定,是否按照访问顺序来存储节点(key)
+    访问的时候,从链表中拿到key,在用key从map中拿到value
+
+class LRUCache extends LinkedHashMap<Integer, Integer> {
+    private int capacity;
+
+    public LRUCache(int capacity) {
+        super(capacity, 0.75F, true);
+        this.capacity = capacity;
+    }
+
+    public int get(int key) {
+        return super.getOrDefault(key, -1);
+    }
+
+    public void put(int key, int value) {
+        super.put(key, value);
+    }
+
+    public boolean removeEldestEntry(Map.Entry<Integer, Integer> entry) {
+        return size() > capacity;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
