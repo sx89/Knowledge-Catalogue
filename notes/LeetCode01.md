@@ -1814,6 +1814,44 @@ public boolean canPartition(int[] nums) {
 
 
 
+#### [494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+
+```java
+改进:背包问题
+    对于sum为负数的dp[i][sum],用dp[i][sum+1000]来解决负数
+public int findTargetSumWays(int[] nums, int S) {
+    int len = nums.length;
+    if (nums == null || nums.length == 0) {
+        return 0;
+    }
+    int[][] dp = new int[len][2001];
+    for (int i = 0; i < len; i++) {
+        for (int j = -1000; j < 1001; j++) {
+            if (i == 0) {
+                //原题为非负整数,不然要添加j==-nums[i]条件
+                if (j == nums[i]) {
+                    dp[i][1000 - nums[i]] = 1;
+                    //注意!!!!!!!!!!!!!! 下面之所以要用+= 是为了应对开头是0的case,
+                    //+0  和 -0 算两种情况
+                    dp[i][1000 + nums[i]] += 1;
+                } else {
+                    dp[i][j + 1000] = 0;
+                }
+                continue;
+            }
+            if (j - nums[i] + 1000 >= 0) {
+                dp[i][j + 1000] += dp[i - 1][j - nums[i] + 1000];
+            }
+            if (j + nums[i] + 1000 < 2001) {
+                dp[i][j + 1000] += dp[i - 1][j + nums[i] + 1000];
+            }
+        }
+    }
+    //题中说数组和不会超过1000所以要判断S>1000
+    return S > 1000 ? 0 : dp[len - 1][S + 1000];
+}
+```
+
 #### [300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
 ```java
@@ -1839,7 +1877,7 @@ public int lengthOfLIS(int[] nums) {
 
 
 
-
+#### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 ```java
 改进: map.put(0,1)放入,是为了sum本身就等于 k,即 sum-k = 0;
