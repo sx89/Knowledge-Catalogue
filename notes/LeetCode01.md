@@ -1478,6 +1478,11 @@ public int numSquares(int n) {
     环入口处相遇
     
     注意代码的逻辑上有几个要注意的问题
+     while (fast != null && fast.next != null) {//走两步必备的判空
+         
+     if (fast == null || fast.next == null) {  //如果fast是因为空指针跳出while循环则不存在环
+        return null;
+    }
 
 public ListNode detectCycle(ListNode head) {
     if (head == null) {
@@ -1508,29 +1513,181 @@ public ListNode detectCycle(ListNode head) {
 }
 ```
 
+#### [394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+
+```java
+改进:代码太牛,记住就好
+public String decodeString(String s) {
+    if (s == null || s.length() == 0) {
+        return "";
+    }
+    StringBuilder res = new StringBuilder();
+    int num = 0;
+    Stack<Integer> stack_num = new Stack<Integer>();
+    Stack<String> stack_res = new Stack<String>();
+    for (char c : s.toCharArray()) {
+        if (c == '[') {
+            stack_res.push(res.toString());
+            stack_num.push(num);
+            res = new StringBuilder();
+            num = 0;
+        } else if (c == ']') {
+            StringBuilder temp = new StringBuilder();
+            int repeat = stack_num.pop();
+            for (int i = 0; i < repeat; i++) {
+                temp = temp.append(res);
+
+            }
+            res = new StringBuilder(stack_res.pop() + temp);
+        } else if (c >= '0' && c <= '9') {
+            num = num * 10 + Integer.parseInt(c + "");
+        } else {
+            res.append(c);
+        }
+    }
+    return res.toString();
+}
+```
 
 
 
 
 
+#### [337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
 
+改进:树的后续遍历+动态规划
+
+```java
+
+
+HashMap<TreeNode, Integer> memo = new HashMap<TreeNode, Integer>();
+
+public int rob(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+    lastOrder(root);
+    return memo.get(root);
+}
+
+private int lastOrder(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+
+    if (memo.containsKey(root)) return memo.get(root);
+    int money1 = root.val;
+    int money2 = 0;
+    int maxMoney = 0;
+    if (root.left != null) {
+        money2 += lastOrder(root.left);
+        money1 += lastOrder(root.left.left);
+        money1 += lastOrder(root.left.right);
+
+    }
+    if (root.right != null) {
+        money2 += lastOrder(root.right);
+        money1 += lastOrder(root.right.left);
+        money1 += lastOrder(root.right.right);
+
+    }
+    maxMoney = Math.max(money1, money2);
+    memo.put(root, maxMoney);
+    return maxMoney;
+}
+```
+
+#### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+```java
+public int maxProfit(int[] prices) {
+    if (prices == null || prices.length == 0)
+        return 0;
+
+    int len = prices.length;
+    int[][] dp = new int[len][2];
+
+    for (int i = 0; i < len; i++) {
+        if (i == 0) {
+            dp[0][0] = 0;
+            dp[0][1] = -prices[0];
+        } else {
+
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(0 - prices[i], dp[i - 1][1]);
+            //0-prices[i]而非dp[i-1][1]-prices[i]是为了防止多次买卖,
+
+        }
+    }
+    return dp[len - 1][0];
+}
+```
 
 
 
+#### [309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+
+改进:动态规划类的题目:1.找状态和选择2.定好base_case 就这两点而已,详情看下面大神题解
+    https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/solution/yi-ge-fang-fa-tuan-mie-6-dao-gu-piao-wen-ti-by-lab/
+
+```java
+
+
+public int maxProfit(int[] prices) {
+    if (prices == null || prices.length == 0) {
+        return 0;
+    }
+    int len = prices.length;
+    int[][] dp = new int[len][2];
+
+    for (int i = 0; i < len; i++) {
+        if (i == 0) {
+            dp[i][0] = 0;
+            dp[i][1] = -prices[0];
+        } else if (i == 1) {
+            dp[1][0] = Math.max(dp[0][0], dp[0][1] + prices[i]);
+            dp[1][1] = Math.max(dp[0][1], -prices[i]);
+        } else {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i]);
+        }
+    }
+    return dp[len - 1][0];
+}
+```
 
 
 
+#### [123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
+改进:k表示交易了多少次
 
+```java
+public int maxProfit(int[] prices) {
+    if (prices == null || prices.length == 0) {
+        return 0;
+    }
+    int len = prices.length;
+    int max_k = 2;
+    int[][][] dp = new int[len][max_k + 1][2];
+    for (int i = 0; i < len; i++) {
+        //k=1是交易了一次,k=2 是交易了两次,而不是剩余几次机会
+        for (int k = 1; k <= max_k; k++) { //改成k++
+            if (i == 0) {
+                dp[0][k][0] = 0;
+                dp[0][k][1] = -prices[0];
+            } else {
+                dp[i][k][0] = Math.max(dp[i - 1][k][0], dp[i - 1][k][1] + prices[i]);
+                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - prices[i]);
+            }
+        }
 
-
-
-
-
-
-
+    }
+    return dp[len - 1][2][0];
+}
+```
 
 
 
