@@ -2097,57 +2097,79 @@ public boolean searchMatrix(int[][] matrix, int target) {
 ```java
 改进:回溯,没啥好说的,继续熟练
 boolean[][] visited;
-int path;
-int colBound;
-int rowBound;
-int[][] loc = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-boolean found;
+    boolean found;
+    int rowBound;
+    int colBound;
+    int[][] loc = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-public boolean exist(char[][] board, String word) {
-    if (board == null || board.length == 0 || board[0].length == 0) {
-        return false;
-    }
-    rowBound = board.length;
-    colBound = board[0].length;
-    visited = new boolean[rowBound][colBound];
-    for (int i = 0; i < rowBound; i++) {
-        for (int j = 0; j < colBound; j++) {
-            backtracing(board, i, j, 0, word);
-
+    public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return false;
         }
-    }
-    return found;
-}
+        rowBound = board.length;
+        colBound = board[0].length;
+        visited = new boolean[rowBound][colBound];
 
-private void backtracing(char[][] board, int row, int col, int path, String word) {
-    if (found) {
-        return;
+        for (int i = 0; i < rowBound; i++) {
+            for (int j = 0; j < colBound; j++) {
+                backtracing(board, i, j, 0, word);
+            }
+        }
+        return found;
     }
-    if (row < 0 || col < 0 || row >= rowBound || col >= colBound) {
-        return;
+
+    private void backtracing(char[][] board, int row, int col, int path, String word) {
+        if (found) {
+            return;
+        }
+        if (row < 0 || col < 0 || row >= rowBound || col >= colBound) {
+            return;
+        }
+        if (board[row][col] != word.charAt(path) || visited[row][col]) {
+            return;
+        }
+        if (board[row][col] == word.charAt(path) && path == word.length() - 1) {
+            found = true;
+            return;
+        }
+        visited[row][col] = true;
+        for (int i = 0; i < loc.length; i++) {
+            int rowTemp = row + loc[i][0];
+            int colTemp = col + loc[i][1];
+            backtracing(board, rowTemp, colTemp, path + 1, word);
+        }
+        visited[row][col] = false;
     }
-    if (board[row][col] != word.charAt(path) || visited[row][col] == true) {
-        return;
-    }
-    if (path == word.length() - 1 && board[row][col] == word.charAt(path)) {
-        found = true;
-        return;
-    }
-    visited[row][col] = true;
-    for (int i = 0; i < loc.length; i++) {
-        int rowTemp = row + loc[i][0];
-        int colTemp = col + loc[i][1];
-        backtracing(board, rowTemp, colTemp, path + 1, word);
-    }
-    visited[row][col] = false;
-}
 ```
 
 
 
+#### [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 
+```java
 
+改进:方法很巧妙,有四点值得学
+//1.删除节点的题,可以添加一个头结点来用
+//2.pre前进N+1步
+//3.删除倒数第n个节点,但second到了倒数第n+1就停下,为了使用 second.next = second.next.next;
+//4.链表类题目的画图方式  [pHead] [head]  []  []  []  null
 
+public ListNode removeNthFromEnd(ListNode head, int n) {
+    ListNode pHead = new ListNode(1);
+    pHead.next = head;
+    ListNode pre = pHead;
+    ListNode second = pHead;
+    for (int i = 1; i <= n + 1; i++) {
+        pre = pre.next;//其实应该判空
+    }
+    while (pre != null) {
+        second = second.next;
+        pre = pre.next;
+    }
+    second.next = second.next.next;
+    return pHead.next;
+}
+```
 
 
 
