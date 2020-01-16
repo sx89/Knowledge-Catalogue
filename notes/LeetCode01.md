@@ -1951,11 +1951,78 @@ public int maximalSquare(char[][] matrix) {
     }
     return maxSquare * maxSquare;
 }
+
+//空间优化的写法
+ public int maximalSquare(char[][] matrix) {
+        int rowBound = matrix.length;
+        int colBound = rowBound > 0 ? matrix[0].length : 0;
+        int[] dp = new int[colBound + 1];
+        int maxSquare = 0;
+        int temp = 0, pre = 0;
+        for (int i = 1; i <= rowBound; i++) {
+            for (int j = 1; j <= colBound; j++) {
+                temp = dp[j];
+                if (matrix[i - 1][j - 1] == '1') {
+                    dp[j] = Math.min(Math.min(dp[j], dp[j - 1]), pre) + 1;
+                    maxSquare = Math.max(dp[j], maxSquare);
+                } else {
+                    // dp[j]在用过多次后,后续不为零,要重新清理
+                    dp[j] = 0;
+                }
+                空间优化的写法,temp,pre的使用
+                pre = temp;
+            }
+        }
+        return maxSquare * maxSquare;
+    }
 ```
 
+#### [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
+```java
+改进:find不到就返回-1
+    getLower 和 getUpper的学习
 
+public int[] searchRange(int[] nums, int target) {
+    int left = getLower(nums, target);
+    int right = getUpper(nums, target);
+    return new int[]{left, right};
+}
 
+private int getLower(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    boolean find = false;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+            find = true;
+        }
+    }
+    return find ? left : -1;
+}
+
+private int getUpper(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    boolean find = false;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else {
+            left = mid + 1;
+            find = true;
+        }
+    }
+    return find ? right : -1;
+}
+```
 
 
 
