@@ -1839,12 +1839,20 @@ public int findTargetSumWays(int[] nums, int S) {
                 }
                 continue;
             }
+            
             if (j - nums[i] + 1000 >= 0) {
                 dp[i][j + 1000] += dp[i - 1][j - nums[i] + 1000];
             }
             if (j + nums[i] + 1000 < 2001) {
                 dp[i][j + 1000] += dp[i - 1][j + nums[i] + 1000];
             }
+            
+            //上面的状态转移可以用下面来代替
+           /* if (dp[i - 1][j + 1000] > 0) {
+                    dp[i][j + 1000 - nums[i]] += dp[i - 1][j + 1000];
+                    dp[i][j + 1000 + nums[i]] += dp[i - 1][j + 1000];
+                }
+            */
         }
     }
     //题中说数组和不会超过1000所以要判断S>1000
@@ -1922,9 +1930,28 @@ public int subarraySum(int[] nums, int k) {
 
 
 
+#### [221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
+改进:关键是这种题的状态转移方程记住.
 
+```java
+public int maximalSquare(char[][] matrix) {
+    int rowBound = matrix.length;
+    int colBound = rowBound > 0 ? matrix[0].length : 0;
+    int[][] dp = new int[rowBound + 1][colBound + 1];
+    int maxSquare = 0;
+    for (int i = 1; i <= rowBound; i++) {
+        for (int j = 1; j <= colBound; j++) {
+            if (matrix[i - 1][j - 1] == '1') {
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i - 1][j - 1]), dp[i][j - 1]) + 1;
+                maxSquare = Math.max(dp[i][j], maxSquare);
+            }
 
+        }
+    }
+    return maxSquare * maxSquare;
+}
+```
 
 
 
