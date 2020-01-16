@@ -2024,6 +2024,65 @@ public int[] searchRange(int[] nums, int target) {
     }
 ```
 
+#### [240. 搜索二维矩阵 II](https://leetcode-cn.com/problems/search-a-2d-matrix-ii/)
+
+```java
+改进:还有一个方法二.
+
+public boolean searchMatrix(int[][] matrix, int target) {
+    int rowBound = matrix.length;
+    if (rowBound == 0 || matrix[0].length == 0) {
+        return false;
+    }
+    int colBound = matrix[0].length;
+    for (int i = rowBound - 1; i >= 0; i--) {
+        if (matrix[i][0] == target) {
+            return true;
+        } else if (matrix[i][0] < target && matrix[i][colBound - 1] >= target) {
+            int foundIndex = binarySearch(matrix[i], target);
+            if (foundIndex != -1) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+private int binarySearch(int[] nums, int target) {
+    int low = 0, high = nums.length - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        } else if (nums[mid] < target) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return -1;
+}
+
+
+方法二
+public boolean searchMatrix(int[][] matrix, int target) {
+        // start our "pointer" in the bottom-left
+        int row = matrix.length-1;
+        int col = 0;
+
+        while (row >= 0 && col < matrix[0].length) {
+            if (matrix[row][col] > target) {
+                row--;
+            } else if (matrix[row][col] < target) {
+                col++;
+            } else { // found it
+                return true;
+            }
+        }
+
+        return false;
+    }
+```
 
 
 
@@ -2031,14 +2090,58 @@ public int[] searchRange(int[] nums, int target) {
 
 
 
+#### [79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
 
 
 
+```java
+改进:回溯,没啥好说的,继续熟练
+boolean[][] visited;
+int path;
+int colBound;
+int rowBound;
+int[][] loc = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+boolean found;
 
+public boolean exist(char[][] board, String word) {
+    if (board == null || board.length == 0 || board[0].length == 0) {
+        return false;
+    }
+    rowBound = board.length;
+    colBound = board[0].length;
+    visited = new boolean[rowBound][colBound];
+    for (int i = 0; i < rowBound; i++) {
+        for (int j = 0; j < colBound; j++) {
+            backtracing(board, i, j, 0, word);
 
+        }
+    }
+    return found;
+}
 
-
-
+private void backtracing(char[][] board, int row, int col, int path, String word) {
+    if (found) {
+        return;
+    }
+    if (row < 0 || col < 0 || row >= rowBound || col >= colBound) {
+        return;
+    }
+    if (board[row][col] != word.charAt(path) || visited[row][col] == true) {
+        return;
+    }
+    if (path == word.length() - 1 && board[row][col] == word.charAt(path)) {
+        found = true;
+        return;
+    }
+    visited[row][col] = true;
+    for (int i = 0; i < loc.length; i++) {
+        int rowTemp = row + loc[i][0];
+        int colTemp = col + loc[i][1];
+        backtracing(board, rowTemp, colTemp, path + 1, word);
+    }
+    visited[row][col] = false;
+}
+```
 
 
 
