@@ -2250,9 +2250,50 @@ public int maxProduct(int[] nums) {
 
 
 
+#### [2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
 
+```java
+改进:1.巧法:如果l1或者l2为空,则它的值可以看做0,这样就不用后续再对剩下一条非空链做单独处理
+    2.见备注的一些细节
 
+public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    int num1 = 0;
+    int num2 = 0;
+    int sum = 0;
+    int addOnePre = 0;
+    int addOneNow = 0;
+    ListNode pHead = new ListNode(1);
+    ListNode pre = pHead;
+    while (l1 != null || l2 != null) {
+        num1 = l1 == null ? 0 : l1.val;
+        num2 = l2 == null ? 0 : l2.val;
+        sum = num1 + num2;
+        if (addOneNow == 1) {
+            //先sum++再判断是否超过10
+            sum++;
+        }
+        if (sum >= 10) {
+            sum = sum % 10;
+            addOnePre = 1;
+        } else {
+            addOnePre = 0;
+        }
 
+        ListNode node = new ListNode(sum);
+        pre.next = node;
+        pre = pre.next;
+        addOneNow = addOnePre;
+
+        l1 = l1 == null ? null : l1.next;
+        l2 = l2 == null ? null : l2.next;
+    }
+    //如果l1和l2都空了,但还有一个进位,也要把这个进位考虑到
+    if (addOneNow == 1) {
+        pre.next = new ListNode(1);
+    }
+    return pHead.next;
+}
+```
 
 
 
