@@ -2326,5 +2326,102 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 }
 ```
 
+#### [31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+
+
+
+思路讲解:https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-by-leetcode/
+
+```java
+改进: 从后往前,找到第一个不满足降序的数字 nums[targetIndex]
+    再从后往前,找到第一个降序的子数组中比nums[targetIndex]大的nums[i]
+	交换nums[targetIndex] 和 nums[i]
+    再把targetIndex后面的数变成升序.
+    
+    上面的思路有点像 一个数字,比如129,降序数组就是9,把2变成3,129就成了139,然后把降序数组9改成升序数组0
+    最终变成了130.
+    
+    
+public void nextPermutation(int[] nums) {
+    int len = nums.length;
+    int targetIndex = len - 2;
+    while (targetIndex >= 0) {
+        if (nums[targetIndex] < nums[targetIndex + 1]) {
+            break;
+        }
+        targetIndex--;
+    }
+    if (targetIndex >= 0) {
+        for (int i = len - 1; i >= 0; i--) {
+            if (nums[i] > nums[targetIndex]) {
+                swap(nums, targetIndex, i);
+                break;
+            }
+        }
+    }
+    reverse(nums, targetIndex + 1, len - 1);
+}
+
+private void reverse(int[] nums, int start, int end) {
+    while (start < end) {
+        swap(nums, start++, end--);
+    }
+}
+
+private void swap(int[] nums, int index1, int index2) {
+    int temp = nums[index1];
+    nums[index1] = nums[index2];
+    nums[index2] = temp;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
