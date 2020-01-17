@@ -2176,7 +2176,13 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 #### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 
 ```java
+改进:
 //动态规划三部演化:  递归(自顶向下)->带备忘录的递归(自顶向下,也就是把递归树剪枝,已经算过的不再重复计算)->动态规划(自底向上)
+//背包问题dp[i][j] i是选到第i个物品,j是当前的和,里面的值是
+//斐波那契,跳台阶,零钱兑换  dp[i] i是和,是台阶总高,是当前拼凑的总钱数;里面的值是
+//里面的值取决于题目,有的是方案可行,有的是方案次数,有的是最优子结构(即最少的拼凑次数,
+//最少的跳台阶数,最少的背包物品数)
+
 //我定好base case,同时知道dp[n]是由下面的dp[n-1]等怎么得来的,就可以写出代码
 public int coinChange(int[] coins, int amount) {
     int[] dp = new int[amount + 1];
@@ -2195,9 +2201,52 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
+#### [152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)
 
+```java
+改进:1.状态转移方程
+     dp[i][0] = Math.max(imax * nums[i - 1], nums[i - 1]);
+     dp[i][1] = Math.min(imin * nums[i - 1], nums[i - 1]);
+	2.因为负负得正,所以维护最小值也是有必要的
+	3.因为只与前一个dp数据有关,dp数组可以被优化空间
+        
+public int maxProduct(int[] nums) {
+    int max = Integer.MIN_VALUE, imax = 1, imin = 1;
+    int[][] dp = new int[nums.length + 1][2];
+    dp[0][0] = 1;
+    dp[0][1] = 1;
+    for (int i = 1; i <= nums.length; i++) {
+        if (nums[i - 1] < 0) {
+            imin = dp[i - 1][0];
+            imax = dp[i - 1][1];
+        } else {
+            imin = dp[i - 1][1];
+            imax = dp[i - 1][0];
+        }
+        dp[i][0] = Math.max(imax * nums[i - 1], nums[i - 1]);
+        dp[i][1] = Math.min(imin * nums[i - 1], nums[i - 1]);
+        max = Math.max(max, dp[i][0]);
+    }
+    return max;
+}
 
-
+改进:优化空间
+    public int maxProduct(int[] nums) {
+        int max = Integer.MIN_VALUE, imax = 1, imin = 1;
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i];
+            if (temp < 0) {
+                int swap = imax;
+                imax = imin;
+                imin = swap;
+            }
+            imax = Math.max(imax * nums[i], nums[i]);
+            imin = Math.min(imin * nums[i], nums[i]);
+            max = Math.max(imax, max);
+        }
+        return max;
+    }
+```
 
 
 
