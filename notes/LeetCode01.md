@@ -2295,9 +2295,36 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 }
 ```
 
+#### [98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
 
+```java
+改进:利用搜索树的性质
 
+boolean ret = true;
 
+public boolean isValidBST(TreeNode root) {
+    ArrayList<Integer> list = new ArrayList<>();
+    inOrder(root, list);
+    return ret;
+}
+
+private void inOrder(TreeNode root, ArrayList<Integer> list) {
+    if (ret == false) {
+        return;
+    }
+    if (root == null) {
+        return;
+    }
+    inOrder(root.left, list);
+    if (list.size() >= 1 && root.val <= list.get(list.size() - 1)) {
+        ret = false;
+        return;
+    } else {
+        list.add(root.val);
+    }
+    inOrder(root.right, list);
+}
+```
 
 
 
