@@ -2377,9 +2377,40 @@ private void swap(int[] nums, int index1, int index2) {
 
 
 
+#### [33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
+```java
+改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
+    写代码:  先画出一个比较通用的情况,然后根据情况写代码; 然后再进行边界的处理(有的边界想不到会有致命bug,有的只是逻辑不健全,后者可以在代码通过一般情况后再考虑);然后空间,时间优化,逻辑结构优化
+        
+        
+    本题思路,对半查找,有一半递增,有一半增减.检测target和递增的部分首尾的关系,进而决定low或者high接下来的变化
 
-
+public int search(int[] nums, int target) {
+    int len = nums.length;
+    int low = 0, high = len - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        }
+        if (nums[low] <= nums[mid]) {
+            if (nums[low] > target || nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        } else {
+            if (nums[mid] > target || nums[high] < target) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+    }
+    return -1;
+}
+```
 
 
 
