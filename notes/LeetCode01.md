@@ -2173,15 +2173,27 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 
 
 
+#### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 
-
-
-
-
-
-
-
-
+```java
+//动态规划三部演化:  递归(自顶向下)->带备忘录的递归(自顶向下,也就是把递归树剪枝,已经算过的不再重复计算)->动态规划(自底向上)
+//我定好base case,同时知道dp[n]是由下面的dp[n-1]等怎么得来的,就可以写出代码
+public int coinChange(int[] coins, int amount) {
+    int[] dp = new int[amount + 1];
+    //初始化为amount+1是因为一个amount最差也可以由amount个1分硬币构成,所以amount+1是一个不可能的数
+    //之所以用amount+1 而不用 -1是因为dp[i] = Math.min(dp[i], dp[i - coin] + 1);是要求最小值
+    Arrays.fill(dp, amount + 1);
+    dp[0] = 0;
+    for (int i = 1; i <= amount; i++) {
+        for (int coin : coins) {
+            if (coin <= i) {
+                dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+            }
+        }
+    }
+    return dp[amount] == amount + 1 ? -1 : dp[amount];
+}
+```
 
 
 
