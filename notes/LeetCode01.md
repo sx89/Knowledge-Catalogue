@@ -2414,19 +2414,93 @@ public int search(int[] nums, int target) {
 
 
 
+### 背包问题的理解
+
+#### 01背包
+
+```
+dp[i][j] = max(dp[i-1][j],dp[i-1][j-weight[i]]+value[i]);
+```
 
 
 
+#### 完全背包
+
+```java
+因为每种物品数量无限,所以到了选择第i件物品的时候,要么一件不放(dp[i][j] = dp[i-1][j])要么放1,2,3..k件
+dp[i][j] = dp[i][j-weight[i]]+value[i];
+
+所以代码为
+for(int i = 1;i<n;i++){
+	for(int j = 1;j<=W;j++){
+		if(j<weight[i]){
+			dp[i][j] = dp[i-1][j];
+		}else{
+			//要么一个也不放,要么在i物品上能放多少就放多少
+			dp[i][j] = Math.max(dp[i-1][j],dp[i][j-weight[i]]+value[i]);
+            //其实和多重背包是一样的?k是从0到无限大??  下面是自己的猜测,能不能用做题验证
+  			dp[i][j] = Math.max(dp[i-1][j],dp[i][j-weight[i]*k]+value[i]*k);
+            dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weight[i]*k]+value[i]*k);
+		}
+	}
+}
+```
 
 
 
+#### 多重背包
 
+```java
+每种物品都有数量限制,限制的数值是k,,要么一件不放(dp[i][j] = dp[i-1][j])要么放1,2,3..k件
+dp[i][j] = dp[i][j-weight[i]]+value[i];
 
+for(int i = 1;i<n;i++){
+	for(int j = 1;j<=W;j++){
+		if(j<weight[i]){
+			dp[i][j] = dp[i-1][j];
+		}else{
+			int count = min(num[i],j/weight[i]);
+			//要么一个也不放
+			dp[i][j] = dp[i-1][j];
+			for(int k = 0;k<count;k++){
+			//要么1,2...k个都试一下
+				dp[i][j] = Math.max(dp[i][j],dp[i-1][j-weight[i]*k]+value[i]*k);
+			}
+		}
+	}
+}
+```
 
+#### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
+```java
 
-
-
+改进:思路滑动窗口
+public int lengthOfLongestSubstring(String s) {
+    if (s == null || s.length() == 0) {
+        return 0;
+    }
+    int len = s.length();
+    int left = 0;
+    int right = 0;
+    int max = 0;
+    HashMap<Character, Integer> charIndexMap = new HashMap<>();
+    for (; right < len; right++) {
+        char ch = s.charAt(right);
+        if (charIndexMap.containsKey(ch)) {
+            int charIndex = charIndexMap.get(ch);
+            if (charIndex >= left) {
+                for (; left <= charIndex; left++) {
+                    charIndexMap.remove(s.charAt(left));
+                }
+            }
+        }
+        charIndexMap.put(ch, right);
+        max = Math.max(max, right - left + 1);
+    }
+    return max;
+}
+```
 
 
 
