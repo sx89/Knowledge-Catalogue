@@ -2557,7 +2557,11 @@ public String longestPalindrome(String s) {
 #### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
 
 ```java
-
+改进:1.数组排序
+    2. 以i为左起点,nums[i]大于0则可以剪枝,否则L++R--来寻找组合
+    3.num[i]可能会有重复,要用最左边的num[i],不然比如 -1  -1 0 1 2,用最右边的nums[i]会漏掉 -1 -1 2 这种情况
+    4.找到 num[i] nums[L] nums[R]的组合之后  L要一直++ R要一直--,直到nums[L]!=nums[L],为的是去除重复解
+    比如 -2 -1 -1 0 3 3
 
 public List<List<Integer>> threeSum(int[] nums) {
     List<List<Integer>> ret = new ArrayList<>();
@@ -2602,9 +2606,39 @@ public List<List<Integer>> threeSum(int[] nums) {
 
 
 
+#### [56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
 
+```java
+改进:思路 1.按照每个区间的左起点排序,
+		2.根据i的right和 i+1的left能否相交决定是否合并区间(right = Math.max(right, intervals[i][1]);
+        3.right = Math.max(right, intervals[i][1]);而非right = intervals[i][1],比如(1,9) (2,4)
+        还是原来的right大
+        4.创建ArrayList<int[]> ret; 转换的时候 ret.toArray(new int[0][]);
 
+public int[][] merge(int[][] intervals) {
+    Comparator<int[]> c = new Comparator<int[]>() {
+        public int compare(int[] a, int[] b) {
+            return a[0] - b[0];
+        }
+    };
+    ArrayList<int[]> ret = new ArrayList<>();
+    if (intervals == null || intervals.length == 0) {
+        return ret.toArray(new int[0][]);
+    }
+    Arrays.sort(intervals, c);
+    for (int i = 0; i < intervals.length; i++) {
+        int right = intervals[i][1];
+        int left = intervals[i][0];
+        while (i + 1 < intervals.length && right >= intervals[i + 1][0]) {
+            i++;
+            right = Math.max(right, intervals[i][1]);
+        }
 
+        ret.add(new int[]{left, right});
+    }
+    return ret.toArray(new int[0][]);
+}
+```
 
 
 
