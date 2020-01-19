@@ -2815,9 +2815,41 @@ public ListNode mergeKLists(ListNode[] lists) {
     }
 ```
 
+#### [239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
+```java
+改进思路  双端队列法:
+		注意:ArrayList<Integer> 转int[] 不能用ret.toArray(new int[]);会报错无法将Integer转成int
+        直接用循环赋值就好了
+            
+        不过像String这种,就可以用ArrayList<String> ret ;ret.toArray(new String[ret.size()])来
+        转换成数组
 
+public int[] maxSlidingWindow(int[] nums, int k) {
+    ArrayList<Integer> ret = new ArrayList<Integer>();
+    Deque<Integer> deque = new ArrayDeque<Integer>();
+    int max = 0;
+    for (int i = 0; i < nums.length; i++) {
+        if (!deque.isEmpty() && deque.getFirst() <= i - k) {
+            deque.removeFirst();
+        }
 
+        while (!deque.isEmpty() && nums[deque.getLast()] < nums[i]) {
+            deque.removeLast();
+        }
+        deque.addLast(i);
+        if (i >= k - 1) {
+            ret.add(nums[deque.getFirst()]);
+        }
+    }
+    int[] retArray = new int[ret.size()];
+    int i = 0;
+    for (int temp : ret) {
+        retArray[i++] = temp;
+    }
+    return retArray;
+}
+```
 
 
 
