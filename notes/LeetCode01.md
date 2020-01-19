@@ -2642,13 +2642,122 @@ public int[][] merge(int[][] intervals) {
 
 
 
+#### [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+```java
+思路1:哈希表
+     public int longestConsecutive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        HashSet<Integer> set = new HashSet<>();
+        for (int temp : nums) {
+            set.add(temp);
+        }
+        int cnt = 0;
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i];
+            cnt = 1;
+            while (set.contains(temp + 1)) {
+                cnt++;
+                temp++;
+            }
+            max = Math.max(max, cnt);
+        }
+        return max;
+    }
+
+
+
+思路2:排序,然后从左到右遍历
+public int longestConsecutive(int[] nums) {
+    if (nums.length == 0) {
+        return 0;
+    }
+    Arrays.sort(nums);
+    int max = 1;
+    int cnt = 1;
+    for (int i = 0; i < nums.length - 1; i++) {
+        while (i < nums.length - 1 && nums[i] == nums[i + 1]) {
+            i++;
+        }
+        if (i < nums.length - 1 && nums[i] + 1 == nums[i + 1]) {
+            cnt++;
+        } else if (i < nums.length - 1 && nums[i] + 1 != nums[i + 1]) {
+            cnt = 1;
+        }
+        max = Math.max(cnt, max);
+    }
+    return max;
+}
+```
+
+
+
+#### [23. 合并K个排序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+```java
+思路1:分而治之法
+
+public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        return merge(lists, 0, lists.length - 1);
+    }
+
+    private ListNode merge(ListNode[] lists, int left, int right) {
+        if (left == right) return lists[left];
+        int mid = left + (right - left) / 2;
+        ListNode l1 = merge(lists, left, mid);
+        ListNode l2 = merge(lists, mid + 1, right);
+        return mergeTwoList(l1, l2);
+    }
+
+    private ListNode mergeTwoList(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        if (l1.val < l2.val) {
+            l1.next = mergeTwoList(l1.next, l2);
+            return l1;
+        } else {
+            l2.next = mergeTwoList(l1, l2.next);
+            return l2;
+        }
+    }
 
 
 
 
+思路2:优先队列
 
+public ListNode mergeKLists(ListNode[] lists) {
+    if (lists == null || lists.length == 0) {
+        return null;
+    }
+    ListNode head = new ListNode(1);
+    ListNode pre = head;
 
-
-
-
+    PriorityQueue<ListNode> queue = new PriorityQueue<ListNode>(1, (a, b) -> (a.val - b.val));
+    for (int i = 0; i < lists.length; i++) {
+        if (lists[i] != null) {
+            queue.add(lists[i]);
+        }
+    }
+    while (!queue.isEmpty()) {
+        ListNode temp = queue.poll();
+        pre.next = temp;
+        pre = pre.next;
+        if (temp.next != null) {
+            queue.add(temp.next);
+        }
+    }
+    return head.next;
+}
+```
 
