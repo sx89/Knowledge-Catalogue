@@ -2700,7 +2700,7 @@ public int longestConsecutive(int[] nums) {
 ```java
 思路1:分而治之法
 
-public ListNode mergeKLists(ListNode[] lists) {
+ public ListNode mergeKLists(ListNode[] lists) {
         if (lists == null || lists.length == 0) {
             return null;
         }
@@ -2708,7 +2708,9 @@ public ListNode mergeKLists(ListNode[] lists) {
     }
 
     private ListNode merge(ListNode[] lists, int left, int right) {
-        if (left == right) return lists[left];
+        if (left == right) {
+            return lists[left];
+        }
         int mid = left + (right - left) / 2;
         ListNode l1 = merge(lists, left, mid);
         ListNode l2 = merge(lists, mid + 1, right);
@@ -2716,19 +2718,30 @@ public ListNode mergeKLists(ListNode[] lists) {
     }
 
     private ListNode mergeTwoList(ListNode l1, ListNode l2) {
-        if (l1 == null) {
-            return l2;
+        ListNode head = new ListNode(0);
+        ListNode pre = head;
+        while (l1 != null || l2 != null) {
+            if (l1 != null && l2 != null) {
+                if (l1.val > l2.val) {
+                    pre.next = l2;
+                    pre = pre.next;
+                    l2 = l2.next;
+                } else {
+                    pre.next = l1;
+                    pre = pre.next;
+                    l1 = l1.next;
+                }
+            } else if (l1 != null) {
+                pre.next = l1;
+                pre = pre.next;
+                l1 = l1.next;
+            } else if (l2 != null) {
+                pre.next = l2;
+                pre = pre.next;
+                l2 = l2.next;
+            }
         }
-        if (l2 == null) {
-            return l1;
-        }
-        if (l1.val < l2.val) {
-            l1.next = mergeTwoList(l1.next, l2);
-            return l1;
-        } else {
-            l2.next = mergeTwoList(l1, l2.next);
-            return l2;
-        }
+        return head.next;
     }
 
 
