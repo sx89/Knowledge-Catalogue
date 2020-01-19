@@ -2506,11 +2506,99 @@ public int lengthOfLongestSubstring(String s) {
 
 
 
+#### [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+
+```java
+改进:利用动规:dp[i][j] = dp[i-1][j+1] +1 (如果len>2的情况下,并且char[i] == char[j])
+    dp[i][j]的含义是 以为i终点,j为起点的字符串中对称字符的长度.
+
+public String longestPalindrome(String s) {
+    if (s == null || s.length() == 0) {
+        return "";
+    }
+    int maxLen = 0;
+    int maxRow = 0;
+    int maxCol = 0;
+    int len = s.length();
+    int[][] dp = new int[len][len];
+    for (int i = 0; i < len; i++) {
+        for (int j = i; j >= 0; j--) {
+
+            if (s.charAt(i) == s.charAt(j)) {
+                if (i == j) {//长度为1
+                    dp[i][j] = 1;
+                } else if (i == j + 1) {//长度为2
+                    dp[i][j] = 2;
+                } else { //长度大于2
+                    if (dp[i - 1][j + 1] != 0) {
+                        dp[i][j] = dp[i - 1][j + 1] + 2;
+
+                    } else {
+                        dp[i][j] = 0;
+                    }
+                }
+                if (maxLen < dp[i][j]) {
+                    maxLen = dp[i][j];
+                    maxRow = i;
+                    maxCol = j;
+                }
+            } else {
+                //char i  与 char j 不相等
+                dp[i][j] = 0;
+            }
+        }
+    }
+    return s.substring(maxCol, maxRow + 1);
+}
+```
 
 
 
+#### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+```java
 
 
+public List<List<Integer>> threeSum(int[] nums) {
+    List<List<Integer>> ret = new ArrayList<>();
+    if (nums == null || nums.length <= 2) {
+        return ret;
+    }
+    Arrays.sort(nums);
+    for (int i = 0; i < nums.length; i++) {
+        if (nums[i] > 0) {
+            break;
+        }
+
+        int L = i + 1;
+        int R = nums.length - 1;
+        while (L < R) {
+            int sum = nums[i] + nums[L] + nums[R];
+            if (sum > 0) {
+                R--;
+            } else if (sum < 0) {
+                L++;
+            } else {
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(nums[i]);
+                list.add(nums[L]);
+                list.add(nums[R]);
+                ret.add(list);
+                while (L < R && nums[L] == nums[L + 1])
+                    L++;
+                while (L < R && nums[R] == nums[R - 1])
+                    R--;
+                L++;
+                R--;
+            }
+        }
+        while (i + 1 < nums.length && nums[i] == nums[i + 1]) {
+            i++;
+        }
+    }
+    return ret;
+}
+```
 
 
 
