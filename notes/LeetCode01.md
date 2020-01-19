@@ -2774,3 +2774,66 @@ public ListNode mergeKLists(ListNode[] lists) {
 }
 ```
 
+
+
+
+
+#### [124. 二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
+
+```java
+改进思路: 双递归:一层递归求该树的每个节点为root的路径最大值,一层递归求特定root根的左右子树路径的sum
+    	注意:如果root.val或者 左右子树+root.val小于零,则return 0; 丢弃该子树
+
+
+ int max = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        if (root.left != null)
+            maxPathSum(root.left);
+        if (root.right != null)
+            maxPathSum(root.right);
+        max = Math.max(max, pathSum(root.left) + pathSum(root.right) + root.val);
+        return max;
+    }
+
+    private int pathSum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = 0;
+        int right = 0;
+        if (root.left == null && root.right == null) {
+            return Math.max(root.val, 0);
+        }
+        if (root.left != null) {
+            left = pathSum(root.left);
+        }
+        if (root.right != null) {
+            right = pathSum(root.right);
+        }
+        int sum = Math.max(left, right) + root.val;
+        return Math.max(sum, 0);
+    }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
