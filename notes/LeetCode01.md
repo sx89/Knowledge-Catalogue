@@ -2784,35 +2784,58 @@ public ListNode mergeKLists(ListNode[] lists) {
 改进思路: 双递归:一层递归求该树的每个节点为root的路径最大值,一层递归求特定root根的左右子树路径的sum
     	注意:如果root.val或者 左右子树+root.val小于零,则return 0; 丢弃该子树
 
+思路1是思路2的改进,把双递归写成了单递归
+	int max = Integer.MIN_VALUE;
 
- int max = Integer.MIN_VALUE;
     public int maxPathSum(TreeNode root) {
-        if (root.left != null)
-            maxPathSum(root.left);
-        if (root.right != null)
-            maxPathSum(root.right);
-        max = Math.max(max, pathSum(root.left) + pathSum(root.right) + root.val);
+        setMaxAndReturnSingleMax(root);
         return max;
     }
 
-    private int pathSum(TreeNode root) {
+    private int setMaxAndReturnSingleMax(TreeNode root) {
         if (root == null) {
             return 0;
         }
-        int left = 0;
-        int right = 0;
-        if (root.left == null && root.right == null) {
-            return Math.max(root.val, 0);
-        }
-        if (root.left != null) {
-            left = pathSum(root.left);
-        }
-        if (root.right != null) {
-            right = pathSum(root.right);
-        }
-        int sum = Math.max(left, right) + root.val;
-        return Math.max(sum, 0);
+        int leftLen = setMaxAndReturnSingleMax(root.left);
+        int rightLen = setMaxAndReturnSingleMax(root.right);
+        // 与max比较,设置以该root为根的最长左单边+右单边
+        max = Math.max(max, leftLen + rightLen + root.val);
+        //获取以root为根的左右单边的最长,返回回去供上一级root使用
+        int singleMaxPath = Math.max(leftLen, rightLen) + root.val;
+        return Math.max(singleMaxPath, 0);
     }
+            
+            
+思路2:
+ int max = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        setMax(root);
+        return max;
+    }
+    //获取以root为根的左右两边最长之和,并与max比较
+    private void setMax(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        setMax(root.left);
+        setMax(root.right);
+        int leftLen = gainSingleMaxPath(root.left);
+        int rightLen = gainSingleMaxPath(root.right);
+        max = Math.max(max, leftLen + rightLen + root.val);
+    }
+    //获取以root为根的单边(要么左子树,要么右子树)的最长
+    private int gainSingleMaxPath(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int leftLen = gainSingleMaxPath(root.left);
+        int rightLen = gainSingleMaxPath(root.right);
+        int singleMaxPath = Math.max(leftLen, rightLen) + root.val;
+        return Math.max(singleMaxPath, 0);
+    }
+
+
+
 ```
 
 #### [239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
@@ -2857,7 +2880,42 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 
 
+```java
+思路1: 每一个height[i]只有左边和右边分别有比它高的墙才能存住水,
+	   所以利用动规,存住i处 左边最高left[i]和右边最高right[i],求min =Math.min(left[i], right[i]);
+       
 
+public int trap(int[] height) {
+    if (height == null || height.length == 0) {
+        return 0;
+    }
+    int len = height.length;
+    int[] left = new int[len];
+    int[] right = new int[len];
+    int maxHeight = 0;
+    int sum = 0;
+    for (int i = 1; i < len; i++) {
+        if (height[i - 1] > maxHeight) {
+            maxHeight = height[i - 1];
+        }
+        left[i - 1] = maxHeight;
+    }
+    maxHeight = 0;
+    for (int i = len - 2; i >= 0; i--) {
+        if (height[i + 1] > maxHeight) {
+            maxHeight = height[i + 1];
+        }
+        right[i + 1] = maxHeight;
+    }
+    for (int i = 1; i < len - 1; i++) {
+        int min = Math.min(left[i], right[i]);
+        if (min > height[i]) {
+            sum += min - height[i];
+        }
+    }
+    return sum;
+}
+```
 
 
 
