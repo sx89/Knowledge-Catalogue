@@ -2919,6 +2919,40 @@ public int trap(int[] height) {
 
 
 
+#### [84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+
+```java
+分而治之法:
+先找到start 到end 范围内的minHeight;
+Area的最大值分三种情况:
+1.minIndex左边的部分求出来的最大Area
+2.minIndex右边的部分求出来的最大Area
+3.minHeight*(end-start+1)
+
+public int calculateArea(int[] heights, int start, int end) {
+    if (start > end) {
+        return 0;
+    }
+    int minIndex = start;
+    for (int i = start; i <= end; i++) {
+        if (heights[minIndex] > heights[i]) {
+            minIndex = i;
+        }
+    }
+    int leftMaxArea = calculateArea(heights, start, minIndex - 1);
+    int rightMaxArea = calculateArea(heights, minIndex + 1, end);
+    int minIndexArea = heights[minIndex] * (end - start + 1);
+    return Math.max(minIndexArea, Math.max(leftMaxArea, rightMaxArea));
+}
+
+public int largestRectangleArea(int[] heights) {
+    if (heights == null || heights.length == 0) {
+        return 0;
+    }
+    return calculateArea(heights, 0, heights.length - 1);
+}
+```
+
 
 
 
