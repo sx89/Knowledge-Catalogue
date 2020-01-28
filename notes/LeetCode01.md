@@ -3103,3 +3103,59 @@ public List<Integer> findAnagrams(String s, String p) {
     return list;
 }
 ```
+
+
+
+#### [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+```java
+思路3个:
+1.dfs
+2.bfs
+3.查并集
+
+private boolean[][] marked;
+private int row = 0, col = 0;
+int count = 0;
+int[][] loc = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+char[][] grid;
+
+public int numIslands(char[][] grid2) {
+    if (grid2 == null || grid2.length == 0) {
+        return 0;
+    }
+    grid = grid2;
+    row = grid.length;
+    col = grid[0].length;
+    marked = new boolean[row][col];
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[0].length; j++) {
+            if (judge(i, j)) {
+                dfs(i, j);
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+private void dfs(int row, int col) {
+    if (judge(row, col) == false) {
+        return;
+    }
+    marked[row][col] = true;
+    for (int i = 0; i < loc.length; i++) {
+        int newRow = row + loc[i][0];
+        int newCol = col + loc[i][1];
+        dfs(newRow, newCol);
+    }
+}
+
+private boolean judge(int row, int col) {
+    if (row < 0 || col < 0 || row > marked.length - 1 || col > marked[0].length - 1 || marked[row][col] || grid[row][col] == '0') {
+        return false;
+    }
+    return true;
+}
+```
+
