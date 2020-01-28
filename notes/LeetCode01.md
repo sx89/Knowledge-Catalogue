@@ -828,9 +828,41 @@ private void backtracing(Integer index, String path, String digits) {
 
 
 
+#### [4. 寻找两个有序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)
 
+```java
+思路1: 把两个数组合并,然后寻找中位数.
 
-
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    if (nums1 == null || nums2 == null) {
+        return 0;
+    }
+    int m = nums1.length;
+    int n = nums2.length;
+    int[] allNums = new int[m + n];
+    int count = 0;
+    int i = 0;
+    int j = 0;
+    while (i < m && j < n && count < m + n) {
+        if (nums1[i] < nums2[j]) {
+            allNums[count++] = nums1[i++];
+        } else {
+            allNums[count++] = nums2[j++];
+        }
+    }
+    while (i < m) {
+        allNums[count++] = nums1[i++];
+    }
+    while (j < n) {
+        allNums[count++] = nums2[j++];
+    }
+    if (count % 2 == 0) {
+        return ((double) allNums[count / 2] + (double) allNums[count / 2 - 1]) / 2;
+    } else {
+        return allNums[count / 2];
+    }
+}
+```
 
 
 
@@ -2953,9 +2985,59 @@ public int largestRectangleArea(int[] heights) {
 }
 ```
 
+#### [76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+```java
+思路:滑动窗口类的题目,都是left指针+right指针.
+    然后先right往右走找到可行解,left往左走,把解优化到最小值.
+    重点就在于窗口内的匹配.本题目由于字符串的匹配是无序的,所以用map<Character,Integer> 和 一个mathCount
+    
+
+public String minWindow(String s, String t) {
+    //我先不判空,居然通过了
+    int matchCount = t.length();
+    HashMap<Character, Integer> map = new HashMap<>();
+    for (int i = 0; i < t.length(); i++) {
+        char c = t.charAt(i);
+        if (map.containsKey(c)) {
+            map.put(c, map.get(c) + 1);
+        } else {
+            map.put(c, 1);
+        }
+    }
+    int left = 0;
+    int right = 0;
+    String minLen = "";
+    while (right < s.length()) {
+        char temp = s.charAt(right);
+        if (map.containsKey(temp)) {
+            if (map.get(temp) > 0) {
+                matchCount--;
+            }
+            map.put(temp, map.get(temp) - 1);
+        }
+        while (matchCount == 0) {
+            char temp2 = s.charAt(left);
+            if (map.containsKey(temp2)) {
+                map.put(temp2, map.get(temp2) + 1);
+
+                if (map.get(temp2) > 0) {
+                    if (minLen.length() == 0) {
+                        minLen = s.substring(left, right + 1);
+                    } else if (minLen.length() > (right - left + 1)) {
+                        minLen = s.substring(left, right + 1);
+                    }
+                    matchCount++;
+                }
+            }
+            left++;
+        }
+        right++;
+
+    }
+    return minLen;
+}
+```
 
 
 
-
-
-   
