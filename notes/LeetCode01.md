@@ -3041,3 +3041,65 @@ public String minWindow(String s, String t) {
 
 
 
+
+
+#### [438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+```java
+思路:滑动窗口,维护left和right.
+    left和right逐渐往右移动,并寻找匹配的字符串.
+    注意,此题需要1. s判空,2. 判p的长度要小于s. 有的题会考这种细节,有的不会考
+public List<Integer> findAnagrams(String s, String p) {
+    ArrayList<Integer> list = new ArrayList<>();
+    HashMap<Character, Integer> map = new HashMap<>();
+    int left = 0;
+    int right = p.length() - 1;
+    int matchCount = p.length();
+    if (s == null || s.length() == 0 || p.length() > s.length()) {
+        return list;
+    }
+
+    for (int i = 0; i < p.length(); i++) {
+        char ch = p.charAt(i);
+        if (map.containsKey(ch)) {
+            map.put(ch, map.get(ch) + 1);
+        } else {
+            map.put(ch, 1);
+        }
+    }
+    for (int i = 0; i < p.length(); i++) {
+        char ch = s.charAt(i);
+        if (map.containsKey(ch)) {
+            if (map.get(ch) > 0) {
+                matchCount--;
+            }
+            map.put(ch, map.get(ch) - 1);
+        }
+    }
+    while (right < s.length()) {
+        if (matchCount == 0) {
+            list.add(left);
+        }
+        //左右都移动
+        char ch = s.charAt(left);
+        if (map.containsKey(ch)) {
+            map.put(ch, map.get(ch) + 1);
+            if (map.get(ch) > 0) {
+                matchCount++;
+            }
+        }
+        left++;
+        right++;
+        if (right < s.length()) {
+            ch = s.charAt(right);
+            if (map.containsKey(ch)) {
+                if (map.get(ch) > 0) {
+                    matchCount--;
+                }
+                map.put(ch, map.get(ch) - 1);
+            }
+        }
+    }
+    return list;
+}
+```
