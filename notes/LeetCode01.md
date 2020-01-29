@@ -3231,3 +3231,69 @@ class Location {
 
 ```
 
+
+
+
+
+#### [139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+```java
+本来想用回溯的办法,但是像这种只要求一个boolean结果或者一个int结果的
+一般用回溯就会超时.
+    
+所以应该用动态规划代替.
+
+dp[j] = dp[j-len]
+比如  leetcode  与 leet code   dp[7] = dp[3]&&(s的code==wordDict里面的code)
+
+
+public boolean wordBreak(String s, List<String> wordDict) {
+    if (s == null || s.length() == 0) {
+        return false;
+    }
+    HashSet<String> set = new HashSet<>(wordDict);
+    int len = s.length();
+    boolean[] dp = new boolean[len];
+    String temp = "";
+    int index = 0;
+
+    //初始化dp[0]到第一个为true的dp.
+    for (index = 0; index < len; index++) {
+        temp = s.substring(0, index + 1);
+        if (set.contains(temp)) {
+            dp[index] = true;
+            break;
+        } else {
+            dp[index] = false;
+        }
+    }
+    //从index开始
+    for (; index < len; index++) {
+        //每一个wordDict里面的单词都试一下,能不能从index开始
+        //往前匹配成功,并且dp[index-length]为true;
+        for (String temp2 : wordDict) {
+            int length = temp2.length();
+            if (length - 1 <= index) {
+                String temp3 = s.substring(index - length + 1, index + 1);
+                if (temp2.equals(temp3)) {
+                    if (index - length == -1) {
+                        dp[index] = true;
+                        break;
+                    } else if (dp[index - length]) {
+                        dp[index] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return dp[index - 1];
+}
+```
+
+
+
+
+
+
+
