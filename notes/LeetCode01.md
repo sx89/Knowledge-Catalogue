@@ -3114,48 +3114,117 @@ public List<Integer> findAnagrams(String s, String p) {
 2.bfs
 3.查并集
 
-private boolean[][] marked;
-private int row = 0, col = 0;
-int count = 0;
-int[][] loc = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-char[][] grid;
+    
+ //   dfs:
 
-public int numIslands(char[][] grid2) {
-    if (grid2 == null || grid2.length == 0) {
-        return 0;
+ private boolean[][] marked;
+    private int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    char[][] grid;
+    int row = 0;
+    int col = 0;
+    int count = 0;
+
+    public int numIslands(char[][] grid2) {
+        grid = grid2;
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        row = grid.length;
+        col = grid[0].length;
+        marked = new boolean[row][col];
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (isHealthy(i, j)) {
+                    dfs(i, j);
+                    count++;
+                }
+            }
+        }
+        return count;
     }
-    grid = grid2;
-    row = grid.length;
-    col = grid[0].length;
-    marked = new boolean[row][col];
-    for (int i = 0; i < grid.length; i++) {
-        for (int j = 0; j < grid[0].length; j++) {
-            if (judge(i, j)) {
-                dfs(i, j);
-                count++;
+
+    private boolean isHealthy(int row, int col) {
+        if (row < 0 || col < 0 || row > grid.length - 1 || col > grid[0].length - 1 || marked[row][col] || grid[row][col] == '0') {
+            return false;
+        }
+        return true;
+    }
+
+    private void dfs(int row, int col) {
+        if (isHealthy(row, col)) {
+            marked[row][col] = true;
+            for (int i = 0; i < directions.length; i++) {
+                int newRow = row + directions[i][0];
+                int newCol = col + directions[i][1];
+                dfs(newRow, newCol);
             }
         }
     }
-    return count;
+
+
+
+
+//bfs 但是会超时,
+   private boolean[][] marked;
+    private int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    char[][] grid;
+    int row = 0;
+    int col = 0;
+    int count = 0;
+
+    public int numIslands(char[][] grid2) {
+        grid = grid2;
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        row = grid.length;
+        col = grid[0].length;
+        marked = new boolean[row][col];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (isHealthy(i, j)) {
+                    Queue<Location> queue = new LinkedList<>();
+                    Location loc = new Location(i, j);
+                    queue.add(loc);
+                    count++;
+                    while (!queue.isEmpty()) {
+                        Location temp = queue.poll();
+                        int X = temp.x;
+                        int Y = temp.y;
+                        marked[X][Y] = true;
+                        for (int k = 0; k < directions.length; k++) {
+                            int newX = X + directions[k][0];
+                            int newY = Y + directions[k][1];
+                            if (isHealthy(newX, newY)) {
+                                queue.add(new Location(newX, newY));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean isHealthy(int row, int col) {
+        if (row < 0 || col < 0 || row > grid.length - 1 || col > grid[0].length - 1 || marked[row][col] || grid[row][col] == '0') {
+            return false;
+        }
+        return true;
+    }
+
+class Location {
+    Integer x;
+    Integer y;
+
+    Location(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }
 
-private void dfs(int row, int col) {
-    if (judge(row, col) == false) {
-        return;
-    }
-    marked[row][col] = true;
-    for (int i = 0; i < loc.length; i++) {
-        int newRow = row + loc[i][0];
-        int newCol = col + loc[i][1];
-        dfs(newRow, newCol);
-    }
-}
 
-private boolean judge(int row, int col) {
-    if (row < 0 || col < 0 || row > marked.length - 1 || col > marked[0].length - 1 || marked[row][col] || grid[row][col] == '0') {
-        return false;
-    }
-    return true;
-}
+
 ```
 
