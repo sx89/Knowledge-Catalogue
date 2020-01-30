@@ -1,3 +1,9 @@
+@的意思是第一次做的不顺利,第二天要再刷一遍
+
+
+
+
+
 #### [617. 合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)
 
 ```java
@@ -58,9 +64,11 @@ public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
 
 ```
 
-#### [538. 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+#### [@538. 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
 
 
+
+@用迭代来做一下试试
 
 ```java
 改进:树的非递归中序遍历  
@@ -193,12 +201,16 @@ private Stack<Pair> s = new Stack<Pair>();
     }
 ```
 
-#### [136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+#### [@136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+
+@异或的办法
+
+
 
 ```java
 思路
 1.求差  2(a+b+c) - (a+a+b+b+c)   第一步要求不重复,应该想到用set,Iterator<Integer> i = s.iterator();
-2.异或
+2.异或   sum = temp^sum
 3.hashMap第一次出现存到map,第二次出现从map里面删除掉
 ```
 
@@ -379,7 +391,15 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     }
 ```
 
-#### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+#### [@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+
+
+@研究一下什么时候中途求max
+
+什么时候返回dp[len-1]即可.
+
+
 
 ```java
     public int maxSubArray(int[] nums) {
