@@ -472,8 +472,12 @@ public int[] twoSum(int[] nums, int target) {
 #### [141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 
 ```java
-快慢指针法
+注意 如果考到这个题,注意看一下需不需要定位环形入口的位置.
+    如果需要  则 x+z+y+z  = 2(x+z) ->  y = x
+    如果不需要,则用下面的快慢指针即可.
 
+
+快慢指针法
 public boolean hasCycle(ListNode head) {
         if (head == null || head.next == null)
             return false;
@@ -513,7 +517,9 @@ public boolean hasCycle(ListNode head) {
 
 ```
 
-#### [234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+#### @[234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+
+@还不熟练,容易出错.
 
 ```java
 改进:
