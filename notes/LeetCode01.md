@@ -126,9 +126,38 @@ public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
 
 
 
-#### [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+#### [@104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 
 ```java
+改进:非递归中序遍历
+
+ private int maxDeep = 0;
+
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Stack<DeepTreeNode> stack = new Stack<>();
+        TreeNode p = root;
+        int deep = 1;
+        DeepTreeNode deepNode = new DeepTreeNode(root, 1);
+        while (!stack.isEmpty() || p != null) {
+            while (p != null) {
+                stack.push(new DeepTreeNode(p, deep++));
+                p = p.left;
+            }
+            if (!stack.isEmpty()) {
+                DeepTreeNode temp = stack.pop();
+                p = temp.node;
+                deep = temp.deep;
+                maxDeep = Math.max(maxDeep, deep);
+            }
+            p = p.right;
+            deep = deep + 1;
+        }
+        return maxDeep;
+    }
+    
 树的深度优先遍历,也是树的第二种迭代先序遍历 
 
 private Stack<Pair> s = new Stack<Pair>();
