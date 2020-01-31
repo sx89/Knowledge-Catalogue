@@ -824,7 +824,19 @@ List<List<Integer>> ret = new ArrayList<>();
 
 
 
-#### [347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+#### @@[347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+
+
+
+@基本方法已经掌握了,注意他这里的一个技巧. 他的优选队列里面存的是num而非frequency. num的比较用的是 
+
+Comparator<Integer> c = new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return map.get(i1) - map.get(i2);
+            }
+        };
+
+内部的比价器居然可以用外部的map.
 
 
 
