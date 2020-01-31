@@ -1,6 +1,6 @@
-@的意思是第一次做的不顺利,第二天要再刷一遍
+@@的意思是第一次做的不顺利,第二天要再刷一遍
 
-
+@的意思是第二天刷的比较顺利,考前再刷就好了.
 
 
 
@@ -604,36 +604,66 @@ Stack<Character> stack = new Stack<>();
     }
 ```
 
-#### [39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+#### @@[39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
 
 ```java
-private List<List<Integer>> ret = new ArrayList<>();
-    private List<Integer> list = new ArrayList<>();
-    int target = 0;
-    int len = 0;
+比较规范的回溯写法
+    
+    
+    
+    backtracing(path,begin,nums,sum){
+    	//终结条件
+    if(begin<len){
+            
+        }
+    	if(sum==target){
+            
+        }
+    	if(sum>tartget){
+            
+        }
+    //各种可能
+    //其中,传值类的直接加在形参上,如begin+1;地址类的 夹住backtracing,用add()和remove();
+    	for(...){
+            list.add()
+            backtracing(list,begin+1,nums,sum+nums[i]);    
+            list.remove()
+        }
+}
+
+
+List<List<Integer>> ret = new ArrayList<>();
+    List<Integer> path = new ArrayList<>();
 
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        if (candidates == null || candidates.length == 0 || target < 0) {
+        if (candidates == null || candidates.length == 0) {
             return ret;
         }
-        len = candidates.length;
-        this.target = target;
-        backtracing(0, 0, candidates);
+        backtracing(candidates, target, 0, 0, path);
         return ret;
     }
 
-    private void backtracing(int begin, int sum, int[] candidates) {
-        if (sum == target) {
-            ret.add(new ArrayList(list));
-        } else if (sum > target) {
+    private void backtracing(int[] candidates, int target, int begin, int sum, List<Integer> path) {
+        if (begin > candidates.length - 1) {
             return;
         }
-        for (int i = begin; i < len; i++) {
-            list.add(candidates[i]);
-            backtracing(i, sum + candidates[i], candidates);
-            list.remove(list.size() - 1);
+        if (sum > target) {
+            return;
         }
-    }private List<List<Integer>> ret = new ArrayList<>();
+        if (sum == target) {
+            List<Integer> temp = new ArrayList<>(path);
+            ret.add(temp);
+            return;
+        }
+        for (int i = begin; i < candidates.length; i++) {
+            path.add(candidates[i]);
+            backtracing(candidates, target, i, sum + candidates[i], path);
+            path.remove(path.size() - 1);
+        }
+    }
+
+
+	private List<List<Integer>> ret = new ArrayList<>();
     private List<Integer> list = new ArrayList<>();
     int target = 0;
     int len = 0;
