@@ -1119,7 +1119,7 @@ private int maxLength = Integer.MIN_VALUE;
 
 
 
-#### [96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+#### @@[96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
 
 ```java
 改进: 从1~n,每个节点都可以当根来组成二叉搜索树.
