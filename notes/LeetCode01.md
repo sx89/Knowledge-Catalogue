@@ -604,7 +604,7 @@ Stack<Character> stack = new Stack<>();
     }
 ```
 
-#### @@[39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
+#### @[39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)
 
 ```java
 比较规范的回溯写法
@@ -1055,7 +1055,7 @@ private void backtracing(int[] nums) {
     }
 ```
 
-#### [@@338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
+#### [@338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)
 
 @思路没想到
 
@@ -1121,7 +1121,7 @@ private int maxLength = Integer.MIN_VALUE;
 
 
 
-#### @@[96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+#### @[96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
 
 ```java
 改进: 从1~n,每个节点都可以当根来组成二叉搜索树.
@@ -1523,7 +1523,13 @@ public int rob(int[] nums) {
 }
 ```
 
-#### [279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+#### [@@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+
+
+
+@思考 什么样的问题用动规解决比较好 (从小到大的累计过程用动规比较好)
+
+本题的动规方程为啥没想到.
 
 ```java
 改进:状态转移方程 dp[i] = Math.min(dp[i],dp[i-1],dp[i-4],dp[i-16],dp[i-j*j])
