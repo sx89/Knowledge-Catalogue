@@ -1337,34 +1337,32 @@ public List<List<String>> groupAnagrams(String[] strs) {
 
 
 
-#### [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+#### [@@739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+
+@此题栈的使用太巧秒了
+
+栈里面存的是升序的,比T[i]处温度大的一些温度.
 
 ```java
 改进:逆序遍历,记录以往的温度的最大值,因为如果 倒数第二天温度是75, 最后一天温度是70,则倒数第三天的时候如果温度是76比75大,则继续往后找也找不到比76大的天气了,因为75是未来几天最大的温度.
 
-Stack<Integer> stack = new Stack<Integer>();
-
-    public int[] dailyTemperatures(int[] T) {
-
+public int[] dailyTemperatures(int[] T) {
+        Stack<Integer> stack = new Stack<>();
         int len = T.length;
-        int[] ans = new int[len];
+        int[] ret = new int[len];
         for (int i = len - 1; i >= 0; i--) {
             int temp = T[i];
             while (!stack.isEmpty()) {
-                if (T[stack.peek()] <= temp) {
+                if (temp >= T[stack.peek()]) {
                     stack.pop();
                 } else {
+                    ret[i] = stack.peek() - i;
                     break;
                 }
             }
-            if (stack.isEmpty()) {
-                ans[i] = 0;
-            } else {
-                ans[i] = stack.peek() - i;
-            }
             stack.push(i);
         }
-        return ans;
+        return ret;
     }
 
 改进:获取比当前温度temp高的所有温度的日期,找距离当前日期最近的那个
@@ -1392,7 +1390,7 @@ public int[] dailyTemperatures(int[] T) {
 
 
 
-#### [406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+#### [@@406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
 
 ```java
 改进:先根据身高从大到小,k从小到大来排数组,然后将排好序的数组往另一个数组里插入,插完就是想要的结果
@@ -1415,7 +1413,11 @@ public int[][] reconstructQueue(int[][] people) {
 
 
 
-#### [11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+#### [@@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+
+
+@受制于短的,所以每次移动短的.
 
 ```java
 改进:
@@ -1436,7 +1438,13 @@ public int maxArea(int[] height) {
 }
 ```
 
-#### [647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+#### [@@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+
+中心扩展法比动态规划效率高.
+
+因为动态规划是从短串到长串都要判断,不好剪枝
+
+中心扩展从短串到长串的过程中,如果短串不成立,则长串终止.
 
 ```java
 改进:动态规划的做法
@@ -1912,7 +1920,7 @@ public int leastInterval(char[] tasks, int n) {
     }
 ```
 
-#### [416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+#### [@@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 
 ```java
 改进:01背包问题
