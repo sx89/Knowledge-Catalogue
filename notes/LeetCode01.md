@@ -1809,33 +1809,51 @@ public int maxProfit(int[] prices) {
 
 
 
-#### [123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+#### [@@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
-改进:k表示交易了多少次
+
+
+
+
+```java
+@@@
+1.关于i=0时的边界条件
+dp[0][k][0] = 0;
+dp[0][k][1] = -prices[0];
+无论k为0,1,2这个赋值都成立.
+2.列出状态转移方程:
+k代表的是剩余交易次数.每次卖出股票后,算消耗了一次交易次数.
+if (k - 1 >= 0) {
+     dp[i][k - 1][0] = Math.max(dp[i - 1][k - 1][0], dp[i - 1][k][1] + prices[i]);
+ }
+dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k][0] - prices[i]);
+
+```
+
+
 
 ```java
 public int maxProfit(int[] prices) {
-    if (prices == null || prices.length == 0) {
-        return 0;
-    }
-    int len = prices.length;
-    int max_k = 2;
-    int[][][] dp = new int[len][max_k + 1][2];
-    for (int i = 0; i < len; i++) {
-        //k=1是交易了一次,k=2 是交易了两次,而不是剩余几次机会
-        for (int k = 1; k <= max_k; k++) { //改成k++
-            if (i == 0) {
-                dp[0][k][0] = 0;
-                dp[0][k][1] = -prices[0];
-            } else {
-                dp[i][k][0] = Math.max(dp[i - 1][k][0], dp[i - 1][k][1] + prices[i]);
-                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k - 1][0] - prices[i]);
+        if (prices == null || prices.length == 0) {
+            return 0;
+        }
+        int len = prices.length;
+        int[][][] dp = new int[len][3][2];
+        for (int i = 0; i < len; i++) {
+            for (int k = 0; k <= 2; k++) {
+                if (i == 0) {
+                    dp[0][k][0] = 0;
+                    dp[0][k][1] = -prices[0];
+                    continue;
+                }
+                if (k - 1 >= 0) {
+                    dp[i][k - 1][0] = Math.max(dp[i - 1][k - 1][0], dp[i - 1][k][1] + prices[i]);
+                }
+                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k][0] - prices[i]);
             }
         }
-
+        return dp[len - 1][0][0];
     }
-    return dp[len - 1][2][0];
-}
 ```
 
 #### [621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
@@ -2051,7 +2069,7 @@ public int lengthOfLIS(int[] nums) {
 
 
 
-#### [@@560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+#### [@560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 @很容易想到梯度,但是没想到sum-k的形式.
 
@@ -2135,9 +2153,19 @@ public int subarraySum(int[] nums, int k) {
 
 
 
-#### [221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
+#### [@221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
-改进:关键是这种题的状态转移方程记住.
+@ 状态转移的方程也比较好理解. 以i,j作为右下角的正方形的最大边长,是由`  [i-1][j-1] 和[i-1][j]和[i][j-1]`为右下角的三个正方形边长共同决定的.
+
+如图:`dp[2][2] 受限于dp[1][2]=1`
+
+ 1   1   0
+
+ 1   1    1
+
+ 1   1     1 
+
+
 
 ```java
 public int maximalSquare(char[][] matrix) {
@@ -2182,7 +2210,17 @@ public int maximalSquare(char[][] matrix) {
     }
 ```
 
-#### [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+#### [@@34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+@自己做出来了 但是要更加熟练.
+
+注意的几个点
+
+1.while(left<=right)
+
+2.Lower的时候:return left; Upper的时候: return right;
+
+3.应对没找到返回-1的情况 准备标志位founded.
 
 ```java
 改进:find不到就返回-1
@@ -2295,9 +2333,11 @@ public boolean searchMatrix(int[][] matrix, int target) {
 
 
 
-#### [79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
+#### [@@79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
 
+@再做一遍  不熟练.典型回溯,但是因为字符边界问题老是出错
 
+本题只要求返回true,false;但是没法用动规来做
 
 ```java
 改进:回溯,没啥好说的,继续熟练
