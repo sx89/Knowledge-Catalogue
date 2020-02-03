@@ -1337,7 +1337,7 @@ public List<List<String>> groupAnagrams(String[] strs) {
 
 
 
-#### [@@739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+#### [@739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
 @此题栈的使用太巧秒了
 
@@ -1390,7 +1390,7 @@ public int[] dailyTemperatures(int[] T) {
 
 
 
-#### [@@406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+#### [@406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
 
 ```java
 改进:先根据身高从大到小,k从小到大来排数组,然后将排好序的数组往另一个数组里插入,插完就是想要的结果
@@ -1413,7 +1413,7 @@ public int[][] reconstructQueue(int[][] people) {
 
 
 
-#### [@@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+#### [@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
 
 
 
@@ -1438,7 +1438,11 @@ public int maxArea(int[] height) {
 }
 ```
 
-#### [@@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+#### [@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+
+本题可以看成是字符串类的动态规划
+
+
 
 中心扩展法比动态规划效率高.
 
@@ -1531,9 +1535,9 @@ public int rob(int[] nums) {
 }
 ```
 
-#### [@@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+#### [@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
-
+一维的,从小到大,但是不相邻的动态规划
 
 @思考 什么样的问题用动规解决比较好 (从小到大的累计过程用动规比较好)
 
@@ -1698,7 +1702,7 @@ public String decodeString(String s) {
 
 
 
-#### [337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+#### [@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
 
@@ -1920,7 +1924,9 @@ public int leastInterval(char[] tasks, int n) {
     }
 ```
 
-#### [@@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+#### [@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+
+本质是背包类的动态规划. 选第i个物品的时候,目标重量或者最大重量由i-1决定.
 
 ```java
 改进:01背包问题
@@ -1959,7 +1965,11 @@ public boolean canPartition(int[] nums) {
 
 
 
-#### [494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+#### [@494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+
+背包类的动态规划,跟  分割等和子集 是一类题目.  i处选不选物品 由i-1处决定.
+
+
 
 ```java
 改进:背包问题
@@ -2005,9 +2015,20 @@ public int findTargetSumWays(int[] nums, int S) {
 }
 ```
 
-#### [300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### [@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+
+
+@状态转移方程 想不到.
+
+比较好的解释:https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/man-hua-ti-jie-zai-ben-du-neng-kan-de-dong-de-dong/
+
+
 
 ```java
+
+    
+
 public int lengthOfLIS(int[] nums) {
     if (nums == null || nums.length == 0) {
         return 0;
@@ -2030,7 +2051,11 @@ public int lengthOfLIS(int[] nums) {
 
 
 
-#### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+#### [@@560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+
+@很容易想到梯度,但是没想到sum-k的形式.
+
+
 
 ```java
 改进: map.put(0,1)放入,是为了sum本身就等于 k,即 sum-k = 0;
@@ -2055,6 +2080,8 @@ HashMap<Integer, Integer> map = new HashMap<>();
         return count;
     }
 
+
+法2:
 public int subarraySum(int[] nums, int k) {
     int left = 0;
     int right = 0;
@@ -2071,6 +2098,39 @@ public int subarraySum(int[] nums, int k) {
     }
     return count;
 }
+
+法3:
+ HashMap<Integer, List<Integer>> map = new HashMap<>();
+
+    public int subarraySum(int[] nums, int k) {
+        int sum = 0;
+        int ret = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum)) {
+                List<Integer> temp = map.get(sum);
+                temp.add(i);
+                map.put(sum, temp);
+            } else {
+                List<Integer> temp = new ArrayList<Integer>();
+                temp.add(i);
+                map.put(sum, temp);
+            }
+        }
+        sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(sum + k)) {
+                List<Integer> temp = map.get(sum + k);
+                for (int num : temp) {
+                    if (num >= i) {
+                        ret++;
+                    }
+                }
+            }
+            sum += nums[i];
+        }
+        return ret;
+    }
 ```
 
 
