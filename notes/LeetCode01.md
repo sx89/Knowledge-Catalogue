@@ -2446,7 +2446,9 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
-#### [152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)
+#### [@152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)
+
+@第一遍就做出来了,思路很好,后面再回来看一下
 
 ```java
 改进:1.状态转移方程
@@ -2455,25 +2457,26 @@ public int coinChange(int[] coins, int amount) {
 	2.因为负负得正,所以维护最小值也是有必要的
 	3.因为只与前一个dp数据有关,dp数组可以被优化空间
         
-public int maxProduct(int[] nums) {
-    int max = Integer.MIN_VALUE, imax = 1, imin = 1;
-    int[][] dp = new int[nums.length + 1][2];
-    dp[0][0] = 1;
-    dp[0][1] = 1;
-    for (int i = 1; i <= nums.length; i++) {
-        if (nums[i - 1] < 0) {
-            imin = dp[i - 1][0];
-            imax = dp[i - 1][1];
-        } else {
-            imin = dp[i - 1][1];
-            imax = dp[i - 1][0];
+ public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
         }
-        dp[i][0] = Math.max(imax * nums[i - 1], nums[i - 1]);
-        dp[i][1] = Math.min(imin * nums[i - 1], nums[i - 1]);
-        max = Math.max(max, dp[i][0]);
+        int max = nums[0];
+        int[][] dp = new int[nums.length][2];
+        for (int i = 0; i < nums.length; i++) {
+            if (i == 0) {
+                dp[i][0] = nums[0];
+                dp[i][1] = nums[0];
+                continue;
+            }
+            int num1 = dp[i - 1][0] * nums[i];
+            int num2 = dp[i - 1][1] * nums[i];
+            dp[i][0] = Math.max(nums[i], Math.max(num1, num2));
+            dp[i][1] = Math.min(Math.min(num1, num2), nums[i]);
+            max = Math.max(dp[i][0], max);
+        }
+        return max;
     }
-    return max;
-}
 
 改进:优化空间
     public int maxProduct(int[] nums) {
