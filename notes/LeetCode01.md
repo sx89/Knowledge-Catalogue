@@ -1809,7 +1809,7 @@ public int maxProfit(int[] prices) {
 
 
 
-#### [@@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+#### [@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
 
 
@@ -2033,7 +2033,7 @@ public int findTargetSumWays(int[] nums, int S) {
 }
 ```
 
-#### [@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### [@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
 
 
@@ -2210,7 +2210,7 @@ public int maximalSquare(char[][] matrix) {
     }
 ```
 
-#### [@@34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+#### [@34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 @自己做出来了 但是要更加熟练.
 
@@ -2333,7 +2333,7 @@ public boolean searchMatrix(int[][] matrix, int target) {
 
 
 
-#### [@@79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
+#### [@79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
 
 @再做一遍  不熟练.典型回溯,但是因为字符边界问题老是出错
 
@@ -2571,9 +2571,9 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 }
 ```
 
-#### [31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+#### [@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
 
-
+@思路记住了.主要是边界条件要小心.
 
 思路讲解:https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-by-leetcode/
 
@@ -2587,42 +2587,54 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
     最终变成了130.
     
     
-public void nextPermutation(int[] nums) {
-    int len = nums.length;
-    int targetIndex = len - 2;
-    while (targetIndex >= 0) {
-        if (nums[targetIndex] < nums[targetIndex + 1]) {
-            break;
+ public void nextPermutation(int[] nums) {
+        int changeIndex = -1;
+        int swapIndex = 0;
+        if (nums == null || nums.length == 0) {
+            return;
         }
-        targetIndex--;
-    }
-    if (targetIndex >= 0) {
-        for (int i = len - 1; i >= 0; i--) {
-            if (nums[i] > nums[targetIndex]) {
-                swap(nums, targetIndex, i);
+        //9 8 3 7 6 1 找到从后往前的第一个非升序, 数字3处的索引2
+        for (int i = nums.length - 1; i > 0; ) {
+            if (nums[i] <= nums[i - 1]) {
+                i--;
+            } else if (nums[i] > nums[i - 1]) {
+                changeIndex = i - 1;
                 break;
             }
         }
+        //如果已经是最大值,就把nums翻转成最小值
+        if (changeIndex == -1) {
+            reverse(nums, 0, nums.length - 1);
+            return;
+        }
+        //把3和6交换位置
+        for (int i = nums.length - 1; i > 0; i--) {
+            if (nums[i] > nums[changeIndex]) {
+                swapIndex = i;
+                break;
+            }
+        }
+        int temp = nums[swapIndex];
+        nums[swapIndex] = nums[changeIndex];
+        nums[changeIndex] = temp;
+        reverse(nums, changeIndex + 1, nums.length - 1);
+        return;
     }
-    reverse(nums, targetIndex + 1, len - 1);
-}
 
-private void reverse(int[] nums, int start, int end) {
-    while (start < end) {
-        swap(nums, start++, end--);
+    private void reverse(int[] nums, int left, int right) {
+        while (left < right) {
+            int temp = nums[left];
+            nums[left] = nums[right];
+            nums[right] = temp;
+            left++;
+            right--;
+        }
     }
-}
-
-private void swap(int[] nums, int index1, int index2) {
-    int temp = nums[index1];
-    nums[index1] = nums[index2];
-    nums[index2] = temp;
-}
 ```
 
 
 
-#### [33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
 ```java
 改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
