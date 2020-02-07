@@ -2418,7 +2418,11 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 
 
 
-#### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+#### [@322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+@好题  第一遍作对了
+
+
 
 ```java
 改进:
@@ -2429,6 +2433,51 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 //最少的跳台阶数,最少的背包物品数)
 
 //我定好base case,同时知道dp[n]是由下面的dp[n-1]等怎么得来的,就可以写出代码
+
+
+//该代码是下面的优化版本
+public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 0;
+        int maxValue = Integer.MAX_VALUE;
+        for (int i = 1; i <= amount; i++) {
+            dp[i] = maxValue;
+            for (int j = 0; j < coins.length; j++) {
+                if (coins[j] <= i && dp[i - coins[j]] != maxValue) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] == maxValue ? -1 : dp[amount];
+    }
+
+//这个版本可以优化成上面
+public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+    	//其实上面的for循环可以省略掉.
+        for (int i = 0; i < coins.length; i++) {
+            if (coins[i] <= amount) {
+                dp[coins[i]] = 1;
+            }
+        }
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < coins.length; j++) {
+                if (coins[j] <= i && dp[i - coins[j]] >= 0 && dp[i - coins[j]] != Integer.MAX_VALUE) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+
+
+
+
+
+
 public int coinChange(int[] coins, int amount) {
     int[] dp = new int[amount + 1];
     //初始化为amount+1是因为一个amount最差也可以由amount个1分硬币构成,所以amount+1是一个不可能的数
@@ -2637,7 +2686,7 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 
 
 
-#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+#### [@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
 ```java
 改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
@@ -2814,7 +2863,13 @@ public String longestPalindrome(String s) {
 
 
 
-#### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+#### [@@@@15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+@这个题对于重复数据的处理很难,题目的难度是困难而非中等.
+
+@@对于三数求和,可以用排序+左右指针,注意对于每个nums[i]只需要从其右边的数里面选nums[left]和 nums[right]
+
+@回溯法对结果去重比较麻烦,本题专有法来做.
 
 ```java
 改进:1.数组排序
@@ -2824,49 +2879,81 @@ public String longestPalindrome(String s) {
     比如 -2 -1 -1 0 3 3
 
 public List<List<Integer>> threeSum(int[] nums) {
-    List<List<Integer>> ret = new ArrayList<>();
-    if (nums == null || nums.length <= 2) {
-        return ret;
-    }
-    Arrays.sort(nums);
-    for (int i = 0; i < nums.length; i++) {
-        if (nums[i] > 0) {
-            break;
-        }
+        List<List<Integer>> ret = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
 
-        int L = i + 1;
-        int R = nums.length - 1;
-        while (L < R) {
-            int sum = nums[i] + nums[L] + nums[R];
-            if (sum > 0) {
-                R--;
-            } else if (sum < 0) {
-                L++;
-            } else {
-                ArrayList<Integer> list = new ArrayList<>();
-                list.add(nums[i]);
-                list.add(nums[L]);
-                list.add(nums[R]);
-                ret.add(list);
-                while (L < R && nums[L] == nums[L + 1])
-                    L++;
-                while (L < R && nums[R] == nums[R - 1])
-                    R--;
-                L++;
-                R--;
+            if (nums[i] > 0) {
+                return ret;
+            }
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    ret.add(list);
+                    while (left + 1 < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    while (left < right - 1 && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    left++;
+                    right--;
+                } else if (sum > 0) {
+                    right--;
+                } else {
+                    left++;
+                }
+
+            }
+            while (i + 1 < nums.length && nums[i] == nums[i + 1]) {
+                i++;
             }
         }
-        while (i + 1 < nums.length && nums[i] == nums[i + 1]) {
-            i++;
+        return ret;
+    }
+@这个题很坑的是 回溯法不好去重,所以还是要用上面的排序法.
+测试用例:
+输入
+[-1,0,1,2,-1,-4]
+输出
+[[-1,0,1],[-1,2,-1],[0,1,-1]]
+预期结果
+[[-1,-1,2],[-1,0,1]]
+    
+    
+List<List<Integer>> ret = new ArrayList<>();
+    List<Integer> path = new ArrayList<>();
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        backtracing(nums, new ArrayList<>(), 0, 0);
+        return ret;
+    }
+
+    private void backtracing(int[] nums, List<Integer> path, int sum, int index) {
+        if (path.size() > 3) {
+            return;
+        }
+        if (path.size() == 3 && sum == 0) {
+            ret.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < nums.length; i++) {
+            path.add(nums[i]);
+            backtracing(nums, path, sum + nums[i], i + 1);
+            path.remove(path.size() - 1);
         }
     }
-    return ret;
-}
 ```
 
 
 
-#### [56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+#### [@56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
 
 ```java
 改进:思路 1.按照每个区间的左起点排序,
@@ -2902,7 +2989,11 @@ public int[][] merge(int[][] intervals) {
 
 
 
-#### [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+#### [@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+@思路忘了  明天再做一遍,两种思路
+
+
 
 ```java
 思路1:哈希表
@@ -2931,6 +3022,40 @@ public int[][] merge(int[][] intervals) {
 
 
 思路2:排序,然后从左到右遍历
+    
+    
+public int longestConsecutive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return 1;
+        }
+        Arrays.sort(nums);
+        //两种排序再熟悉一下
+        int right = 1;
+        int maxCount = 1;
+        int cnt = 1;
+        while (right < nums.length) {
+            if (nums[right] == nums[right - 1] + 1) {
+                cnt++;
+                maxCount = Math.max(maxCount, cnt);
+                right++;
+                while (right < nums.length && nums[right] == nums[right - 1]) {
+                    right++;
+                }
+            } else {
+                right++;
+                while (right < nums.length && nums[right] == nums[right - 1]) {
+                    right++;
+                }
+                cnt = 1;
+            }
+        }
+        return maxCount;
+    }
+    
+    
 public int longestConsecutive(int[] nums) {
     if (nums.length == 0) {
         return 0;
@@ -2955,7 +3080,11 @@ public int longestConsecutive(int[] nums) {
 
 
 
-#### [23. 合并K个排序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+#### [@23. 合并K个排序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+归并排序.再学习.
+
+
 
 ```java
 思路1:分而治之法
@@ -3179,7 +3308,11 @@ public int trap(int[] height) {
 
 
 
-#### [84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+#### [@84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+
+
+
+@思路不是很好理解.
 
 ```java
 分而治之法:
@@ -3193,6 +3326,7 @@ public int calculateArea(int[] heights, int start, int end) {
     if (start > end) {
         return 0;
     }
+    //注意这里是以minIndex为分界线.
     int minIndex = start;
     for (int i = start; i <= end; i++) {
         if (heights[minIndex] > heights[i]) {
@@ -3271,12 +3405,75 @@ public String minWindow(String s, String t) {
 
 
 
-#### [438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+#### [@438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+@一开始忘了cnt + map<char,int> 的方法,再做一遍熟练起来
 
 ```java
 思路:滑动窗口,维护left和right.
     left和right逐渐往右移动,并寻找匹配的字符串.
     注意,此题需要1. s判空,2. 判p的长度要小于s. 有的题会考这种细节,有的不会考
+    
+     public List<Integer> findAnagrams(String s, String p) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        List<Integer> ret = new ArrayList<>();
+        int cnt = p.length();
+        int left = 0;
+        int right = 0;
+    	//初始化map
+        for (int i = 0; i < p.length(); i++) {
+            char ch = p.charAt(i);
+            if (map.containsKey(ch)) {
+                map.put(ch, map.get(ch) + 1);
+            } else {
+                map.put(ch, 1);
+            }
+        }
+    	//right右移
+        for (right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right);
+            if (map.containsKey(ch)) {
+                if (map.get(ch) > 0) {
+                    cnt--;
+                }
+                map.put(ch, map.get(ch) - 1);
+            } else {
+                //s中出现了map中没有的字符,则left的起点至少要设在这个字符之后
+                //其实没必要,因为上面这种情况发生的话,cnt不会为0.
+                int i = left;
+                left = right + 1;
+                for (; i < left; i++) {
+                    ch = s.charAt(i);
+                    if (map.containsKey(ch)) {
+                        map.put(ch, map.get(ch) + 1);
+                        if (map.get(ch) > 0) {
+                            cnt++;
+                        }
+                    }
+                }
+            }
+            //匹配了就ret.add
+            if (cnt == 0) {
+                ret.add(left);
+            }
+            //滑动窗口过大,就left++,并修改cnt和map
+            if (right - left + 1 >= p.length()) {
+                ch = s.charAt(left);
+                if (map.containsKey(ch)) {
+                    map.put(ch, map.get(ch) + 1);
+                    if (map.get(ch) > 0) {
+                        cnt++;
+                    }
+                }
+                left++;
+            }
+        }
+        return ret;
+    }
+    
+    
+之前的提交:
+    
 public List<Integer> findAnagrams(String s, String p) {
     ArrayList<Integer> list = new ArrayList<>();
     HashMap<Character, Integer> map = new HashMap<>();
@@ -3463,7 +3660,7 @@ class Location {
 
 
 
-#### [139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+#### [@@139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
 
 ```java
 本来想用回溯的办法,但是像这种只要求一个boolean结果或者一个int结果的
@@ -3551,3 +3748,95 @@ public boolean canJump(int[] nums) {
 
 
 
+#### @归并排序(mergeSort)
+
+结合128题.最长连续序列  里面的思路二,来验证排序
+
+```java
+public void mergeSort(int[] nums) {
+        merge(nums, 0, nums.length - 1);
+    }
+
+    private void merge(int[] nums, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        //当时没想到临时数组
+        int[] temp = new int[right - left + 1];
+        int mid = left + (right - left) / 2;
+        merge(nums, left, mid);
+        merge(nums, mid + 1, right);
+
+        //把nums的  left~mid   和  mid+1~right 合并到temp
+
+        int i1 = left;
+        int i2 = mid + 1;
+        int i = 0;
+        while (i1 <= mid && i2 <= right) {
+            if (nums[i1] <= nums[i2]) {
+                temp[i++] = nums[i1++];
+            } else {
+                temp[i++] = nums[i2++];
+            }
+        }
+        while (i1 <= mid) {
+            temp[i++] = nums[i1++];
+        }
+        while (i2 <= right) {
+            temp[i++] = nums[i2++];
+        }
+        //把合并后的temp转移到nums
+        i1 = left;
+        for (i = 0; i < temp.length; ) {
+            nums[i1++] = temp[i++];
+        }
+    }
+```
+
+
+
+
+
+
+
+#### @快速排序(quickSort)
+
+结合128题.最长连续序列  里面的思路二,来验证排序
+
+```java
+ private void quickSort(int[] nums, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int index = patition(nums, left, right);
+        quickSort(nums, left, index - 1);
+        quickSort(nums, index + 1, right);
+    }
+
+    private int patition(int nums[], int left, int right) {
+        if (left >= right) {
+            return left;
+        }
+        int temp = nums[left];
+        while (left < right) {
+            while (left < right && nums[right] >= temp) {
+                right--;
+            }
+            swap(nums, left, right);
+            while (left < right && nums[left] <= temp) {
+                left++;
+            }
+            swap(nums, left, right);
+        }
+        nums[left] = temp;
+        return left;
+    }
+
+    private void swap(int[] nums, int left, int right) {
+        int temp = nums[left];
+        nums[left] = nums[right];
+        nums[right] = temp;
+    }
+```
+
+#### @@但凡是有关left,right的函数,一般要判断left>right return
