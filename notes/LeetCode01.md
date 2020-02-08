@@ -2863,7 +2863,7 @@ public String longestPalindrome(String s) {
 
 
 
-#### [@@@@15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+#### [@15. 三数之和](https://leetcode-cn.com/problems/3sum/)
 
 @这个题对于重复数据的处理很难,题目的难度是困难而非中等.
 
