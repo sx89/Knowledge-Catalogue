@@ -1623,6 +1623,7 @@ public int numSquares(int n) {
 #### [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 ```java
+
 改进:公式  x + y+ z + y = 2(x+y)推出  x = z 所以这个时候把快指针放到phead处,走x;慢指针走z;两个指针就会在
     环入口处相遇
     
@@ -1662,7 +1663,15 @@ public ListNode detectCycle(ListNode head) {
 }
 ```
 
-#### [394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+#### [@@@@@@@394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+
+
+
+@@//字母 数字  [  ] 四种情况   +
+
+  stringbuilder的应用 +
+
+栈的应用,括号类问题的处理
 
 ```java
 改进:代码太牛,记住就好
@@ -1674,6 +1683,8 @@ public String decodeString(String s) {
     int num = 0;
     Stack<Integer> stack_num = new Stack<Integer>();
     Stack<String> stack_res = new Stack<String>();
+    
+    
     for (char c : s.toCharArray()) {
         if (c == '[') {
             stack_res.push(res.toString());
@@ -1690,7 +1701,7 @@ public String decodeString(String s) {
             res = new StringBuilder(stack_res.pop() + temp);
         } else if (c >= '0' && c <= '9') {
             num = num * 10 + Integer.parseInt(c + "");
-        } else {
+        } else {//是字母
             res.append(c);
         }
     }
@@ -1856,7 +1867,11 @@ public int maxProfit(int[] prices) {
     }
 ```
 
-#### [621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
+#### [@@@621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
+
+@优先队列,来确定执行顺序
+
+@每个n为一个轮回,既可以解决空转,又可以让数量多的任务先运行
 
 
 
@@ -1915,7 +1930,9 @@ public int leastInterval(char[] tasks, int n) {
 
 ```
 
-#### [146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+#### [@@@146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+
+@双向链表的做法.
 
 ```java
 改进:LinkedHashMap 可以在构造的时候指定,是否按照访问顺序来存储节点(key)
@@ -3840,3 +3857,116 @@ public void mergeSort(int[] nums) {
 ```
 
 #### @@但凡是有关left,right的函数,一般要判断left>right return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
