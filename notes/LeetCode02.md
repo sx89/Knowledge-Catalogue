@@ -6,7 +6,7 @@
 nums1因为后方有空余位置,所以让nums1从后往前填充,可以达到时间复杂度O(m+n)空间复杂度O(1)
 ```
 
-#### [@@253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
+#### [@253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
 
 
 
@@ -42,7 +42,7 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### [@@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
+#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
 
 
@@ -126,7 +126,7 @@ int maxLen = 0;
 
 
 
-#### [@@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+#### [@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 
 
@@ -336,5 +336,49 @@ public String reverseWords(String s) {
 
 ```
 
+```
+
+
+
+
+
+#### [@@10. 正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
+
+```java
+ public boolean isMatch(String s, String p) {
+        if (s == null || p == null) {
+            return false;
+        }
+        int len1 = s.length();
+        int len2 = p.length();
+        boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
+        dp[0][0] = true;
+        //初始化"" 与p的匹配关系  "" 和 a*a*a*是可以匹配的
+        for (int i = 0; i < len2; i++) {
+            if (p.charAt(i) == '*' && dp[0][i - 1]) {
+                dp[0][i + 1] = true;
+            }
+        }
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                // ##s   ##p     与     ##s    ##.
+                if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
+                    dp[i + 1][j + 1] = dp[i][j];
+                }
+                if (p.charAt(j) == '*') {
+                    if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
+                        // ##c    ##cp*  i  和 j-2
+                        //##p     ##p*    i  和  j-1
+                        //##ppp   ##p*    i-1 和  j
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
+                    } else {
+                        // ##b  要和  ##c*匹配   i  和  j-2
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1];
+                    }
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
 ```
 

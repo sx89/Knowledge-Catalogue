@@ -749,7 +749,7 @@ public class Solution {
 
 ```
 
-# 8. 二叉树的下一个结点
+# @@8. 二叉树的下一个结点
 
 [NowCoder](https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?tpId=13&tqId=11210&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
@@ -806,7 +806,7 @@ class TreeLinkNode {
 ```
 
 
-# 9. 用两个栈实现队列
+# @@9. 用两个栈实现队列
 
 [NowCoder](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
@@ -1386,7 +1386,7 @@ public class Solution {
 }
 ```
 
-# 14. 剪绳子
+# @14. 剪绳子
 
 [Leetcode](https://leetcode.com/problems/integer-break/description/)
 
@@ -1492,7 +1492,14 @@ public int NumberOf1(int n) {
 }
 ```
 
-# 16. 数值的整数次方
+# @16. 数值的整数次方
+
+
+
+@因为 (x\*x)n/2 可以通过递归求解，并且每次递归 n 都减小一半，因此整个算法的时间复杂度为 O(logN)。
+    如果for循环来求n遍的话,复杂度为O(N)
+
+@考虑 指数是负数,底数是负数,指数是偶数奇数的情况.
 
 [NowCoder](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&tqId=11165&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -1527,12 +1534,13 @@ public double Power(double base, int exponent) {
 }
 
 改进:
-因为 (x\*x)n/2 可以通过递归求解，并且每次递归 n 都减小一半，因此整个算法的时间复杂度为 O(logN)。
-    如果for循环来求n遍的话,复杂度为O(N)
+
     
 ```
 
-# 17. 打印从 1 到最大的 n 位数
+# @17. 打印从 1 到最大的 n 位数
+
+@回溯而不是从1到n打印.
 
 ## 题目描述
 
@@ -1658,7 +1666,7 @@ public ListNode deleteDuplication(ListNode pHead) {
     }
 ```
 
-# 19. 正则表达式匹配
+# @@@19. 正则表达式匹配
 
 [NowCoder](https://www.nowcoder.com/practice/45327ae22b7b413ea21df13ee7d6429c?tpId=13&tqId=11205&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -1673,30 +1681,43 @@ public ListNode deleteDuplication(ListNode pHead) {
 应该注意到，'.' 是用来当做一个任意字符，而 '\*' 是用来重复前面的字符。这两个的作用不同，不能把 '.' 的作用和 '\*' 进行类比，从而把它当成重复前面字符一次。
 
 ```java
-public boolean match(char[] str, char[] pattern) {
-
-    int m = str.length, n = pattern.length;
-    boolean[][] dp = new boolean[m + 1][n + 1];
-
-    dp[0][0] = true;
-    for (int i = 1; i <= n; i++)
-        if (pattern[i - 1] == '*')
-            dp[0][i] = dp[0][i - 2];
-
-    for (int i = 1; i <= m; i++)
-        for (int j = 1; j <= n; j++)
-            if (str[i - 1] == pattern[j - 1] || pattern[j - 1] == '.')
-                dp[i][j] = dp[i - 1][j - 1];
-            else if (pattern[j - 1] == '*')
-                if (pattern[j - 2] == str[i - 1] || pattern[j - 2] == '.') {
-                    dp[i][j] |= dp[i][j - 1]; // a* counts as single a
-                    dp[i][j] |= dp[i - 1][j]; // a* counts as multiple a
-                    dp[i][j] |= dp[i][j - 2]; // a* counts as empty
-                } else
-                    dp[i][j] = dp[i][j - 2];   // a* only counts as empty
-
-    return dp[m][n];
-}
+ public boolean match(char[] str, char[] pattern) {
+        String s = new String(str);
+        String p = new String(pattern);
+        if (s == null || p == null) {
+            return false;
+        }
+        int len1 = s.length();
+        int len2 = p.length();
+        boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
+        dp[0][0] = true;
+        //初始化"" 与p的匹配关系  "" 和 a*a*a*是可以匹配的
+        for (int i = 0; i < len2; i++) {
+            if (p.charAt(i) == '*' && dp[0][i - 1]) {
+                dp[0][i + 1] = true;
+            }
+        }
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                // ##s   ##p     与     ##s    ##.
+                if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
+                    dp[i + 1][j + 1] = dp[i][j];
+                }
+                if (p.charAt(j) == '*') {
+                    if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
+                        // ##c    ##cp*  i  和 j-2
+                        //##p     ##p*    i  和  j-1
+                        //##ppp   ##p*    i-1 和  j
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
+                    } else {
+                        // ##b  要和  ##c*匹配   i  和  j-2
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1];
+                    }
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
 
 改进:
 用下面的思路 比较清晰
@@ -1757,7 +1778,17 @@ public boolean matchCore(char[] str, int strIndex, char[] pattern, int patternIn
 
 
 
-# 20. 表示数值的字符串
+# @20. 表示数值的字符串
+
+@index == len
+
+@ otherWord
+
+@分三段判  ` ***.***E***`
+
+@count<=0
+
+@首数字为0(小数部分可以,其他两段不可以,但本题没有这个限制)
 
 [NowCoder](https://www.nowcoder.com/practice/6f8c901d091949a5837e24bb82a731f2?tpId=13&tqId=11206&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -1800,6 +1831,60 @@ false
 ```
 
 ```java
+思路1:
+
+	private int index = 0;
+    private int len = 0;
+    private boolean hasOtherWord = false;
+
+    public boolean isNumeric(char[] str) {
+        if (str == null || str.length == 0)
+            return false;
+        len = str.length;
+        int count1 = 0, count2 = 0, count3 = 0;
+        count1 = judgeNum(str);
+        if (index < len && str[index] == '.') {
+            index++;
+            count2 = judgeUnsignNum(str);
+            if (count2 < 1)
+                return false;
+        }
+        if (index < len && (str[index] == 'E' || str[index] == 'e')) {
+            index++;
+            count3 = judgeNum(str);
+            if (count3 < 1)
+                return false;
+        }
+        return !hasOtherWord && index == len;
+    }
+
+    private int judgeNum(char[] str) {
+        if (index >= len) {
+            return 0;
+        }
+        if (str[index] == '+' || str[index] == '-') {
+            index++;
+        }
+        return judgeUnsignNum(str);
+    }
+
+    private int judgeUnsignNum(char[] str) {
+        int start = index;
+        while (index < len) {
+            if (str[index] >= '0' && str[index] <= '9') {
+                index++;
+            } else if (str[index] == '.' || str[index] == 'e' || str[index] == 'E') {
+                return index - start;
+            } else {
+                hasOtherWord = true;
+                return -1;
+            }
+        }
+        return index - start;
+    }
+
+
+思路2:
 public boolean isNumeric(char[] str) {
     if (str == null || str.length == 0)
         return false;
@@ -1807,7 +1892,9 @@ public boolean isNumeric(char[] str) {
 }
 ```
 
-# 21. 调整数组顺序使奇数位于偶数前面
+# @21. 调整数组顺序使奇数位于偶数前面
+
+@创建一个新数组，时间复杂度 O(N)，空间复杂度 O(N)。
 
 [NowCoder](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&tqId=11166&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2312,7 +2399,7 @@ public int min() {
 改进: minStack不能用一个记录最小值的int来替代.因为pop一次,再求最小值,int里面的值不符合要求了.
 ```
 
-# 31. 栈的压入、弹出序列
+# @31. 栈的压入、弹出序列
 
 [NowCoder](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&tqId=11174&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2504,7 +2591,7 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     }
 ```
 
-# 33. 二叉搜索树的后序遍历序列
+# @@33. 二叉搜索树的后序遍历序列
 
 [NowCoder](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&tqId=11176&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2623,7 +2710,7 @@ private ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>
     }
 ```
 
-# 35. 复杂链表的复制
+# @@35. 复杂链表的复制(我赌不考)
 
 [NowCoder](https://www.nowcoder.com/practice/f836b2c43afc4b35ad6adc41ec941dba?tpId=13&tqId=11178&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2725,7 +2812,7 @@ public RandomListNode Clone(RandomListNode pHead) {
  }
 ```
 
-# 36. 二叉搜索树与双向链表
+# @@36. 二叉搜索树与双向链表
 
 [NowCoder](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3017,7 +3104,13 @@ public int MoreThanHalfNum_Solution(int[] nums) {
     }
 ```
 
-# 40. 最小的 K 个数
+# @@@40. 最小的 K 个数
+
+@快排,排出第k位的数,左边的k个数就是要求的.
+
+一些边界的处理总结:
+
+null  length  k>length  目标结果不存在   等等.
 
 [NowCoder](https://www.nowcoder.com/practice/6a296eb82cf844ca8539b57c23e6e9bf?tpId=13&tqId=11182&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3163,7 +3256,7 @@ public ArrayList<Integer> GetLeastNumbers_Solution(int[] nums, int k) {
 
 ```
 
- 41.1 数据流中的中位数
+#  41.1 数据流中的中位数
 
 [NowCoder](https://www.nowcoder.com/practice/9be0172896bd43948f8a32fb954e1be1?tpId=13&tqId=11216&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3265,7 +3358,7 @@ Integer.MIN_VALUE;
 Math.max(,);
 ```
 
-# 42.2二维矩阵中的最大子矩阵
+# @@42.2二维矩阵中的最大子矩阵
 
 题目描述:
 
@@ -3278,7 +3371,7 @@ Math.max(,);
 
 ```
 输入是一个N * N的矩阵。输入的第一行给出N (0 < N <= 100)。
-再后面的若干行中，依次（首先从左到右给出第一行的N个整数，再从左到右给出第二行的N个整数……）给出矩阵中的N2个整数，整数之间由空白字符分隔（空格或者空行）。
+再后面的若干行中，依次（首先从左到右给出第一行的N个整数，再从左到右给出第二行的N个整数……）给出矩阵中的N2个整数，整数之间由空白字符分隔（空格或者空行）
 已知矩阵中整数的范围都在[-127, 127]。
 ```
 
@@ -3293,7 +3386,9 @@ Math.max(,);
 ```java
 改进:
 思路: 
-把所有的行的组合 都 累加成一行试一试,在一行上求最大连续子序列.最终的max,就是 第i到第j行的组合下,某几列的连续子序列.
+i从0 到 n  
+j从i 到 n
+i到j行累加成一行,在一行上求最大连续子序列.最终的max,就是 第i到第j行的组合下,某几列的连续子序列.
 
 public class Main {
     public static void main(String[] args) {
@@ -3349,7 +3444,7 @@ public class Main {
 
 
 
-# 43. 从 1 到 n 整数中 1 出现的次数
+# @@@@43. 从 1 到 n 整数中 1 出现的次数
 
 [NowCoder](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3398,7 +3493,7 @@ public class Main {
 
 > [Leetcode : 233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/discuss/64381/4+-lines-O(log-n)-C++JavaPython)
 
-# 44. 数字序列中的某一位数字
+# @@@44. 数字序列中的某一位数字
 
 ## 题目描述
 
@@ -3453,7 +3548,7 @@ private int getDigitAtIndex(int index, int place) {
 }
 ```
 
-# 45. 把数组排成最小的数
+# @45. 把数组排成最小的数
 
 [NowCoder](https://www.nowcoder.com/practice/8fecd3f8ba334add803bf2a06af1b993?tpId=13&tqId=11185&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3493,7 +3588,7 @@ Array.sort(nums,comparator);
 此题的核心在于s1 和 s2的 大小是由 s1+s2 ,s2+s1 的大小来决定的.
 ```
 
-# 46. 把数字翻译成字符串
+# @46. 把数字翻译成字符串
 
 [Leetcode](https://leetcode.com/problems/decode-ways/description/)
 
@@ -3656,7 +3751,11 @@ dp[n]只由dp[n-1]决定,
     }
 ```
 
-# 49. 丑数
+# @@49. 丑数
+
+@思路不难,难在如何找下一个丑数,因为`2*2*2*2  > 3*3`
+
+@注意三个if之间并非互斥的  123456  下一个数  因为 nums[idx3] = 2;所以  2*3 = 6,但6已经存在,所以idx3应该++.
 
 [NowCoder](https://www.nowcoder.com/practice/6aa9e04fc3794f68acf8778237ba065b?tpId=13&tqId=11186&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3783,7 +3882,10 @@ public int FirstNotRepeatingChar2(String str) {
 	int[] flags = new int[26];//字母
 ```
 
-# 51. 数组中的逆序对
+# @@51. 数组中的逆序对
+
+@//如果左边leftIdx的值 大于右边的有序序列
+                //则左边从leftIdx到mid的值,都可以与rightIdx的值组成一个逆序对.
 
 [NowCoder](https://www.nowcoder.com/practice/96bd6684e04a44eb80e6a68efc0ec6c5?tpId=13&tqId=11188&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3843,7 +3945,9 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
                 tmp[tempIdx] = array[leftIdx++];
             } else if (array[leftIdx] <= array[rightIdx]) {
                 tmp[tempIdx] = array[leftIdx++];
-            } else {
+            } else if(array[leftIdx]>array[rightIdx]{
+                //如果左边leftIdx的值 大于右边的有序序列
+                //则左边从leftIdx到mid的值,都可以与rightIdx的值组成一个逆序对.
                 tmp[tempIdx] = array[rightIdx++];
                 this.count += mid - leftIdx + 1;
             }
@@ -4136,7 +4240,7 @@ private boolean isBalance = true;
     }
 ```
 
-# 56. 数组中只出现一次的数字
+# @@56. 数组中只出现一次的数字
 
 [NowCoder](https://www.nowcoder.com/practice/e02fdb54d7524710a7d664d082bb7811?tpId=13&tqId=11193&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4304,7 +4408,7 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
     }  
 ```
 
-# 58.1 翻转单词顺序列
+# @58.1 翻转单词顺序列
 
 [NowCoder](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4363,7 +4467,7 @@ public String ReverseSentence(String str) {
     }
 ```
 
-# 58.2 左旋转字符串
+# @58.2 左旋转字符串
 
 [NowCoder](https://www.nowcoder.com/practice/12d959b108cb42b1ab72cef4d36af5ec?tpId=13&tqId=11196&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4466,7 +4570,7 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
     }
 ```
 
-# 60. n 个骰子的点数
+# @ 60. n 个骰子的点数
 
 [Lintcode](https://www.lintcode.com/en/problem/dices-sum/)
 
@@ -4484,6 +4588,7 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
 空间复杂度：O(N<sup>2</sup>)
 
 ```java
+//求的是 s=1*n  到  s = 6*n的概率的list.Map
 public List<Map.Entry<Integer, Double>> dicesSum(int n) {
     final int face = 6;
     final int pointNum = face * n;
@@ -4538,13 +4643,13 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 }
 ```
 
-# 61. 扑克牌顺子
+# @61. 扑克牌顺子
 
 [NowCoder](https://www.nowcoder.com/practice/762836f4d43d43ca9deb273b3de8e1f4?tpId=13&tqId=11198&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
 ## 题目描述
 
-五张牌，其中大小鬼为癞子，牌面为 0。判断这五张牌是否能组成顺子。
+五张牌，其中大小王用数字0表示,但是可以代表任何数字。判断这五张牌是否能组成顺子。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/eaa506b6-0747-4bee-81f8-3cda795d8154.png" width="350px"> </div><br>
 ## 解题思路
@@ -4583,7 +4688,7 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 
 ```
 
-# 62. 圆圈中最后剩下的数
+# @62. 圆圈中最后剩下的数
 
 [NowCoder](https://www.nowcoder.com/practice/f78a359491e64a50bce2d89cff857eb6?tpId=13&tqId=11199&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4596,14 +4701,6 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 约瑟夫环，圆圈长度为 n 的解可以看成长度为 n-1 的解再加上报数的长度 m。因为是圆圈，所以最后需要对 n 取余。
 
 ```java
-public int LastRemaining_Solution(int n, int m) {
-    if (n == 0)     /* 特殊输入的处理 */
-        return -1;
-    if (n == 1)     /* 递归返回条件 */
-        return 0;
-    return (LastRemaining_Solution(n - 1, m) + m) % n;
-}
-
 改进:
 初始位置是begin = 0;
 每一次被点到的同学的位置是(begin+m-1)%list.size();
@@ -4628,7 +4725,7 @@ public int LastRemaining_Solution(int n, int m) {
     }
 ```
 
-# 63. 股票的最大利润
+#  63. 股票的最大利润
 
 [Leetcode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/)
 
@@ -4642,6 +4739,21 @@ public int LastRemaining_Solution(int n, int m) {
 使用贪心策略，假设第 i 轮进行卖出操作，买入操作价格应该在 i 之前并且价格最低。
 
 ```java
+ public int maxProfit(int[] prices) {
+        if(prices==null||prices.length==0){
+            return 0;
+        }
+        int len = prices.length;
+        int[][] dp = new int[len][2];
+        dp[0][0] = 0;
+        dp[0][1]=-prices[0];
+        for(int i = 1;i<len;i++){
+            dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]+prices[i]); 
+            dp[i][1] = Math.max(dp[i-1][1],-prices[i]);
+        }
+        return dp[len-1][0];
+    }
+
 
 
 public int maxProfit(int[] prices) {
@@ -4697,7 +4809,7 @@ public int maxProfit1(int[] prices) {
     }
 ```
 
-# 64. 求 1+2+3+...+n
+# @@64. 求 1+2+3+...+n
 
 [NowCoder](https://www.nowcoder.com/practice/7a0da8fc483247ff8800059e12d7caf1?tpId=13&tqId=11200&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4721,7 +4833,7 @@ public int maxProfit1(int[] prices) {
     }
 ```
 
-# 65. 不用加减乘除做加法
+# @@65. 不用加减乘除做加法
 
 [NowCoder](https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4736,9 +4848,16 @@ a ^ b 表示没有考虑进位的情况下两数的和，(a & b) << 1 就是进�
 递归会终止的原因是 (a & b) << 1 最右边会多一个 0，那么继续递归，进位最右边的 0 会慢慢增多，最后进位会变为 0，递归终止。
 
 ```java
-public int Add(int a, int b) {
-    return b == 0 ? a : Add(a ^ b, (a & b) << 1);
-}
+ public int Add(int num1, int num2) {
+        while (num2 != 0) {
+            int xiangJia = num1 ^ num2; //异或求出来的是每一位相加的结果
+            int jinWei = (num1 & num2) << 1;  //与 +  左移一位   求出来的是每一位的进位情况
+            
+            num1 = xiangJia;
+            num2 = jinWei;
+        }
+        return num1;
+    }
 ```
 
 # 66. 构建乘积数组
@@ -4776,7 +4895,7 @@ public int[] multiply(int[] A) {
     }
 ```
 
-# 67. 把字符串转换成整数
+# @@@67. 把字符串转换成整数
 
 [NowCoder](https://www.nowcoder.com/practice/1277c681251b4372bdef344468e4f26e?tpId=13&tqId=11202&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4860,7 +4979,7 @@ Output:
     }
 ```
 
-# 68. 树中两个节点的最低公共祖先
+# @@68. 树中两个节点的最低公共祖先
 
 ## 解题思路
 
@@ -4978,32 +5097,9 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 
-# 不用加减乘除做加法
-
-写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
-
-https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=3&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking&from=cyc_github
 
 
-
-首先看十进制是如何做的： 5+7=12，三步走 第一步：相加各位的值，不算进位，得到2。 第二步：计算进位值，得到10. 如果这一步的进位值为0，那么第一步得到的值就是最终结果。 第三步：重复上述两步，只是相加的值变成上述两步的得到的结果2和10，得到12。 同样我们可以用三步走的方式计算二进制值相加： 5-101，7-111 第一步：相加各位的值，不算进位，得到010，二进制每位相加就相当于各位做异或操作，101^111。 第二步：计算进位值，得到1010，相当于各位做与操作得到101，再向左移一位得到1010，(101&111)<<1。 第三步重复上述两步， 各位相加 010^1010=1000，进位值为100=(010&1010)<<1。     继续重复上述两步：1000^100 = 1100，进位值为0，跳出循环，1100为最终结果。
-
-```java
- public int Add(int num1, int num2) {
-        while (num2 != 0) {
-            int xiangJia = num1 ^ num2; //异或求出来的是每一位相加的结果
-            int jinWei = (num1 & num2) << 1;  //与 +  左移一位   求出来的是每一位的进位情况
-            
-            num1 = xiangJia;
-            num2 = jinWei;
-        }
-        return num1;
-    }
-```
-
-
-
-# 对称的二叉树
+# 70.对称的二叉树
 
 ```java
 改进思路  private boolean isSymmerical(TreeNode r1, TreeNode r2) {
@@ -5061,7 +5157,9 @@ boolean isSymmetrical(TreeNode pRoot) {
 
 ```
 
-# 数据流中的中位数
+# @@71.数据流中的中位数
+
+https://www.nowcoder.com/practice/9be0172896bd43948f8a32fb954e1be1?tpId=13&tqId=11216&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking
 
 
 
@@ -5112,109 +5210,39 @@ Comparator<Integer> c1 = new Comparator<Integer>() {
 
 
 
-# 表示数值的字符串
-
-https://www.nowcoder.com/questionTerminal/6f8c901d091949a5837e24bb82a731f2?f=discussion
 
 
 
-```java
-改进:
-正则表达式语法:
-?  0或1次
-+  1到多次
-*  0次1次或者多次
-{n} 或 {n,} 或 {n,m}  最少n次,最多m次
-
-特殊字符参与匹配要加转义  比如*  如果要匹配,就用\*.
-
-[1-9]设置第一个数字不是 0
-[0-9]* 表示任意多个数字
-.  匹配字符串中的各种打印或非打印字符( 数字字母必然可以)，只有一个字符例外。这个例外就是换行符 (\n)。
-x|y  x或y
-[xyz]  匹配任意一个
-[a-z]	 范围内的任意一个
-\b   匹配一个单词边界，也就是指单词和空格间的位置。例如， 'er\b' 可以匹配"never" 中的 'er'，但不能匹配 "verb" 中的 'er'。
-\d  匹配一个数字字符。等价于 [0-9]。
-\D  匹配一个非数字字符。等价于 [^0-9]。
-^abc   表示字符串的开头处,匹配abc    [^abc]   表示不匹配a,b,c这三个字母
-bucket$   字符串的末尾处匹配
-^bucket$  精准匹配
-[a-z] //匹配所有的小写字母 
-[A-Z] //匹配所有的大写字母 
-[a-zA-Z] //匹配所有的字母 
-[0-9] //匹配所有的数字 
-[0-9\.\-] //匹配所有的数字，句号和减号 
-[ \f\r\t\n] //匹配所有的白字符
 
 
 
-/[1-9][0-9]?/  和 /[1-9][0-9]{0,1}/ 等价, 匹配1~99.    /[0-9]{1,2}/不行,会匹配开头是0
 
 
-[\+\-]?\d*(\.\d+)?([eE][\+\-]?\d+)?
 
 
-public boolean isNumeric(char[] str) {
-        String s= new String(str);
-        return s.matches("[\\+\\-]?\\d*(\\.\\d+)?([eE][\\+\\-]?\\d+)?");
-        
-    }
 
-改进:
-把 +123.567E+89分成被'E'和'.' 划开的三部分   +123  .  567  E   +89
-其中+123 和 +89  又可以转换成跟567 一样的无符号数.
 
-  private int index = 0;
-    private int len = 0;
-    private boolean hasOtherWord = false;
 
-    public boolean isNumeric(char[] str) {
-        if (str == null || str.length == 0)
-            return false;
-        len = str.length;
-        int count1 = 0, count2 = 0, count3 = 0;
-        count1 = judgeNum(str);
-        if (index < len && str[index] == '.') {
-            index++;
-            count2 = judgeUnsignNum(str);
-            if (count2 < 1)
-                return false;
-        }
-        if (index < len && (str[index] == 'E' || str[index] == 'e')) {
-            index++;
-            count3 = judgeNum(str);
-            if (count3 < 1)
-                return false;
-        }
-        return !hasOtherWord && index == len;
-    }
 
-    private int judgeNum(char[] str) {
-        if (index >= len) {
-            return 0;
-        }
-        if (str[index] == '+' || str[index] == '-') {
-            index++;
-        }
-        return judgeUnsignNum(str);
-    }
 
-    private int judgeUnsignNum(char[] str) {
-        int start = index;
-        while (index < len) {
-            if (str[index] >= '0' && str[index] <= '9') {
-                index++;
-            } else if (str[index] == '.' || str[index] == 'e' || str[index] == 'E') {
-                return index - start;
-            } else {
-                hasOtherWord = true;
-                return -1;
-            }
-        }
-        return index - start;
-    }
-    
-    
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
