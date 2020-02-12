@@ -213,7 +213,7 @@ deque.addFirst();deque.addLast();
 
 [NowCoder](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 在一个长度为 n 的数组里的所有数字都在 0 到 n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字是重复的，也不知道每个数字重复几次。请找出数组中任意一个重复的数字。
 
@@ -225,7 +225,7 @@ Output:
 2
 ```
 
-## 解题思路
+**解题思路**
 
 要求时间复杂度 O(N)，空间复杂度 O(1)。因此不能使用排序的方法，也不能使用额外的标记数组。
 
@@ -313,7 +313,7 @@ Output:
 
 [NowCoder](https://www.nowcoder.com/practice/abc3fe2ce8e146608e868a70efebf62e?tpId=13&tqId=11154&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 给定一个二维数组，其每一行从左到右递增排序，从上到下也是递增排序。给定一个数，判断这个数是否在该二维数组中。
 
@@ -331,7 +331,7 @@ Given target = 5, return true.
 Given target = 20, return false.
 ```
 
-## 解题思路
+**解题思路**
 
 要求时间复杂度 O(M + N)，空间复杂度 O(1)。其中 M 为行数，N 为 列数。
 从左下角开始查找.
@@ -403,7 +403,7 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/4060ac7e3e404ad1a894ef3e17650423?tpId=13&tqId=11155&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 
 将一个字符串中的空格替换成 "%20"。
@@ -416,7 +416,7 @@ Output:
 "A%20B"
 ```
 
-## 解题思路
+**解题思路**
 时间O(n) 空间O(n)
 新创建一个StringBuffer来存储结果
 ```java
@@ -476,16 +476,16 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/d0267f7f55b3412ba93bd35cfa8e8035?tpId=13&tqId=11156&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 从尾到头反过来打印出每个结点的值。
 
 时间复杂度一般是O(n),空间复杂度可以是O(1)或者O(n),另外还要注意是否可以改变输入的数据结构
 
 
-## 解题思路
+**解题思路**
 
-### 使用递归
+**使用递归**
 
 要逆序打印链表 1->2->3（3,2,1)，可以先逆序打印链表 2->3(3,2)，最后再打印第一个节点 1。而链表 2->3 可以看成一个新的链表，要逆序打印该链表可以继续使用求解函数，也就是在求解函数中调用自己，这就是递归函数。
 
@@ -529,7 +529,7 @@ public class Solution {
 }
 ```
 
-### 使用头插法
+**使用头插法**
 
 使用头插法可以得到一个逆序的链表。
 
@@ -596,7 +596,7 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
     头插的链表放到list里面的时候,记得的第一个head节点给跳过	head = head.next;
 ```
 
-### 使用栈
+使用栈
 
 栈具有后进先出的特点，在遍历链表时将值按顺序放入栈中，最后出栈的顺序即为逆序。
 
@@ -627,12 +627,12 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/8a19cbe657394eeaac2f6ea9b0f6fcf6?tpId=13&tqId=11157&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 根据二叉树的前序遍历和中序遍历的结果，重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
 
 
-## 解题思路
+**解题思路**
 数组的长度用length而不是size  
 
 本题treenode的构造器没有无参构造器,注意报错  
@@ -753,11 +753,11 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?tpId=13&tqId=11210&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
 
-## 解题思路
+**解题思路**
 
 ① 如果一个节点的右子树不为空，那么该节点的下一个节点是右子树的最左节点；
 
@@ -810,11 +810,11 @@ class TreeLinkNode {
 
 [NowCoder](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 用两个栈来实现一个队列，完成队列的 Push 和 Pop 操作。
 
-## 解题思路
+**解题思路**
 
 in 栈用来处理入栈（push）操作，out 栈用来处理出栈（pop）操作。一个元素进入 in 栈之后，出栈的顺序被反转。当元素要出栈时，需要先进入 out 栈，此时元素出栈顺序再一次被反转，因此出栈顺序就和最开始入栈顺序是相同的，先进入的元素先退出，这就是队列的顺序。
 
@@ -846,12 +846,12 @@ public int pop() throws Exception {
 
 [NowCoder](https://www.nowcoder.com/practice/c6c7742f5ba7442aada113136ddea0c3?tpId=13&tqId=11160&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 求斐波那契数列的第 n 项，n <= 39。
 
 <div align="center"><img src="https://latex.codecogs.com/gif.latex?f(n)=\left\{\begin{array}{rcl}0&&{n=0}\\1&&{n=1}\\f(n-1)+f(n-2)&&{n>1}\end{array}\right." class="mathjax-pic"/></div> <br>
-## 解题思路
+**解题思路**
 
 如果使用递归求解，会重复计算一些子问题。例如，计算 f(4) 需要计算 f(3) 和 f(2)，计算 f(3) 需要计算 f(2) 和 f(1)，可以看到 f(2) 被重复计算了。
 <div align="center"> <img src="pics/c13e2a3d-b01c-4a08-a69b-db2c4e821e09.png" width="350px"/> </div><br>
@@ -879,12 +879,12 @@ public int pop() throws Exception {
 
 [NowCoder](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&tqId=11163&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 我们可以用 2\*1 的小矩形横着或者竖着去覆盖更大的矩形。请问用 n 个 2\*1 的小矩形无重叠地覆盖一个 2\*n 的大矩形，总共有多少种方法？
 
 <div align="center"> <img src="pics/b903fda8-07d0-46a7-91a7-e803892895cf.gif" width="100px"> </div><br>
-## 解题思路
+**解题思路**
 
 当 n 为 1 时，只有一种覆盖方法：
 
@@ -935,12 +935,12 @@ public int RectCover2(int target) {
 
 [NowCoder](https://www.nowcoder.com/practice/8c82a5b80378478f9484d87d1c5f12a4?tpId=13&tqId=11161&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
 
 <div align="center"> <img src="pics/9dae7475-934f-42e5-b3b3-12724337170a.png" width="380px"> </div><br>
-## 解题思路
+**解题思路**
 
 当 n = 1 时，只有一种跳法：
 
@@ -987,14 +987,14 @@ public int JumpFloor(int target) {
 
 [NowCoder](https://www.nowcoder.com/practice/22243d016f6b47f2a6928b4313c85387?tpId=13&tqId=11162&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级... 它也可以跳上 n 级。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
 
 <div align="center"> <img src="pics/cd411a94-3786-4c94-9e08-f28320e010d5.png" width="380px"> </div><br>
-## 解题思路
+**解题思路**
 
-### 动态规划
+动态规划
 
 ```java
 public int JumpFloorII(int target) {
@@ -1017,7 +1017,7 @@ public int JumpFloorII(int target) {
         return array[target];
     }
 ```
-### 数学推导
+数学推导
 
 跳上 n-1 级台阶，可以从 n-2 级跳 1 级上去，也可以从 n-3 级跳 2 级上去...，那么
 
@@ -1058,12 +1058,12 @@ public int JumpFloorII(int target) {
 
 [NowCoder](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-## 题目描述
+**题目描述**
 
 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个非递减排序的数组的一个旋转，输出旋转数组的最小元素。
 
 
-## 解题思路
+**解题思路**
 
 将旋转数组对半分可以得到一个包含最小元素的新旋转数组，以及一个非递减排序的数组。新的旋转数组的数组元素是原数组的一半，从而将问题规模减少了一半，这种折半性质的算法的时间复杂度为 O(logN)（为了方便，这里将 log<sub>2</sub>N 写为 logN）。
 
@@ -1150,14 +1150,14 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/c61c6999eecb4b8f88a98f66b273a3cc?tpId=13&tqId=11218&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向上下左右移动一个格子。如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。
 
 例如下面的矩阵包含了一条 bfce 路径。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/1db1c7ea-0443-478b-8df9-7e33b1336cc4.png" width="200px"> </div><br>
-## 解题思路
+**解题思路**
 
 使用回溯法（backtracking）进行求解，它是一种暴力搜索方法，通过搜索所有可能的结果来求解问题。回溯法在一次搜索结束时需要进行回溯（回退），将这一次搜索过程中设置的状态进行清除，从而开始一次新的搜索过程。例如下图示例中，从 f 开始，下一步有 4 种搜索可能，如果先搜索 b，需要将 b 标记为已经使用，防止重复使用。在这一次搜索结束之后，需要将 b 的已经使用状态清除，并搜索 c。
 
@@ -1272,13 +1272,13 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/6e5207314b5241fb83f2329e89fdecc8?tpId=13&tqId=11219&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 地上有一个 m 行和 n 列的方格。一个机器人从坐标 (0, 0) 的格子开始移动，每一次只能向左右上下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于 k 的格子。
 
 例如，当 k 为 18 时，机器人能够进入方格 (35,37)，因为 3+5+3+7=18。但是，它不能进入方格 (35,38)，因为 3+5+3+8=19。请问该机器人能够达到多少个格子？
 
-## 解题思路
+**解题思路**
 
 使用深度优先搜索（Depth First Search，DFS）方法进行求解。回溯是深度优先搜索的一种特例，它在一次搜索过程中需要设置一些本次搜索过程的局部状态，并在本次搜索结束之后清除状态。而普通的深度优先搜索并不需要使用这些局部状态，虽然还是有可能设置一些全局状态。
 
@@ -1392,7 +1392,7 @@ public class Solution {
 
 [NowCode](https://www.nowcoder.com/questionTerminal/57d85990ba5b440ab888fc72b0751bf8?answerType=1&f=discussion)
 
-## 题目描述
+**题目描述**
 
 把一根绳子剪成多段，并且使得每段的长度乘积最大。
 
@@ -1404,9 +1404,9 @@ n = 10
 return 36 (10 = 3 + 3 + 4)
 ```
 
-## 解题思路
+**解题思路**
 
-### 贪心
+贪心
 
 尽可能多剪长度为 3 的绳子，并且不允许有长度为 1 的绳子出现。如果出现了，就从已经切好长度为 3 的绳子中拿出一段与长度为 1 的绳子重新组合，把它们切成两段长度为 2 的绳子。
 
@@ -1428,7 +1428,7 @@ public int integerBreak(int n) {
 }
 ```
 
-### 动态规划
+动态规划
 
 ```java
 public int integerBreak(int n) {
@@ -1451,11 +1451,11 @@ public int integerBreak(int n) {
 
 [NowCoder](https://www.nowcoder.com/practice/8ee967e43c2c4ec193b040ea7fbb10b8?tpId=13&tqId=11164&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个整数，输出该数二进制表示中 1 的个数。
 
-### n&(n-1)
+**n&(n-1)**
 
 该位运算去除 n 的位级表示中最低的那一位。
 
@@ -1483,8 +1483,7 @@ n&(n-1)该位运算去除 n 的位级表示中最低的那一位。
     而且题目中的整数包含负数,所while(里面是n!=0 而不是n>0)
 ```
 
-
-### Integer.bitCount()
+**Integer.bitCount()**
 
 ```java
 public int NumberOf1(int n) {
@@ -1503,11 +1502,11 @@ public int NumberOf1(int n) {
 
 [NowCoder](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&tqId=11165&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 给定一个 double 类型的浮点数 base 和 int 类型的整数 exponent，求 base 的 exponent 次方。
 
-## 解题思路
+**解题思路**
 
 下面的讨论中 x 代表 base，n 代表 exponent。
 
@@ -1542,11 +1541,11 @@ public double Power(double base, int exponent) {
 
 @回溯而不是从1到n打印.
 
-## 题目描述
+**题目描述**
 
 输入数字 n，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数即 999。
 
-## 解题思路
+**解题思路**
 
 由于 n 可能会非常大，因此不能直接用 int 表示数字，而是用 char 数组进行存储。
 
@@ -1583,7 +1582,7 @@ private void printNumber(char[] number) {
 
 # 18.1 在 O(1) 时间内删除链表节点
 
-## 解题思路
+**解题思路**
 
 ① 如果该节点不是尾节点，那么可以直接将下一个节点的值赋给该节点，然后令该节点指向下下个节点，再删除下一个节点，时间复杂度为 O(1)。
 
@@ -1621,10 +1620,10 @@ public ListNode deleteNode(ListNode head, ListNode tobeDelete) {
 
 [NowCoder](https://www.nowcoder.com/practice/fc533c45b73a41b0b44ccba763f866ef?tpId=13&tqId=11209&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/17e301df-52e8-4886-b593-841a16d13e44.png" width="450"/> </div><br>
-## 解题描述
+**解题描述**
 
 ```java
 public ListNode deleteDuplication(ListNode pHead) {
@@ -1670,13 +1669,13 @@ public ListNode deleteDuplication(ListNode pHead) {
 
 [NowCoder](https://www.nowcoder.com/practice/45327ae22b7b413ea21df13ee7d6429c?tpId=13&tqId=11205&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 请实现一个函数用来匹配包括 '.' 和 '\*' 的正则表达式。模式中的字符 '.' 表示任意一个字符，而 '\*' 表示它前面的字符可以出现任意次（包含 0 次）。
 
 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串 "aaa" 与模式 "a.a" 和 "ab\*ac\*a" 匹配，但是与 "aa.a" 和 "ab\*a" 均不匹配。
 
-## 解题思路
+**解题思路**
 
 应该注意到，'.' 是用来当做一个任意字符，而 '\*' 是用来重复前面的字符。这两个的作用不同，不能把 '.' 的作用和 '\*' 进行类比，从而把它当成重复前面字符一次。
 
@@ -1792,7 +1791,7 @@ public boolean matchCore(char[] str, int strIndex, char[] pattern, int patternIn
 
 [NowCoder](https://www.nowcoder.com/practice/6f8c901d091949a5837e24bb82a731f2?tpId=13&tqId=11206&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 ```
 true
@@ -1815,7 +1814,7 @@ false
 ```
 
 
-## 解题思路
+**解题思路**
 
 使用正则表达式进行匹配。
 
@@ -1898,12 +1897,12 @@ public boolean isNumeric(char[] str) {
 
 [NowCoder](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&tqId=11166&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 需要保证奇数和奇数，偶数和偶数之间的相对位置不变，这和书本不太一样。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d03a2efa-ef19-4c96-97e8-ff61df8061d3.png" width="200px"> </div><br>
-## 解题思路
+**解题思路**
 
 方法一：创建一个新数组，时间复杂度 O(N)，空间复杂度 O(N)。
 
@@ -1999,7 +1998,7 @@ private void swap(int[] nums, int i, int j) {
 
 输入一个链表，输出该链表中倒数第k个结点
 
-## 解题思路
+**解题思路**
 
 设链表的长度为 N。设置两个指针 P1 和 P2，先让 P1 移动 K 个节点，则还有 N - K 个节点可以移动。此时让 P1 和 P2 同时移动，可以知道当 P1 移动到链表结尾时，P2 移动到第 N - K 个节点处，该位置就是倒数第 K 个节点。
 
@@ -2046,11 +2045,11 @@ public ListNode FindKthToTail(ListNode head, int k) {
 
 [NowCoder](https://www.nowcoder.com/practice/253d2c59ec3e4bc68da16833f79a38e4?tpId=13&tqId=11208&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 一个链表中包含环，请找出该链表的环的入口结点。要求不能使用额外的空间。
 
-## 解题思路
+**解题思路**
 
 使用双指针，一个指针 fast 每次移动两个节点，一个指针 slow 每次移动一个节点。因为存在环，所以两个指针必定相遇在环中的某个节点上。假设相遇点在下图的 z1 位置，此时 fast 移动的节点数为 x+y+z+y，slow 为 x+y，由于 fast 速度比 slow 快一倍，因此 x+2y+z=2(x+y)，得到 x=z。
 
@@ -2086,9 +2085,9 @@ public ListNode EntryNodeOfLoop(ListNode pHead) {
 
 [NowCoder](https://www.nowcoder.com/practice/75e878df47f24fdc9dc3e400ec6058ca?tpId=13&tqId=11168&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 解题思路
+**解题思路**
 
-### 递归
+递归
 
 ```java
 public ListNode ReverseList(ListNode head) {
@@ -2102,7 +2101,7 @@ public ListNode ReverseList(ListNode head) {
 }
 ```
 
-### 迭代
+迭代
 
 使用头插法。
 
@@ -2144,12 +2143,12 @@ public ListNode ReverseList(ListNode head) {
 
 [NowCoder](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/c094d2bc-ec75-444b-af77-d369dfb6b3b4.png" width="400"/> </div><br>
-## 解题思路
+**解题思路**
 
-### 递归
+递归
 
 ```java
 public ListNode Merge(ListNode list1, ListNode list2) {
@@ -2167,7 +2166,7 @@ public ListNode Merge(ListNode list1, ListNode list2) {
 }
 ```
 
-### 迭代
+迭代
 
 ```java
 public ListNode Merge(ListNode list1, ListNode list2) {
@@ -2195,10 +2194,10 @@ public ListNode Merge(ListNode list1, ListNode list2) {
 
 [NowCoder](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&tqId=11170&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/84a5b15a-86c5-4d8e-9439-d9fd5a4699a1.jpg" width="450"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 public boolean HasSubtree(TreeNode root1, TreeNode root2) {
@@ -2222,12 +2221,12 @@ private boolean isSubtreeWithRoot(TreeNode root1, TreeNode root2) {
 
 [NowCoder](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 操作给定的二叉树，将其变换为源二叉树的镜像。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 public void Mirror(TreeNode root) {
@@ -2249,10 +2248,10 @@ private void swap(TreeNode root) {
 
 [NowCoder](https://www.nowcoder.com/practice/ff05d44dfdb04e1d83bdbdab320efbcb?tpId=13&tqId=11211&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/0c12221f-729e-4c22-b0ba-0dfc909f8adf.jpg" width="300"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 boolean isSymmetrical(TreeNode pRoot) {
@@ -2276,12 +2275,12 @@ boolean isSymmetrical(TreeNode t1, TreeNode t2) {
 
 [NowCoder](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&tqId=11172&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 下图的矩阵顺时针打印结果为：1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/48517227-324c-4664-bd26-a2d2cffe2bfe.png" width="200px"> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 
@@ -2369,11 +2368,11 @@ colLocationBound = matrix[0].length;
 
 [NowCoder](https://www.nowcoder.com/practice/4c776177d2c04c2494f2555c9fcc1e49?tpId=13&tqId=11173&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 定义栈的数据结构，请在该类型中实现一个能够得到栈最小元素的 min 函数。
 
-## 解题思路
+**解题思路**
 
 ```java
 private Stack<Integer> dataStack = new Stack<>();
@@ -2403,13 +2402,13 @@ public int min() {
 
 [NowCoder](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&tqId=11174&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。
 
 例如序列 1,2,3,4,5 是某栈的压入顺序，序列 4,5,3,2,1 是该压栈序列对应的一个弹出序列，但 4,3,5,1,2 就不可能是该压栈序列的弹出序列。
 
-## 解题思路
+**解题思路**
 
 使用一个栈来模拟压入弹出操作。
 
@@ -2453,14 +2452,14 @@ public boolean IsPopOrder(int[] pushSequence, int[] popSequence) {
 
 [NowCoder](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&tqId=11175&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
 
 例如，以下二叉树层次遍历的结果为：1,2,3,4,5,6,7
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/d5e838cf-d8a2-49af-90df-1b2a714ee676.jpg" width="250"/> </div><br>
-## 解题思路
+**解题思路**
 
 使用队列来进行层次遍历。
 
@@ -2512,11 +2511,11 @@ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
 
 [NowCoder](https://www.nowcoder.com/practice/445c44d982d04483b04a54f298796288?tpId=13&tqId=11213&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 和上题几乎一样。
 
-## 解题思路
+**解题思路**
 
 ```java
 ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
@@ -2549,11 +2548,11 @@ while (cnt-- > 0) 是最重要的一步,分割了两层树的节点
 
 [NowCoder](https://www.nowcoder.com/practice/91b69814117f4e8097390d107d2efbe0?tpId=13&tqId=11212&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
 
-## 解题思路
+**解题思路**
 
 ```java
 改进: 注意如果用队列和栈来做, 第一行正序,第二行逆序,第三行因为第二行原本就是逆序,所以顺序不好控制了
@@ -2591,18 +2590,18 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     }
 ```
 
-# @@33. 二叉搜索树的后序遍历序列
+# @@@@33. 二叉搜索树的后序遍历序列
 
 [NowCoder](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&tqId=11176&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。假设输入的数组的任意两个数字都互不相同。
 
 例如，下图是后序遍历序列 1,3,2 所对应的二叉搜索树。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/13454fa1-23a8-4578-9663-2b13a6af564a.jpg" width="150"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 public boolean VerifySquenceOfBST(int[] sequence) {
@@ -2638,14 +2637,14 @@ private boolean verify(int[] sequence, int first, int last) {
 
 [NowCoder](https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&tqId=11177&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一颗二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
 
 下图的二叉树有两条和为 22 的路径：10, 5, 7 和 10, 12
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ed77b0e6-38d9-4a34-844f-724f3ffa2c12.jpg" width="200"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 private ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>>();
@@ -2714,7 +2713,7 @@ private ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>
 
 [NowCoder](https://www.nowcoder.com/practice/f836b2c43afc4b35ad6adc41ec941dba?tpId=13&tqId=11178&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的 head。
 
@@ -2731,7 +2730,7 @@ public class RandomListNode {
 ```
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/66a01953-5303-43b1-8646-0c77b825e980.png" width="300"/> </div><br>
-## 解题思路
+**解题思路**
 
 第一步，在每个节点的后面插入复制的节点。
 
@@ -2816,12 +2815,12 @@ public RandomListNode Clone(RandomListNode pHead) {
 
 [NowCoder](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/05a08f2e-9914-4a77-92ef-aebeaecf4f66.jpg" width="400"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 private TreeNode pre = null;
@@ -2912,11 +2911,11 @@ pre = root;
 
 [NowCoder](https://www.nowcoder.com/practice/cf7e25aa97c04cc1a68c8f040e71fb84?tpId=13&tqId=11214&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 请实现两个函数，分别用来序列化和反序列化二叉树。
 
-## 解题思路
+**解题思路**
 
 ```java
 private String deserializeStr;
@@ -2989,11 +2988,11 @@ string长度   string.length()
 
 [NowCoder](https://www.nowcoder.com/practice/fe6b651b66ae47d7acce78ffdd9a96c7?tpId=13&tqId=11180&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个字符串，按字典序打印出该字符串中字符的所有排列。例如输入字符串 abc，则打印出由字符 a, b, c 所能排列出来的所有字符串 abc, acb, bac, bca, cab 和 cba。
 
-## 解题思路
+**解题思路**
 
 ```java
     private StringBuilder sb ;
@@ -3055,7 +3054,7 @@ string长度   string.length()
 
 [NowCoder](https://www.nowcoder.com/practice/e8a1b01a2df14cb2b228b30ee6a92163?tpId=13&tqId=11181&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 解题思路
+**解题思路**
 
 多数投票问题，可以利用 Boyer-Moore Majority Vote Algorithm 来解决这个问题，使得时间复杂度为 O(N)。
 
@@ -3114,7 +3113,7 @@ null  length  k>length  目标结果不存在   等等.
 
 [NowCoder](https://www.nowcoder.com/practice/6a296eb82cf844ca8539b57c23e6e9bf?tpId=13&tqId=11182&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 解题思路
+**解题思路**
 
 ### 快速选择
 
@@ -3260,11 +3259,11 @@ public ArrayList<Integer> GetLeastNumbers_Solution(int[] nums, int k) {
 
 [NowCoder](https://www.nowcoder.com/practice/9be0172896bd43948f8a32fb954e1be1?tpId=13&tqId=11216&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
 
-## 解题思路
+**解题思路**
 
 ```java
 /* 大顶堆，存储左半边元素 */
@@ -3301,11 +3300,11 @@ public Double GetMedian() {
 
 [NowCoder](https://www.nowcoder.com/practice/00de97733b8e4f97a3fb5c680ee10720?tpId=13&tqId=11207&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 请实现一个函数用来找出字符流中第一个只出现一次的字符。例如，当从字符流中只读出前两个字符 "go" 时，第一个只出现一次的字符是 "g"。当从该字符流中读出前六个字符“google" 时，第一个只出现一次的字符是 "l"。
 
-## 解题思路
+**解题思路**
 
 ```java
 private int[] cnts = new int[256];
@@ -3332,13 +3331,13 @@ queue用linkedList来实现.   最早的节点在头上,最晚的节点在尾巴
 
 [NowCoder](https://www.nowcoder.com/practice/459bd355da1549fa8a49e350bf3df484?tpId=13&tqId=11183&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 {6, -3, -2, 7, -15, 1, 2, 2}，连续子数组的最大和为 8（从第 0 个开始，到第 3 个为止）。
 
 注意: 并不是一定要从0开始,可以是数组中间的一段连续子数组.
 
-## 解题思路
+**解题思路**
 
 ```java
 public int FindGreatestSumOfSubArray(int[] nums) {
@@ -3367,7 +3366,7 @@ Math.max(,);
 
 已知矩阵的大小定义为矩阵中所有元素的和。给定一个矩阵，你的任务是找到最大的非空(大小至少是1 * 1)子矩阵。 比如，如下4 * 4的矩阵 0 -2 -7 0 9 2 -6 2 -4 1 -4 1 -1 8 0 -2 的最大子矩阵是 9 2 -4 1 -1 8 这个子矩阵的大小是15。
 
-##### **输入描述:**
+**输入描述:**
 
 ```
 输入是一个N * N的矩阵。输入的第一行给出N (0 < N <= 100)。
@@ -3375,7 +3374,7 @@ Math.max(,);
 已知矩阵中整数的范围都在[-127, 127]。
 ```
 
-##### **输出描述:**
+**输出描述:**
 
 ```
 测试数据可能有多组，对于每组测试数据，输出最大子矩阵的大小。
@@ -3448,7 +3447,7 @@ public class Main {
 
 [NowCoder](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 解题思路
+**解题思路**
 
 ```java
     public int NumberOf1Between1AndN_Solution(int num) {
@@ -3495,11 +3494,11 @@ public class Main {
 
 # @@@44. 数字序列中的某一位数字
 
-## 题目描述
+**题目描述**
 
 数字以 0123456789101112131415... 的格式序列化到一个字符串中，求这个字符串的第 index 位。
 
-## 解题思路
+解题思路
 
 ```java
 public int getDigitAtIndex(int index) {
@@ -3552,11 +3551,11 @@ private int getDigitAtIndex(int index, int place) {
 
 [NowCoder](https://www.nowcoder.com/practice/8fecd3f8ba334add803bf2a06af1b993?tpId=13&tqId=11185&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组 {3，32，321}，则打印出这三个数字能排成的最小数字为 321323。
 
-## 解题思路
+解题思路
 
 可以看成是一个排序问题，在比较两个字符串 S1 和 S2 的大小时，应该比较的是 S1+S2 和 S2+S1 的大小，如果 S1+S2 < S2+S1，那么应该把 S1 排在前面，否则应该把 S2 排在前面。
 
@@ -3592,11 +3591,11 @@ Array.sort(nums,comparator);
 
 [Leetcode](https://leetcode.com/problems/decode-ways/description/)
 
-## 题目描述
+**题目描述**
 
 给定一个数字，按照如下规则翻译成字符串：1 翻译成“a”，2 翻译成“b”... 26 翻译成“z”。一个数字有多种翻译可能，例如 12258 一共有 5 种，分别是 abbeh，lbeh，aveh，abyh，lyh。实现一个函数，用来计算一个数字有多少种不同的翻译方法。
 
-## 解题思路
+**解题思路**
 
 ```java
 public int numDecodings(String s) {
@@ -3631,7 +3630,7 @@ public int numDecodings(String s) {
 
 [NowCoder](https://www.nowcoder.com/questionTerminal/72a99e28381a407991f2c96d8cb238ab)
 
-## 题目描述
+**题目描述**
 
 在一个 m\*n 的棋盘的每一个格都放有一个礼物，每个礼物都有一定价值（大于 0）。从左上角开始拿礼物，每次向右或向下移动一格，直到右下角结束。给定一个棋盘，求拿到礼物的最大价值。例如，对于如下棋盘
 
@@ -3644,7 +3643,7 @@ public int numDecodings(String s) {
 
 礼物的最大价值为 1+12+5+7+7+16+5=53。
 
-## 解题思路
+**解题思路**
 
 应该用动态规划求解，而不是深度优先搜索，深度优先搜索过于复杂，不是最优解。
 
@@ -3689,11 +3688,11 @@ public int getMost(int[][] values) {
 
 # 48. 最长不含重复字符的子字符串
 
-## 题目描述
+**题目描述**
 
 输入一个字符串（只包含 a\~z 的字符），求其最长不含重复字符的子字符串的长度。例如对于 arabcacfr，最长不含重复字符的子字符串为 acfr，长度为 4。
 
-## 解题思路
+**解题思路**
 
 ```java
 public int longestSubStringWithoutDuplication(String str) {
@@ -3759,7 +3758,7 @@ dp[n]只由dp[n-1]决定,
 
 [NowCoder](https://www.nowcoder.com/practice/6aa9e04fc3794f68acf8778237ba065b?tpId=13&tqId=11186&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 把只包含因子 2、3 和 5 的数称作丑数（Ugly Number）。例如 6、8 都是丑数，但 14 不是，因为它包含因子 7。习惯上我们把 1 当做是第一个丑数。求按从小到大的顺序的第 N 个丑数。
 
@@ -3772,7 +3771,7 @@ dp[n]只由dp[n-1]决定,
 
 首先从丑数的定义我们知道，一个丑数的因子只有2,3,5，那么丑数p = 2 ^ x * 3 ^ y * 5 ^ z，换句话说一个丑数一定由另一个丑数乘以2或者乘以3或者乘以5得到，那么我们从1开始乘以2,3,5，就得到2,3,5三个丑数，在从这三个丑数出发乘以2,3,5就得到4，6,10,6，
 
-## 解题思路
+**解题思路**
 
 ```java
 public int GetUglyNumber_Solution(int N) {
@@ -3832,7 +3831,7 @@ public int GetUglyNumber_Solution(int n) {
 
 [NowCoder](https://www.nowcoder.com/practice/1c82e8cf713b4bbeb2a5b31cf5b0417c?tpId=13&tqId=11187&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 在一个字符串中找到第一个只出现一次的字符，并返回它的位置。
 
@@ -3841,7 +3840,7 @@ Input: abacc
 Output: b
 ```
 
-## 解题思路
+**解题思路**
 
 最直观的解法是使用 HashMap 对出现次数进行统计，但是考虑到要统计的字符范围有限，因此可以使用整型数组代替 HashMap，从而将空间复杂度由 O(N) 降低为 O(1)。
 
@@ -3889,11 +3888,11 @@ public int FirstNotRepeatingChar2(String str) {
 
 [NowCoder](https://www.nowcoder.com/practice/96bd6684e04a44eb80e6a68efc0ec6c5?tpId=13&tqId=11188&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
 
-## 解题思路
+**解题思路**
 
 ```java
 改进:
@@ -3963,10 +3962,10 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
 
 [NowCoder](https://www.nowcoder.com/practice/6ab1d9a29e88450685099d45c9e31e46?tpId=13&tqId=11189&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/5f1cb999-cb9a-4f6c-a0af-d90377295ab8.png" width="500"/> </div><br>
-## 解题思路
+**解题思路**
 
 设 A 的长度为 a + c，B 的长度为 b + c，其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
 
@@ -4025,7 +4024,7 @@ public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
 
 [NowCoder](https://www.nowcoder.com/practice/70610bf967994b22bb1c26f9ae901fa2?tpId=13&tqId=11190&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 ```html
 Input:
@@ -4036,7 +4035,7 @@ Output:
 4
 ```
 
-## 解题思路
+**解题思路**
 
 ```java
 public int GetNumberOfK(int[] nums, int K) {
@@ -4130,7 +4129,7 @@ private:
 
 [NowCoder](https://www.nowcoder.com/practice/ef068f602dde4d28aab2b210e859150a?tpId=13&tqId=11215&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 解题思路
+**解题思路**
 
 利用二叉查找树中序遍历有序的特点。
 
@@ -4170,12 +4169,12 @@ private int count = 0;
 
 [NowCoder](https://www.nowcoder.com/practice/435fb86331474282a3499955f0a41e8b?tpId=13&tqId=11191&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ba355101-4a93-4c71-94fb-1da83639727b.jpg" width="350px"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 public int TreeDepth(TreeNode root) {
@@ -4209,12 +4208,12 @@ private int max = 0;
 
 [NowCoder](https://www.nowcoder.com/practice/8b3b95850edb4115918ecebdf1b4d222?tpId=13&tqId=11192&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 平衡二叉树左右子树高度差不超过 1。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/af1d1166-63af-47b6-9aa3-2bf2bd37bd03.jpg" width="250px"/> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 private boolean isBalance = true;
@@ -4244,11 +4243,11 @@ private boolean isBalance = true;
 
 [NowCoder](https://www.nowcoder.com/practice/e02fdb54d7524710a7d664d082bb7811?tpId=13&tqId=11193&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 一个整型数组里除了两个数字之外，其他的数字都出现了两次，找出这两个数。
 
-## 解题思路
+**解题思路**
 
 两个不相等的元素在位级表示上必定会有一位存在不同，将数组的所有元素异或得到的结果为不存在重复的两个元素异或的结果。
 
@@ -4308,11 +4307,11 @@ public void FindNumsAppearOnce(int[] array, int num1[], int num2[]) {
 
 [NowCoder](https://www.nowcoder.com/practice/390da4f7a00f44bea7c2f3d19491311b?tpId=13&tqId=11195&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输入一个递增排序的数组和一个数字 S，在数组中查找两个数，使得他们的和正好是 S。如果有多对数字的和等于 S，输出两个数的乘积最小的。
 
-## 解题思路
+**解题思路**
 
 使用双指针，一个指针指向元素较小的值，一个指针指向元素较大的值。指向较小元素的指针从头向尾遍历，指向较大元素的指针从尾向头遍历。
 
@@ -4362,7 +4361,7 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
 
 [NowCoder](https://www.nowcoder.com/practice/c451a3fd84b64cb19485dad758a55ebe?tpId=13&tqId=11194&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 输出所有和为 S 的连续正数序列。
 
@@ -4373,7 +4372,7 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
 [18, 19, 20, 21, 22]	
 ```
 
-## 解题思路
+**解题思路**
 
 ```java
  ArrayList<ArrayList<Integer>> ret = new ArrayList<ArrayList<Integer>>();
@@ -4412,7 +4411,7 @@ public ArrayList<Integer> FindNumbersWithSum(int[] array, int target) {
 
 [NowCoder](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 ```html
 Input:
@@ -4422,7 +4421,7 @@ Output:
 "student. a am I"
 ```
 
-## 解题思路
+**解题思路**
 
 题目应该有一个隐含条件，就是不能用额外的空间。虽然 Java 的题目输入参数为 String 类型，需要先创建一个字符数组使得空间复杂度为 O(N)，但是正确的参数类型应该和原书一样，为字符数组，并且只能使用该字符数组的空间。任何使用了额外空间的解法在面试时都会大打折扣，包括递归解法。
 
@@ -4471,7 +4470,7 @@ public String ReverseSentence(String str) {
 
 [NowCoder](https://www.nowcoder.com/practice/12d959b108cb42b1ab72cef4d36af5ec?tpId=13&tqId=11196&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 ```html
 Input:
@@ -4482,7 +4481,7 @@ Output:
 "XYZdefabc"
 ```
 
-## 解题思路
+**解题思路**
 
 先将 "abc" 和 "XYZdef" 分别翻转，得到 "cbafedZYX"，然后再把整个字符串翻转得到 "XYZdefabc"。
 
@@ -4518,13 +4517,13 @@ Output:
 
 [NowCoder](https://www.nowcoder.com/practice/1624bc35a45c42c0bc17d17fa0cba788?tpId=13&tqId=11217&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。
 
 例如，如果输入数组 {2, 3, 4, 2, 6, 2, 5, 1} 及滑动窗口的大小 3，那么一共存在 6 个滑动窗口，他们的最大值分别为 {4, 4, 6, 6, 6, 5}。
 
-## 解题思路
+**解题思路**
 
 ```java
 public ArrayList<Integer> maxInWindows(int[] num, int size) {
@@ -4574,14 +4573,14 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
 
 [Lintcode](https://www.lintcode.com/en/problem/dices-sum/)
 
-## 题目描述
+**题目描述**
 
 把 n 个骰子扔在地上，求点数和为 s 的概率。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/195f8693-5ec4-4987-8560-f25e365879dd.png" width="300px"> </div><br>
-## 解题思路
+**解题思路**
 
-### 动态规划
+动态规划
 
 使用一个二维数组 dp 存储点数出现的次数，其中 dp[i][j] 表示前 i 个骰子产生点数 j 的次数。
 
@@ -4611,7 +4610,7 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 }
 ```
 
-### 动态规划 + 旋转数组
+动态规划 + 旋转数组
 
 空间复杂度：O(N)
 
@@ -4647,12 +4646,12 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 
 [NowCoder](https://www.nowcoder.com/practice/762836f4d43d43ca9deb273b3de8e1f4?tpId=13&tqId=11198&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 五张牌，其中大小王用数字0表示,但是可以代表任何数字。判断这五张牌是否能组成顺子。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/eaa506b6-0747-4bee-81f8-3cda795d8154.png" width="350px"> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
 改进:
@@ -4692,11 +4691,11 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 
 [NowCoder](https://www.nowcoder.com/practice/f78a359491e64a50bce2d89cff857eb6?tpId=13&tqId=11199&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 让小朋友们围成一个大圈。然后，随机指定一个数 m，让编号为 0 的小朋友开始报数。每次喊到 m-1 的那个小朋友要出列唱首歌，然后可以在礼品箱中任意的挑选礼物，并且不再回到圈中，从他的下一个小朋友开始，继续 0...m-1 报数 .... 这样下去 .... 直到剩下最后一个小朋友，可以不用表演。
 
-## 解题思路
+**解题思路**
 
 约瑟夫环，圆圈长度为 n 的解可以看成长度为 n-1 的解再加上报数的长度 m。因为是圆圈，所以最后需要对 n 取余。
 
@@ -4729,12 +4728,12 @@ public int LastRemaining_Solution(int n, int m) {
 
 [Leetcode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/)
 
-## 题目描述
+**题目描述**
 
 可以有一次买入和一次卖出，买入必须在前。求最大收益。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/42661013-750f-420b-b3c1-437e9a11fb65.png" width="220px"> </div><br>
-## 解题思路
+**解题思路**
 
 使用贪心策略，假设第 i 轮进行卖出操作，买入操作价格应该在 i 之前并且价格最低。
 
@@ -4813,11 +4812,11 @@ public int maxProfit1(int[] prices) {
 
 [NowCoder](https://www.nowcoder.com/practice/7a0da8fc483247ff8800059e12d7caf1?tpId=13&tqId=11200&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 要求不能使用乘除法、for、while、if、else、switch、case 等关键字及条件判断语句 A ? B : C。
 
-## 解题思路
+**解题思路**
 
 使用递归解法最重要的是指定返回条件，但是本题无法直接使用 if 语句来指定返回条件。
 
@@ -4837,11 +4836,11 @@ public int maxProfit1(int[] prices) {
 
 [NowCoder](https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 写一个函数，求两个整数之和，要求不得使用 +、-、\*、/ 四则运算符号。
 
-## 解题思路
+**解题思路**
 
 a ^ b 表示没有考虑进位的情况下两数的和，(a & b) << 1 就是进位。
 
@@ -4864,12 +4863,12 @@ a ^ b 表示没有考虑进位的情况下两数的和，(a & b) << 1 就是进�
 
 [NowCoder](https://www.nowcoder.com/practice/94a4d381a68b47b7a8bed86f2975db46?tpId=13&tqId=11204&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 给定一个数组 A[0, 1,..., n-1]，请构建一个数组 B[0, 1,..., n-1]，其中 B 中的元素 B[i]=A[0]\*A[1]\*...\*A[i-1]\*A[i+1]\*...\*A[n-1]。要求不能使用除法。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/4240a69f-4d51-4d16-b797-2dfe110f30bd.png" width="250px"> </div><br>
-## 解题思路
+**解题思路**
 
 ```java
  改进: 第i个数组 等于 i左边所有数字的累乘  再乘以i右边数字的累乘
@@ -4899,7 +4898,7 @@ public int[] multiply(int[] A) {
 
 [NowCoder](https://www.nowcoder.com/practice/1277c681251b4372bdef344468e4f26e?tpId=13&tqId=11202&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
-## 题目描述
+**题目描述**
 
 将一个字符串转换成一个整数，字符串不是一个合法的数值则返回 0，要求不能使用字符串转换整数的库函数。
 
@@ -4913,7 +4912,7 @@ Output:
 0
 ```
 
-## 解题思路
+**解题思路**
 
 在越界的情况下,2147483647比-2147483648要小!!!
 
@@ -4981,7 +4980,7 @@ Output:
 
 # @@68. 树中两个节点的最低公共祖先
 
-## 解题思路
+**解题思路**
 
 ### 二叉查找树
 
