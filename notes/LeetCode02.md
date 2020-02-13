@@ -382,3 +382,107 @@ public String reverseWords(String s) {
     }
 ```
 
+
+
+
+
+#### [@@8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
+
+```java
+
+public int myAtoi(String str) {
+        str = str.trim();
+        if (str == null || str.length() == 0)
+            return 0;
+        int len = str.length();
+        boolean isNegative = false;
+        boolean firstSign = false;
+        char[] chars = str.toCharArray();
+
+        int limit = 0;//用正数最大值的相反数作限制
+        if (chars[0] == '-') {
+            isNegative = true;
+            firstSign = true;
+            limit = Integer.MIN_VALUE;
+        } else if (chars[0] == '+') {
+            isNegative = false;
+            firstSign = true;
+            limit = -Integer.MAX_VALUE;
+        } else {
+            isNegative = false;
+            firstSign = false;
+            limit = -Integer.MAX_VALUE;
+        }
+
+        int littleLimit = limit / 10;
+        int digit = 0;
+        int result = 0;
+        for (int i = firstSign ? 1 : 0; i < len; i++) {
+            if (!(chars[i] >= '0' && chars[i] <= '9'))
+                break;
+            digit = chars[i] - '0';
+            if (result < littleLimit)
+                return isNegative?Integer.MIN_VALUE:Integer.MAX_VALUE;
+            if (result * 10 < limit + digit)
+                //注意!!!!!!!改进!!!!!!
+                //这里不可以写result*10-digit < limit  左边会越界,影响比较大小的真实逻辑
+                return isNegative?Integer.MIN_VALUE:Integer.MAX_VALUE;
+            result = result * 10 - digit;
+        }
+        return isNegative ? result : -result;
+    }
+    
+```
+
+
+
+
+
+#### [235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+@二叉搜索树的特点是,找到第一个可以把p和q区分开的root.val,就是最近的root.val.
+
+所以本题也不需要后序遍历.
+
+```java
+递归:起名有问题,其实不是后序遍历,从根往下走即可
+
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return null;
+        }
+        return lastOrder(root, p, q);
+    }
+
+    private TreeNode lastOrder(TreeNode root, TreeNode p, TreeNode q) {
+
+        if (root.val > p.val && root.val > q.val) {
+            return lastOrder(root.left, p, q);
+        } else if (root.val < p.val && root.val < q.val) {
+            return lastOrder(root.right, p, q);
+        } else {
+            return root;
+        }
+    }
+
+非递归:也不是后序遍历,直接从根往下走即可
+
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root==null)
+            return null;
+        int pVal = p.val;
+        int qVal = q.val;
+        TreeNode node = root;
+        while(node!=null){
+            if(node.val>pVal&&node.val>qVal)
+                node = node.left;
+            else if(node.val<pVal&&node.val<qVal)
+                node = node.right;
+            else 
+                return node;
+        }
+        return node;
+    }
+
+```
+

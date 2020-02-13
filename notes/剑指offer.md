@@ -2709,7 +2709,7 @@ private ArrayList<ArrayList<Integer>> listSum = new ArrayList<ArrayList<Integer>
     }
 ```
 
-# @@35. 复杂链表的复制(我赌不考)
+# @@35. 复杂链表的复制
 
 [NowCoder](https://www.nowcoder.com/practice/f836b2c43afc4b35ad6adc41ec941dba?tpId=13&tqId=11178&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2780,6 +2780,7 @@ public RandomListNode Clone(RandomListNode pHead) {
         if (pHead == null) {
             return null;
         }
+    	//克隆节点
         RandomListNode cur = pHead;
         while (cur != null) {
             RandomListNode clone = new RandomListNode(cur.label);
@@ -2787,7 +2788,7 @@ public RandomListNode Clone(RandomListNode pHead) {
             cur.next = clone;
             cur = cur.next.next;
         }
-        
+        //克隆随机指针
         cur = pHead;
         while (cur != null) {
             RandomListNode clone = cur.next;
@@ -3450,41 +3451,41 @@ public class Main {
 **解题思路**
 
 ```java
-    public int NumberOf1Between1AndN_Solution(int num) {
+public int NumberOf1Between1AndN_Solution(int num) {
 
-//            以i=10的循环为例,解释上面的代码:
-//            i=10,假设num=317,
-//            oneInI: 计算十位上是1,等时候出现的数字个数
+//            以base=10的循环为例,解释上面的代码:
+//            base=10,假设num=317,
+//            oneInBase: 计算十位上是1,等时候出现的数字个数
 //                    num除以100,得出来的是3,
 //                    也就是3个100,每个100里面,十位上是1都有10次出现的机会.
-//                    所以(num / i * 10) * i的末尾再乘以 i,也就是乘以10.
+//                    所以(num / base * 10) * base的末尾再乘以 base,也就是乘以10.
 //                    得出317的oneInI等于30
 //            oneInRemain是300~317之间出现1的次数.
 //            分三种情况.如果17大于19(20~99),如果17小于10(0~9),如果17在10~19之间(10~19)
-//            对应的1的个数分别是10个           0个                    17-10+1个
+//            对应的1的个数分别是10个 (10~19)     0个      17-10+1个(10,11,12,13...17)
 //			所以最后317在十位上的1的个数为: 317/(10*10)*10+(17-10+1) = 38
 
         if (num <= 0)
             return 0;
         int countSum = 0;
         long oneInRemain = 0;
-        long oneInI = 0;
-        //i=1时,计算的是个位里面1的个数
-        //i=10时,计算的是十位里1的个数
-        for (long i = 1; i <= num; i *= 10) {
+        long oneInBase = 0;
+        //base=1时,计算的是个位里面1的个数
+        //base=10时,计算的是十位里1的个数
+        for (long base = 1; base <= num; base *= 10) {
             //计算OneInI
-            oneInI = (num / (i * 10)) * i;
+            oneInBase = (num / (base * 10)) * base;
 
             //计算OnInRemain
-            long remain = num % (i * 10);
-            if (remain > i * 2 - 1)
-                oneInRemain = i;
-            else if (remain < i)
+            long remain = num % (base * 10);
+            if (remain > base * 2 - 1)
+                oneInRemain = base;
+            else if (remain < base)
                 oneInRemain = 0;
-            else
-                oneInRemain = remain - i + 1;
+            else if(remain>=base&&remain<=base*2-1) //>=10&&<=19
+                oneInRemain = remain - base + 1;
             //计算总的countSum
-            countSum += oneInI + oneInRemain;
+            countSum += oneInBase + oneInRemain;
         }
         return countSum;
     }
@@ -3492,7 +3493,9 @@ public class Main {
 
 > [Leetcode : 233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/discuss/64381/4+-lines-O(log-n)-C++JavaPython)
 
-# @@@44. 数字序列中的某一位数字
+# @44. 数字序列中的某一位数字
+
+@ 0~9 1位数  10~99 2位数
 
 **题目描述**
 
@@ -4239,7 +4242,7 @@ private boolean isBalance = true;
     }
 ```
 
-# @@56. 数组中只出现一次的数字
+# @56. 数组中只出现一次的数字
 
 [NowCoder](https://www.nowcoder.com/practice/e02fdb54d7524710a7d664d082bb7811?tpId=13&tqId=11193&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4844,7 +4847,7 @@ public int maxProfit1(int[] prices) {
 
 a ^ b 表示没有考虑进位的情况下两数的和，(a & b) << 1 就是进位。
 
-递归会终止的原因是 (a & b) << 1 最右边会多一个 0，那么继续递归，进位最右边的 0 会慢慢增多，最后进位会变为 0，递归终止。
+递归会终止的原因是 (a & b) << 	1 最右边会多一个 0，那么继续递归，进位最右边的 0 会慢慢增多，最后进位会变为 0，递归终止。
 
 ```java
  public int Add(int num1, int num2) {
@@ -5037,7 +5040,7 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         TreeNode right = lowestCommonAncestor(root.right,p,q);
         if(left==null){
             return right;
-        }else{
+        }else if(left!=null){
             if(right==null)
                  return left;
             else
@@ -5090,6 +5093,7 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         }
         return null;
     }
+
 
 
 ```
