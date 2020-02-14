@@ -601,3 +601,317 @@ private int getCyc(int n, int m) {
     }
 ```
 
+
+
+
+
+#### 两个数字字符串相加，区分正负
+
+
+
+```
+
+1.正负号另算,用大正数减去小正数 
+2. 比如9887 - 92
+3.  首位-1,   末位借10 ,  其他位都借9.
+也就是8887 加上   99(10) -92
+4.最后8887+ 908
+
+```
+
+
+
+
+
+#### [419. 甲板上的战舰](https://leetcode-cn.com/problems/battleships-in-a-board/)
+
+```java
+如果题设没有特殊规则和要求的话，常规做法就是使用BFS或者DFS扫描，计算连通图的个数。
+但是题目要求只扫描一次，且O(1)的额外空间，那么就只能从题目给出的特殊规则出发了。
+特殊规则：连通图是1xN或者Nx1的长条形的，且不会相交（之间有.分隔）。
+解法：扫描到X时，如果上方或者左方也是X，则不计数，否则计数加1。
+
+class Solution {
+public:
+    int countBattleships(vector<vector<char>>& board) {
+        int nCount = 0;
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[i].size(); ++j) {
+                if (board[i][j] == 'X') {
+                    if (i > 0 && board[i - 1][j] == 'X' ||
+                        j > 0 && board[i][j - 1] == 'X')
+                        continue;
+                    ++nCount;
+                }
+            }
+        }
+        return nCount;
+    }
+};
+
+```
+
+
+
+#### [398. 随机数索引](https://leetcode-cn.com/problems/random-pick-index/)
+
+```java
+ Random random = new Random();
+int i = random.nextInt(100);
+
+
+蓄水池抽样问题.
+
+ private int[] nums = null;
+
+    public Solution(int[] nums) {
+        this.nums = nums;
+    }
+
+    public int pick(int target) {
+        int ret = 0;
+        int cnt = 0;
+        Random r = new Random();
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                if (cnt == 0) {
+                    cnt++;
+                    ret = i;
+                } else {
+                    cnt++;
+                    if (r.nextInt() % cnt == 0) {
+                        ret = i;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+```
+
+
+
+
+
+#### [面试题 16.11. 跳水板](https://leetcode-cn.com/problems/diving-board-lcci/)
+
+```java
+public int[] divingBoard(int shorter, int longer, int k) {
+    int diff = longer - shorter;
+
+    if (k == 0) {
+        return new int[0];
+    }
+    if (shorter == longer) {
+        return new int[]{k * shorter};
+    }
+    int[] ret = new int[k + 1];
+    for (int i = 0; i <= k; i++) {
+        ret[i] = shorter * k + diff * i;
+    }
+    return ret;
+}
+```
+
+
+
+#### [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+
+
+
+@思想是无序子数组中最小元素的正确位置可以决定左边界，最大元素的正确位置可以决定右边界。
+
+
+
+```java
+public int findUnsortedSubarray(int[] nums) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        boolean flag = false;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < nums[i - 1]) {
+                flag = true;
+            }
+            if (flag) {
+                min = Math.min(min, nums[i]);
+            }
+        }
+        flag = false;
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (nums[i] > nums[i + 1]) {
+                flag = true;
+            }
+            if (flag) {
+                max = Math.max(max, nums[i]);
+            }
+        }
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > min) {
+                start = i;
+                break;
+            }
+        }
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] < max) {
+                end = i;
+                break;
+            }
+        }
+        return start == end ? 0 : end - start + 1;
+    }
+作者：LeetCode
+链接：https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
+
+#### [@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+
+@StringBuilder用于回溯
+
+@ip的条件  cutCount = 4, index==len,Integer.parseInt(temp)<=255,若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
+
+```java
+  List<String> ret = new ArrayList<>();
+    int len = 0;
+
+    public List<String> restoreIpAddresses(String s) {
+        len = s.length();
+        backtracing(s, 0, 0, new StringBuilder());
+        return ret;
+    }
+
+    private void backtracing(String s, int cutCount, int index, StringBuilder path) {
+        if (index > len || cutCount > 4) {
+            return;
+        }
+        if (index == len && cutCount == 4) {
+            path.delete(path.length() - 1, path.length());
+            ret.add(path.toString());
+            path.append(".");
+            return;
+        }
+        for (int j = index; j <= index + 3; j++) {
+            String temp = "";
+            if (j < len) {
+                temp = s.substring(index, j + 1);
+                if (s.charAt(index) == '0' && j == index) {
+                    path.append(temp).append(".");
+                    backtracing(s, cutCount + 1, j + 1, path);
+                    path.delete(path.length() - temp.length() - 1, path.length());
+                } else if (s.charAt(index) != '0' && Integer.parseInt(temp) <= 255) {
+                    path.append(temp).append(".");
+                    backtracing(s, cutCount + 1, j + 1, path);
+                    path.delete(path.length() - temp.length() - 1, path.length());
+                }
+            }
+        }
+    }
+```
+
+
+
+#### [134. 加油站](https://leetcode-cn.com/problems/gas-station/)
+
+```java
+ boolean finded = false;
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        for (int i = 0; i < gas.length; i++) {
+            carRun(gas, cost, i);
+            if (finded) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void carRun(int[] gas, int[] cost, int begin) {
+        int tank = 0;
+        for (int i = begin; i < gas.length; i++) {
+            tank += gas[i];
+            tank -= cost[i];
+            if (tank < 0) {
+                return;
+            }
+        }
+        for (int i = 0; i <= begin; i++) {
+            tank += gas[i];
+            tank -= cost[i];
+            if (tank < 0) {
+                return;
+            }
+        }
+        finded = true;
+    }
+```
+
+
+
+#### [@@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+
+@每个递归,负责连两条线.
+
+
+
+```java
+public Node connect(Node root) {
+        if (root == null) {
+            return null;
+        }
+        Node left = root.left;
+        Node right = root.right;
+        if (left != null) {
+            left.next = right;
+        }
+
+        Node next = root.next;
+        if (right != null && next != null) {
+            right.next = next.left;
+        }
+
+        connect(root.left);
+        connect(root.right);
+        return root;
+    }
+```
+
+
+
+#### [90. 子集 II](https://leetcode-cn.com/problems/subsets-ii/)
+
+@排序+第二次碰到相同的数字就跳过(注意是第二次碰到再跳过)比如 
+
+1  2   2  3  
+
+第一次到2的时候有组合:  2,22,223,
+
+当遇到第二个2的时候有组合 2,23   所以第二个2可以跳过
+
+```java
+public List<List<Integer>> subsetsWithDup(int[] nums) {
+    List<List<Integer>> ans = new ArrayList<>();
+    Arrays.sort(nums); //排序
+    getAns(nums, 0, new ArrayList<>(), ans);
+    return ans;
+}
+
+private void getAns(int[] nums, int start, ArrayList<Integer> temp, List<List<Integer>> ans) {
+    ans.add(new ArrayList<>(temp));
+    for (int i = start; i < nums.length; i++) {
+        //和上个数字相等就跳过
+        if (i > start && nums[i] == nums[i - 1]) {
+            continue;
+        }
+        temp.add(nums[i]);
+        getAns(nums, i + 1, temp, ans);
+        temp.remove(temp.size() - 1);
+    }
+}
+
+```
+
