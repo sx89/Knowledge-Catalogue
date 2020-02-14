@@ -438,7 +438,7 @@ public int myAtoi(String str) {
 
 
 
-#### [235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+#### [@@235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 
 @二叉搜索树的特点是,找到第一个可以把p和q区分开的root.val,就是最近的root.val.
 
@@ -484,5 +484,120 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         return node;
     }
 
+```
+
+
+
+#### [@@236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+```java
+ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        return lastOrder(root, p, q);
+    }
+
+    private TreeNode lastOrder(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return root;
+        }
+        if (root == p || root == q) {
+            return root;
+        }
+        TreeNode left = lastOrder(root.left, p, q);
+        TreeNode right = lastOrder(root.right, p, q);
+
+        if (left != null && right != null) {
+            return root;
+        } else if (left == null && right == null) {
+            return null;
+        } else {
+            return left == null ? right : left;
+        }
+    }
+```
+
+
+
+#### [@@@@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+
+@叶子节点删自身
+
+@有右子树,root.val赋值为后驱节点值,删后驱节点,  
+
+@没右子树,只有左子树,root.val赋值为前驱节点值,删前驱节点
+
+```java
+public TreeNode deleteNode(TreeNode root, int key) {
+        return deleteNodeFunc(root, key);
+    }
+
+    private TreeNode deleteNodeFunc(TreeNode root, int key) {
+        if (root == null) {
+            return null;
+        }
+        if (key > root.val) {
+            root.right = deleteNodeFunc(root.right, key);
+        } else if (key < root.val) {
+            root.left = deleteNodeFunc(root.left, key);
+        } else {
+            if (root.left == null && root.right == null) {
+                root = null;
+            } else if (root.right != null) {
+                TreeNode laster = getLaster(root.right);
+                root.val = laster.val;
+                root.right = deleteNodeFunc(root.right, laster.val);
+            } else if (root.left != null) {
+                TreeNode pre = getPre(root.left);
+                root.val = pre.val;
+                root.left = deleteNodeFunc(root.left, pre.val);
+            }
+        }
+        return root;
+    }
+
+    private TreeNode getLaster(TreeNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root;
+    }
+
+    private TreeNode getPre(TreeNode root) {
+        while (root.right != null) {
+            root = root.right;
+        }
+        return root;
+    }
+```
+
+
+
+#### 循环节长度
+
+两个整数做除法，有时会产生循环小数，其循环部分称为：循环节。 
+比如，11/13=6=>0.846153846153….. 其循环节为[846153] 共有6位。 
+
+
+
+https://blog.csdn.net/weixin_41514525/article/details/97121292
+
+```java
+private int getCyc(int n, int m) {
+        int count = 0;
+        int remain = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        n = n % m;
+        while (true) {
+            n = n * 10;
+            remain = n / m;
+            n = n % m;
+            if (n == 0) {//可以除尽,不是无限不循环
+                return -1;
+            }
+            if (map.containsKey(remain)) {
+                return count - map.get(remain);
+            }
+            map.put(remain, count++);
+        }
+    }
 ```
 
