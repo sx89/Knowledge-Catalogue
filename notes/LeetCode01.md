@@ -1938,6 +1938,9 @@ public int leastInterval(char[] tasks, int n) {
 改进:LinkedHashMap 可以在构造的时候指定,是否按照访问顺序来存储节点(key)
     访问的时候,从链表中拿到key,在用key从map中拿到value
 
+   
+    
+    思路1:
     class LRUCache {
         private LinkedHashMap<Integer, Integer> map;
 
@@ -1955,6 +1958,50 @@ public int leastInterval(char[] tasks, int n) {
 
         public void put(int key, int value) {
             map.put(key, value);
+        }
+    }
+
+
+思路2:  有个弊端,list.remove的时候复杂度是O(1)	另外注意list.remove((Object)key)  和 remove.(Index)
+class LRUCache {
+        LinkedList<Integer> list = null;
+        HashMap<Integer, Integer> map = null;
+        int cap = 0;
+
+        public LRUCache(int capacity) {
+            list = new LinkedList<>();
+            map = new HashMap<>();
+            this.cap = capacity;
+        }
+
+        public int get(int key) {
+            Integer val = map.get(key);
+            if (val != null) {
+                list.remove((Object) key);
+                list.addLast(key);
+                return val;
+            }
+            return -1;
+        }
+
+        public void put(int key, int value) {
+            Integer val = map.get(key);
+            if (val != null) {
+                list.remove((Object) key);
+                list.addLast(key);
+                map.put(key, value);
+                return;
+            }
+            if (list.size() < cap) {
+                list.addLast(key);
+                map.put(key, value);
+            } else {
+                Integer firstKey = list.getFirst();
+                map.remove(firstKey);
+                list.removeFirst();
+                map.put(key, value);
+                list.addLast(key);
+            }
         }
     }
 ```

@@ -3446,6 +3446,12 @@ public class Main {
 
 # @@@@43. 从 1 到 n 整数中 1 出现的次数
 
+@base也要使用long
+
+除了sum,其他的数字都要用long,尤其是base, 因为base有一个base*10的操作,会溢出,
+
+long和int之间可以做加减乘除,不必类型转换.
+
 [NowCoder](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
 **解题思路**

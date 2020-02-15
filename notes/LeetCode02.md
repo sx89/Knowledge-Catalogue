@@ -977,3 +977,354 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
     }
 ```
 
+
+
+#### [@@348. 判定井字棋胜负](https://leetcode-cn.com/problems/design-tic-tac-toe/)
+
+@但是本题没有判断 同一个玩家在某个点处重复下棋的情况,当然题目中也没要求有这种判断.
+
+@制造一个记录每行,每列的数组,和两个记录对角线棋子数的数字.
+
+一旦某个计数满足len,就获胜了
+
+```java
+    int[] rowRem = null;
+    int[] colRem = null;
+    int diagnol = 0;
+    int antiDiagnol = 0;
+    int len = 0;
+
+    public TicTacToe(int n) {
+        len = n;
+        rowRem = new int[n];
+        colRem = new int[n];
+    }
+
+    public int move(int row, int col, int player) {
+        int toAdd = player == 1 ? 1 : -1;
+        rowRem[row] += toAdd;
+        colRem[col] += toAdd;
+        if (row == col) {
+            diagnol += toAdd;
+        }
+        if (row + col == len - 1) {
+            antiDiagnol += toAdd;
+        }
+        if (Math.abs(rowRem[row]) == len ||
+                Math.abs(colRem[col]) == len ||
+                Math.abs(diagnol) == len ||
+                Math.abs(antiDiagnol) == len) {
+            return player;
+        }
+        return 0;
+    }
+```
+
+
+
+
+
+#### 和为0的连续最长子序列
+
+@利用求和的梯度来做.
+
+```  
+{3,0,-1,-2,-3,1,1,1,2,3,1,-2,-1}   12
+
+{1，-1，1，-1，1，-1，1，-1}     8
+```
+
+```java
+ public int func(int[] nums) {
+        int maxLen = 0;
+        int sum = 0;
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 0);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum)) {
+                int len = i+1 - map.get(sum);
+                maxLen = Math.max(len, maxLen);
+            } else {
+                map.put(sum, i+1);
+            }
+        }
+        return maxLen;
+    }
+```
+
+#### 链表快排.
+
+
+
+```java
+  public void listQuickSort(Node pHead) {
+        quickSort(pHead, null);
+    }
+
+    public void quickSort(Node pHead, Node pEnd) {
+        if (pHead == null || pHead == pEnd) {
+            return;
+        }
+        Node mid = partition(pHead, null);
+        quickSort(pHead, mid);
+        quickSort(mid.next, null);
+    }
+
+    private Node partition(Node start, Node end) {
+        if (start == null) {
+            return start;
+        }
+        int key = start.val;
+        Node itsNextIsRightNum = start;
+        Node node = start.next;
+        while (node != end) {
+            if (node.val < key) {
+                itsNextIsRightNum = itsNextIsRightNum.next;
+                swap(itsNextIsRightNum, node);
+            }
+
+            node = node.next;
+        }
+        swap(start, itsNextIsRightNum);
+        return itsNextIsRightNum;
+    }
+
+    private void swap(Node p1, Node p2) {
+        int temp = p1.val;
+        p1.val = p2.val;
+        p2.val = temp;
+    }
+```
+
+
+
+#### [@@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+
+```java
+ public int longestCommonSubsequence(String text1, String text2) {
+        int len1 = text1.length();
+        int len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 0; i <= len1; i++) {
+            for (int j = 0; j <= len2; j++) {
+                if (j == 0 || i == 0) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+```
+
+
+
+#### 删除最少字符变成回文串
+
+题目描述：给定一字符串s,求最少删除多少个字符可以使得s成为回文串。例如：s="abca",答案是1.
+
+思路:把自身翻转, 自身和翻转的lcs,就是最大回文长度,str.length()-lcs 即为要删除的字符.
+
+```java
+public int minChange(String str) {
+        int lcs = longestCommonSubsequence(str, null);
+        return str.length() - lcs;
+    }
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        int len1 = text1.length();
+        StringBuffer stringBuffer = new StringBuffer(text1);
+        text2 = stringBuffer.reverse().toString();
+        int len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 0; i <= len1; i++) {
+            for (int j = 0; j <= len2; j++) {
+                if (j == 0 || i == 0) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+```
+
+
+
+
+
+
+
+#### [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+@归并排序,需要截断list
+
+@快速排序
+
+```java
+
+归并排序:
+public ListNode sortList(ListNode head) {
+        int len = 0;
+        ListNode temp = head;
+        while (head != null) {
+            head = head.next;
+            len++;
+        }
+        return mergeSort(temp, null, len);
+    }
+
+    private ListNode mergeSort(ListNode begin, ListNode end, int len) {
+        if (begin == null || begin == end) {
+            return begin;
+        }
+
+        int mid = len / 2;
+        ListNode midNode = begin;
+        int cnt = 1;
+        while (cnt < mid) {
+            cnt++;
+            midNode = midNode.next;
+        }
+
+        ListNode begin2 = midNode.next;
+        //记得把midNode截断这样l1和l2才是两段独立的链表.
+        midNode.next = null;
+        if (end != null) {
+            end.next = null;
+        }
+        ListNode l1 = mergeSort(begin, midNode, mid);
+        ListNode l2 = mergeSort(begin2, end, mid);
+        return merge(l1, l2);
+    }
+
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(-1);
+        ListNode node = head;
+        if (l1 != null && l2 != null) {
+            while (l1 != null && l2 != null) {
+                if (l1.val <= l2.val) {
+                    node.next = l1;
+                    l1 = l1.next;
+                } else {
+                    node.next = l2;
+                    l2 = l2.next;
+                }
+                node = node.next;
+            }
+            while (l1 != null) {
+                node.next = l1;
+                l1 = l1.next;
+                node = node.next;
+            }
+            while (l2 != null) {
+                node.next = l2;
+                l2 = l2.next;
+                node = node.next;
+            }
+            return head.next;
+        } else if (l2 != null) {
+            return l2;
+        } else {
+            return l1;
+        }
+    }
+
+
+快速排序:
+
+public ListNode sortList(ListNode head) {
+        quickSort(head, null);
+        return head;
+    }
+
+    private void quickSort(ListNode begin, ListNode end) {
+        if (begin == null || begin == end) {
+            return;
+        }
+        ListNode midNode = partition(begin, end);
+        quickSort(begin, midNode);
+        quickSort(midNode.next, end);
+    }
+
+    private ListNode partition(ListNode begin, ListNode end) {
+        if (begin == null || begin == end) {
+            return begin;
+        }
+        ListNode itsNextIsRightNum = begin;
+        int key = begin.val;
+        ListNode node = begin.next;
+        while (node != end) {
+            if (node.val <= key) {
+                itsNextIsRightNum = itsNextIsRightNum.next;
+                swap(itsNextIsRightNum, node);
+            }
+            node = node.next;
+        }
+        swap(itsNextIsRightNum, begin);
+        return itsNextIsRightNum;
+    }
+
+    private void swap(ListNode p1, ListNode p2) {
+        int temp = p1.val;
+        p1.val = p2.val;
+        p2.val = temp;
+    }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
