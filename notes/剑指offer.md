@@ -1704,12 +1704,12 @@ public ListNode deleteDuplication(ListNode pHead) {
                 }
                 if (p.charAt(j) == '*') {
                     if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
-                        // ##c    ##cp*  i  和 j-2
+                                                   // ##c    ##cp*  i  和 j-2
                         //##p     ##p*    i  和  j-1
                         //##ppp   ##p*    i-1 和  j
                         dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
                     } else {
-                        // ##b  要和  ##c*匹配   i  和  j-2
+                        // ##c  要和  ##p*匹配   i  和  j-2
                         dp[i + 1][j + 1] = dp[i + 1][j - 1];
                     }
                 }

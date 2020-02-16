@@ -42,7 +42,7 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
+#### [@@@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
 
 
@@ -126,7 +126,7 @@ int maxLen = 0;
 
 
 
-#### [@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+#### [@@@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 
 
@@ -342,7 +342,7 @@ public String reverseWords(String s) {
 
 
 
-#### [@@10. 正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
+#### [@@@@@10. 正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
 
 ```java
  public boolean isMatch(String s, String p) {
@@ -386,7 +386,7 @@ public String reverseWords(String s) {
 
 
 
-#### [@@8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
+#### [@8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
 
 ```java
 
@@ -438,7 +438,7 @@ public int myAtoi(String str) {
 
 
 
-#### [@@235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+#### [@235. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 
 @二叉搜索树的特点是,找到第一个可以把p和q区分开的root.val,就是最近的root.val.
 
@@ -852,7 +852,7 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
-#### [@@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+#### [@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
 
 @每个递归,负责连两条线.
 
@@ -979,7 +979,7 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 
 
-#### [@@348. 判定井字棋胜负](https://leetcode-cn.com/problems/design-tic-tac-toe/)
+#### [@348. 判定井字棋胜负](https://leetcode-cn.com/problems/design-tic-tac-toe/)
 
 @但是本题没有判断 同一个玩家在某个点处重复下棋的情况,当然题目中也没要求有这种判断.
 
@@ -1100,7 +1100,7 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 
 
-#### [@@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+#### [@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
 ```java
  public int longestCommonSubsequence(String text1, String text2) {
@@ -1290,9 +1290,34 @@ public ListNode sortList(ListNode head) {
 
 
 
+#### [114. 二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 
+```java
+ private TreeNode pre = null;
 
+    public void flatten(TreeNode root) {
+        preOrder(root);
+    }
 
+    private void preOrder(TreeNode root) {
+
+        if (root == null) {
+            return;
+        }
+        //需要提前把左右子树存储好
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if (pre != null) {
+            pre.right = root;
+
+        }
+        pre = root;
+        root.left = null;
+        preOrder(left);
+        preOrder(right);
+
+    }
+```
 
 
 
