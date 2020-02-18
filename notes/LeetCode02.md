@@ -42,7 +42,7 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### [@@@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
+#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
 
 
@@ -367,9 +367,48 @@ public String reverseWords(String s) {
                 }
                 if (p.charAt(j) == '*') {
                     if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
-                        // ##c    ##cp*  i  和 j-2
-                        //##p     ##p*    i  和  j-1
-                        //##ppp   ##p*    i-1 和  j
+                        // ##cp    ##cpp*  i  和 j-2   p*匹配0个
+                        //##p     ##p*    i  和  j-1   p*  匹配1个
+                        //##ppp   ##p*    i-1 和  j   p* 匹配多个
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
+                    } else {
+                        // ##b  要和  ##c*匹配   i  和  j-2
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1];
+                    }
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+
+
+再做一遍
+    
+     public boolean isMatch(String s, String p) {
+        if (s == null || p == null) {
+            return false;
+        }
+        int len1 = s.length();
+        int len2 = p.length();
+        boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
+        dp[0][0] = true;
+        //初始化"" 与p的匹配关系  "" 和 a*a*a*是可以匹配的
+        for (int i = 0; i < len2; i++) {
+            if (p.charAt(i) == '*' && dp[0][i - 1]) {
+                dp[0][i + 1] = true;
+            }
+        }
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                // ##s   ##p     与     ##s    ##.
+                if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
+                    dp[i + 1][j + 1] = dp[i][j];
+                }
+                if (p.charAt(j) == '*') {
+                    if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
+                        // ##cp    ##cpp*  i  和 j-2   p*匹配0个
+                        //##p     ##p*    i  和  j-1   p*  匹配1个
+                        //##ppp   ##p*    i-1 和  j   p* 匹配多个
                         dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
                     } else {
                         // ##b  要和  ##c*匹配   i  和  j-2
@@ -488,22 +527,22 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 
-#### [@@236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+#### [@236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
 ```java
- public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        return lastOrder(root, p, q);
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        return preOrder(root, p, q);
     }
 
-    private TreeNode lastOrder(TreeNode root, TreeNode p, TreeNode q) {
+    private TreeNode preOrder(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null) {
             return root;
         }
         if (root == p || root == q) {
             return root;
         }
-        TreeNode left = lastOrder(root.left, p, q);
-        TreeNode right = lastOrder(root.right, p, q);
+        TreeNode left = preOrder(root.left, p, q);
+        TreeNode right = preOrder(root.right, p, q);
 
         if (left != null && right != null) {
             return root;
@@ -517,7 +556,7 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 
-#### [@@@@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+#### [@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 
 @叶子节点删自身
 
