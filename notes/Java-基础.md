@@ -1977,10 +1977,10 @@ public class FruitGenerator implements Generator<String> {
  * @param tClass 传入的泛型实参
  * @return T 返回值为T类型
  * 说明：
- *     1）public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法。
- *     2）只有声明了<T>的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法。
- *     3）<T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T。
- *     4）与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型。
+ *     1）public 与 返回值中间<T>非常重要，可以理解为声明此方法为泛型方法
+ *     2）只有声明了<T>的方法才是泛型方法，泛型类中的使用了泛型的成员方法并不是泛型方法
+ *     3）<T>表明该方法将使用泛型类型T，此时才可以在方法中使用泛型类型T
+ *     4）与泛型类的定义一样，此处T可以随便写为任意标识，常见的如T、E、K、V等形式的参数常用于表示泛型
  */
 public <T> T genericMethod(Class<T> tClass)throws InstantiationException ,
   IllegalAccessException{
@@ -2033,11 +2033,10 @@ public void showKeyValue1(Generic<?> obj){
 
 ### 通配符的上下边界
 **Plate<？ extends Fruit>**
-一个能放水果以及一切是水果派生类(香蕉,苹果)的盘子。
-
+一个能放水果以及一切是水果子类(香蕉,苹果)的盘子。
 
 **Plate<？ super Fruit>**
-一个能放水果以及一切是水果基类(食物类,Object类)的盘子。
+一个能放水果以及一切是水果基类也就是父类(食物类,Object类)的盘子。
 
 **PECS原则**  
 最后看一下什么是PECS（Producer Extends Consumer Super）原则，已经很好理解了：  
@@ -2082,7 +2081,6 @@ public class GenericEraseTest {
 
 ### java中没有泛型数组的原因
 
-
 java中数组的缺陷:
 Object[]数组可以是任何数组的父类，或者说，任何一个数组都可以向上转型成它在定义时指定元素类型的父类的数组，这个时候如果我们往里面放不同于原始数据类型 但是满足后来使用的父类类型的话，编译不会有问题，但是在运行时会检查加入数组的对象的类型，于是会抛ArrayStoreException：
 
@@ -2118,6 +2116,7 @@ Map<Integer, String>[] mapArray = new Map<Integer, String>[20];
      
 ## 常见元注解
 **@Target注解传入ElementType.METHOD参数来标明@Test只能用于方法上**
+
 ```java
 public enum ElementType {
     /**标明该注解可以用于类、接口（包括注解类型）或enum声明*/
@@ -2170,7 +2169,6 @@ RUNTIME：注解信息将在运行期(JVM)也保留，因此可以通过反射�
 # 内部变量
 
 <div align="center"> <img src=" .\pictures\java-basic\Snipaste_2019-09-20_22-08-25.jpg" width="600px"> </div><br>
-
 # 内部类
 ## 定义
 内部类是指在一个外部类的内部再定义一个类。内部类作为外部类的一个成员，并且依附于外部类而存在的。内部类可为静态，可用protected和private修饰（而外部类只能使用public和缺省的包访问权限）。内部类主要有以下几类：成员内部类、局部内部类、静态内部类、匿名内部类
@@ -2497,6 +2495,6 @@ wait方法会让当前线程等待直到另外一个线程调用对象的notify�
 时间到了参数设置的超时时间。如果timeout参数为0，则不会超时，会一直进行等待
 
 ## finalize方法
-finalize方法是一个protected方法，Object类的默认实现是不进行任何操作。
+finalize方法是一个protected方法，Object类的默认实现是不进行任何操作
 
-该方法的作用是实例被垃圾回收器回收的时候触发的操作，就好比 “死前的最后一波挣扎”。
+该方法的作用是实例被垃圾回收器回收的时候触发的操作，就好比 “死前的最后一波挣扎”

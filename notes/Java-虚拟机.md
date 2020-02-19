@@ -78,7 +78,7 @@ JRE包含JVM,HotSpot是JVM的一种技术实现,用C和汇编语言编写,包含
 JVM包含解释器与编译器,用来运行字节码(.class文件,是特殊的二进制文件，二进制字节码文件),javac.exe可以简单看成是Java编译器。
 
 
-## JIT的两个模式
+## JIT的两个模式(*Just-in-time* compilation即时编译)
 client模式是一种轻量级编译器，也叫C1编译器，占用内存小，启动快，但是执行效率没有server模式高，默认状态下不进行动态编译，适用于桌面应用程序。
 
 server模式是一种重量级编译器，也叫C2编译器，启动慢，占用内存大，执行效率高，默认是开启动态编译的，适合服务器应用。
@@ -92,9 +92,9 @@ XX:RewriteFrequentPairs   用于开启动态编译。
 编译分为静态编译与动态编译,静态编译是字节码在装入虚拟机之前就转换成本地代码.动态编译是装入虚拟机之后,根据运行热度,把热度高的字节码转换成本地代码
 
 好处: 
-静态编译器通常很难准确预知程序运行过程中究竟什么部分最需要优化。函数调用都是很浪费系统时间的，因为有许多进栈出栈操作。因此有一种优化办法，就是把原来的函数调用，通过编译器的编译，改成非函数调用，把函数代码直接嵌到调用处，变成顺序执行。
 
-    面向对象的语言支持多态，静态编译无效确定程序调用哪个方法，因为多态是在程序运行中确定调用哪个方法。
+1. 静态编译器通常很难准确预知程序运行过程中究竟什么部分最需要优化。函数调用都是很浪费系统时间的，因为有许多进栈出栈操作。因此有一种优化办法，就是把原来的函数调用，通过编译器的编译，改成非函数调用，把函数代码直接嵌到调用处，变成顺序执行。
+2. 面向对象的语言支持多态，静态编译无效确定程序调用哪个方法，因为多态是在程序运行中确定调用哪个方法。
 
 
 # 内存泄漏与内存溢出
@@ -118,9 +118,9 @@ XX:RewriteFrequentPairs   用于开启动态编译。
 这里的object实例，其实我们期望它只作用于method1()方法中，且其他地方不会再用到它，但是，当method1()方法执行完成后，object对象所分配的内存不会马上被认为是可以被释放的对象，只有在Simple类创建的对象被释放后才会被释放，严格的说，这就是一种内存泄露。
 
 ### 解决办法
-减小对象的作用域,
+减小对象的作用域
 
-或者及时对对象复制为null
+及时对对象赋值为null
 
 各种连接需要close也是这个道理,长周期对象短周期引用
 
@@ -131,21 +131,19 @@ XX:RewriteFrequentPairs   用于开启动态编译。
 # 运行时数据区域
 
 <div align="center"> <img src="pics/5778d113-8e13-4c53-b5bf-801e58080b97.png" width="400px"> </div><br>
-
 ## 程序计数器
 
 当前线程所执行的字节码的行号指示器，为了线程切换后能够恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器。
 
-## Java 虚拟机栈
+## Java 虚拟机栈(装着栈帧)
 
 每个 Java 方法在执行的同时会创建一个栈帧用于存储局部变量表、操作数栈(存储着需要执行的指令)、常量池引用等信息。从方法调用直至执行完成的过程，对应着一个栈帧在 Java 虚拟机栈中入栈和出栈的过程。
 
 <div align="center"> <img src="pics/8442519f-0b4d-48f4-8229-56f984363c69.png" width="400px"> </div><br>
-
 可以通过 -Xss 这个虚拟机参数来指定每个线程的 Java 虚拟机栈内存大小，在 JDK 1.4 中默认为 256K，而在 JDK 1.5+ 默认为 1M：
 
 ```java
-java -Xss2M HackTheJava
+java -Xss 2M HackTheJava
 ```
 
 该区域可能抛出以下异常：
@@ -160,7 +158,6 @@ java -Xss2M HackTheJava
 本地方法一般是用其它语言（C、C++ 或汇编语言等）编写的，并且被编译为基于本机硬件和操作系统的程序，对待这些方法需要特别处理。
 
 <div align="center"> <img src="pics/66a6899d-c6b0-4a47-8569-9d08f0baf86c.png" width="300px"> </div><br>
-
 ## 堆
 
 所有**对象实例**都在这里分配内存，是垃圾收集的主要区域（"GC 堆"）。
@@ -175,13 +172,12 @@ java -Xss2M HackTheJava
 可以通过 -Xms 和 -Xmx 这两个虚拟机参数来指定一个程序的堆内存大小，第一个参数设置初始值，第二个参数设置最大值。
 
 ```java
-java -Xms1M -Xmx2M HackTheJava
+java -Xms 1M -Xmx 2M HackTheJava
 ```
 ### java对象实例结构
 在HotSpot虚拟机中，对象在内存中存储的布局可以分为3块区域：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）。下图是普通对象实例与数组对象实例的数据结构：
 
 <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-06_17-47-53.jpg" width=""/> </div><br>
-
 
 对象头
 
@@ -226,11 +222,17 @@ klass
 
 用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
 
+**方法区是一个 JVM 规范，永久代与元空间都是其一种实现方式。在 JDK 1.8 之后，原来永久代的数据被分到了堆和元空间中。元空间存储类的元信息，静态变量和常量池等放入堆中。**
+
+
+
+用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
+
 和堆一样不需要连续的内存，并且可以动态扩展，动态扩展失败一样会抛出 OutOfMemoryError 异常。
 
 对这块区域进行垃圾回收的主要目标是对常量池的回收和对类的卸载，但是一般比较难实现。
 
-HotSpot 虚拟机把它当成永久代来进行垃圾回收。但很难确定永久代的大小，因为它受到很多因素影响，并且每次 Full GC 之后永久代的大小都会改变，所以经常会抛出 OutOfMemoryError 异常。为了更容易管理方法区，从 JDK 1.8 开始，移除永久代，并把方法区移至元空间，它位于本地内存中，而不是虚拟机内存中。
+HotSpot 虚拟机把它当成永久代来进行垃圾回收。但很难确定永久代的大小，因为它受到很多因素影响，并且每次 Full GC 之后永久代的大小都会改变，所以经常会抛出 OutOfMemoryError 异常。**为了更容易管理方法区，从 JDK 1.8 开始，移除永久代，并把方法区移至元空间，它位于本地内存中，而不是虚拟机内存中。**
 
 方法区是一个 JVM 规范，永久代与元空间都是其一种实现方式。在 JDK 1.8 之后，原来永久代的数据被分到了堆和元空间中。元空间存储类的元信息，静态变量和常量池等放入堆中。
 
@@ -247,7 +249,7 @@ Class 文件中的常量池（编译器生成的字面量和符号引用）会�
 在 JDK 1.4 中新引入了 NIO 类，它可以使用 Native 函数库直接分配堆外内存，然后通过 Java 堆里的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在堆内存和堆外内存来回拷贝数据。
 
 ## jvm分区的作用再理解
-方法区：类信息、类变量（静态变量和常量）、方法 
+方法区：类信息、类变量（静态变量和常量）、方法 (JDK1.8之后,静态变量和常量进入堆,类信息进入元空间)
 
 堆：对象、成员变量 
 
@@ -311,7 +313,6 @@ Java 虚拟机使用该算法来判断对象是否可被回收，GC Roots 一般
 - 方法区中的常量引用的对象
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/83d909d2-3858-4fe1-8ff4-16471db0b180.png" width="350px"> </div><br>
-
 
 以下几种对象可以作为GC Root：
 
@@ -416,7 +417,6 @@ obj = null;
 ### 1. 标记 - 清除
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/005b481b-502b-4e3f-985d-d043c2b330aa.png" width="400px"> </div><br>
-
 在标记阶段，程序会检查每个对象是否为活动对象，如果是活动对象，则程序会在对象头部打上标记。
 
 在清除阶段，会进行对象回收并取消标志位，另外，还会判断回收后的分块与前一个空闲分块是否连续，若连续，会合并这两个分块。回收对象就是把对象作为分块，连接到被称为 “空闲链表” 的单向链表，之后进行分配时只需要遍历这个空闲链表，就可以找到分块。
@@ -431,7 +431,6 @@ obj = null;
 ### 2. 标记 - 整理
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/ccd773a5-ad38-4022-895c-7ac318f31437.png" width="400px"> </div><br>
-
 让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。
 
 优点:
@@ -445,7 +444,6 @@ obj = null;
 ### 3. 复制
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/b2b77b9e-958c-4016-8ae5-9c6edd83871e.png" width="400px"> </div><br>
-
 将内存划分为大小相等的两块，每次只使用其中一块，当这一块内存用完了就将还存活的对象复制到另一块上面，然后再把使用过的内存空间进行一次清理。
 
 主要不足是只使用了内存的一半。
@@ -466,7 +464,6 @@ HotSpot 虚拟机的 Eden 和 Survivor 大小比例默认为 8:1，保证了内�
 ## 垃圾收集器
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/c625baa0-dde6-449e-93df-c3a67f2f430f.jpg" width=""/> </div><br>
-
 以上是 HotSpot 虚拟机中的 7 个垃圾收集器，连线表示垃圾收集器可以配合使用。
 
 - 单线程与多线程：单线程指的是垃圾收集器只使用一个线程，而多线程使用多个线程；
@@ -475,7 +472,6 @@ HotSpot 虚拟机的 Eden 和 Survivor 大小比例默认为 8:1，保证了内�
 ### 1. Serial 收集器
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/22fda4ae-4dd5-489d-ab10-9ebfdad22ae0.jpg" width=""/> </div><br>
-
 Serial 翻译为串行，也就是说它以串行的方式执行。
 
 它是单线程的收集器，只会使用一个线程进行垃圾收集工作。
@@ -487,7 +483,6 @@ Serial 翻译为串行，也就是说它以串行的方式执行。
 ### 2. ParNew 收集器
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/81538cd5-1bcf-4e31-86e5-e198df1e013b.jpg" width=""/> </div><br>
-
 它是 Serial 收集器的多线程版本。多cpu下效率比serial好,但单核不如,因为有进程切换开销
 
 它是 Server 场景下默认的新生代收集器，除了性能原因外，主要是因为除了 Serial 收集器，只有它能与 CMS 收集器配合使用。
@@ -509,7 +504,6 @@ Serial 翻译为串行，也就是说它以串行的方式执行。
 ### 4. Serial Old 收集器(以下是老年代收集器)
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/08f32fd3-f736-4a67-81ca-295b2a7972f2.jpg" width=""/> </div><br>
-
 是 Serial 收集器的老年代版本，也是给 Client 场景下的虚拟机使用。如果用在 Server 场景下，它有两大用途：
 
 - 在 JDK 1.5 以及之前版本（Parallel Old 诞生以前）中与 Parallel Scavenge 收集器搭配使用。
@@ -518,7 +512,6 @@ Serial 翻译为串行，也就是说它以串行的方式执行。
 ### 5. Parallel Old 收集器
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/278fe431-af88-4a95-a895-9c3b80117de3.jpg" width=""/> </div><br>
-
 是 Parallel Scavenge 收集器的老年代版本。
 
 在注重吞吐量以及 CPU 资源敏感的场合，都可以优先考虑 Parallel Scavenge 加 Parallel Old 收集器。
@@ -526,7 +519,6 @@ Serial 翻译为串行，也就是说它以串行的方式执行。
 ### 6. CMS 收集器
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/62e77997-6957-4b68-8d12-bfd609bb2c68.jpg" width=""/> </div><br>
-
 CMS（Concurrent Mark Sweep），Mark Sweep 指的是标记 - 清除算法。
 
 分为以下四个流程：
@@ -551,17 +543,14 @@ G1（Garbage-First），它是一款面向服务端应用的垃圾收集器，�
 堆被分为新生代和老年代，其它收集器进行收集的范围都是整个新生代或者老年代，而 G1 可以直接对新生代和老年代一起回收。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/4cf711a8-7ab2-4152-b85c-d5c226733807.png" width="600"/> </div><br>
-
 G1 把堆划分成多个大小相等的独立区域（Region），新生代和老年代不再物理隔离。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/9bbddeeb-e939-41f0-8e8e-2b1a0aa7e0a7.png" width="600"/> </div><br>
-
 通过引入 Region 的概念，从而将原来的一整块内存空间划分成多个的小空间，使得每个小空间可以单独进行垃圾回收。这种划分方法带来了很大的灵活性，使得可预测的停顿时间模型成为可能。通过记录每个 Region 垃圾回收时间以及回收所获得的空间（这两个值是通过过去回收的经验获得），并维护一个优先列表，每次根据允许的收集时间，优先回收价值最大的 Region。
 
 每个 Region 都有一个 Remembered Set，用来记录该 Region 对象的引用对象所在的 Region。通过使用 Remembered Set，在做可达性分析的时候就可以避免全堆扫描。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/f99ee771-c56f-47fb-9148-c0036695b5fe.jpg" width=""/> </div><br>
-
 如果不计算维护 Remembered Set 的操作，G1 收集器的运作大致可划分为以下几个步骤：
 
 - 初始标记
@@ -673,7 +662,6 @@ JVM类加载机制主要包括两个问题：类加载的时机与步骤 和 类
 
 Java类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载（Loading）、验证（Verification）、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using) 和 卸载(Unloading)七个阶段。其中准备、验证、解析3个部分统称为连接（Linking）
 <div align="center"> <img src="pictures/java-vm/Snipaste_2019-08-13_09-58-03.jpg" width="430px"> </div><br>
-
 加载、验证、准备、初始化和卸载这5个阶段的顺序是确定的，类的加载过程必须按照这种顺序按部就班地开始，而解析阶段则不一定：它在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定（也称为动态绑定或晚期绑定）。
 
 这些阶段通常都是相互交叉地混合式进行的，也就是说通常会在一个阶段执行的过程中调用或激活另外一个阶段。
@@ -753,7 +741,7 @@ public class NotInitialization{
         SClass init!
         123     
  *///:~
- ```
+```
 子类引用父类的静态字段只会出发父类的初始化
 
 在本例中，由于value字段是在类SClass中定义的，因此该类会被初始化；此外，在初始化类SClass时，虚拟机会发现其父类SSClass还未被初始化，因此虚拟机将先初始化父类SSClass，然后初始化子类SClass，而SubClass始终不会被初始化。
@@ -831,7 +819,7 @@ public class NotInitialization{
 其次，这里所说的初始值“通常情况”下是数据类型的零值，假设一个类变量的定义为：
 ```java
  public static int value = 123;
- ```
+```
  那么，变量value在准备阶段过后的值为0而不是123。因为这时候尚未开始执行任何java方法，而把value赋值为123的putstatic指令是程序被编译后，存放于类构造器方法`<clinit>()`之中，所以把value赋值为123的动作将在初始化阶段才会执行。
 
  至于“特殊情况”是指：当类字段的字段属性是ConstantValue时，会在准备阶段初始化为指定的值，所以标注为final之后，value的值在准备阶段初始化为123而非0。
@@ -876,14 +864,14 @@ public class Test{
 }/* Output: 
         1
  *///:~
- ```
+```
 
 
 
  类构造器`<clinit>()`与实例构造器`<init>()`不同，它不需要程序员进行显式调用
- 
+
  虚拟机会保证在子类类构造器`<clinit>()`执行之前，父类的类构造`<clinit>()`执行完毕。由于父类的构造器`<clinit>()`先执行，也就意味着父类中定义的静态语句块/静态变量的初始化要优先于子类的静态语句块/静态变量的初始化执行。
- 
+
  特别地，类构造器`<clinit>()`对于类或者接口来说并不是必需的，如果一个类中没有静态语句块，也没有对类变量的赋值操作，那么编译器可以不为这个类生产类构造器`<clinit>()`。
 
 　虚拟机会保证一个类的类构造器<clinit>()在多线程环境中被正确的加锁、同步，如果多个线程同时去初始化一个类，那么只会有一个线程去执行这个类的类构造器<clinit>()，其他线程都需要阻塞等待，直到活动线程执行<clinit>()方法完毕。
@@ -925,7 +913,7 @@ public class DealLoopTest {
         Thread[Thread-0,5,main] start
         Thread[Thread-1,5,main]init DeadLoopClass
  *///:~
- ```
+```
  如上述代码所示，在初始化DeadLoopClass类时，线程Thread-1得到执行并在执行这个类的类构造器`<clinit>()` 时，由于该方法包含一个死循环，因此久久不能退出。
 
 
@@ -968,7 +956,7 @@ public class StaticTest {
         1
         4
  *///:~
- ```
+```
 解释：
 
 一般思路是：  
@@ -1357,7 +1345,7 @@ public class InstanceVariableInitializer {
             8
             5
  *///:~
- ```
+```
 
  　上面的例子正好印证了上面的结论。特别需要注意的是，Java是按照编程顺序来执行实例变量初始化器和实例初始化器中的代码的，并且**不允许顺序靠前的实例代码块初始化在其后面定义的实例变量**，比如：
 
@@ -1556,7 +1544,7 @@ public class StaticTest {
         1
         4
  *///:~
- ```
+```
  参考博文: https://blog.csdn.net/justloveyou_/article/details/72466416
 
 ## 类加载器
@@ -1572,12 +1560,10 @@ public class StaticTest {
 
 <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_10-52-19.jpg" width="420px"/> </div><br>
 
-
 ### 双亲委派机制
 JVM在加载类时默认采用的是双亲委派机制。通俗的讲，就是某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归 (本质上就是loadClass函数的递归调用)，因此所有的加载请求最终都应该传送到顶层的启动类加载器中。如果父类加载器可以完成这个类加载请求，就成功返回；只有当父类加载器无法完成此加载请求时，子加载器才会尝试自己去加载。
 
 <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_13-06-19.jpg" width="420px"/> </div><br>
-
 上面两张图分别是扩展类加载器继承层次图和系统类加载器继承层次图。通过这两张图我们可以看出，扩展类加载器和系统类加载器均是继承自 java.lang.ClassLoader抽象类。我们下面我们就看简要介绍一下抽象类 java.lang.ClassLoader 中几个最重要的方法：
 
 面试题:findclass loadclass defineclass的区别
@@ -1714,7 +1700,6 @@ public static Class<?> forName(String name, boolean initialize, ClassLoader load
 
 <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-09-18_12-47-36.jpg" width="420px"/> </div><br>
 
-
 ### 类加载器常见问题
 
 #### 由不同的类加载器加载的指定类还是相同的类型吗？
@@ -1808,14 +1793,11 @@ public class Test {
 [文件系统类加载器,网络系统类加载器见博客最底部](https://blog.csdn.net/justloveyou_/article/details/72217806)
 
 <div align="center"> <img src="" width="420px"/> </div><br>
-
 <div align="center"> <img src="" width="420px"/> </div><br>
-
 
  # 强引用,软引用,弱引用,虚引用
 
  <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-08-13_14-42-54.jpg" width="420px"/> </div><br>
-
  ## 强引用
 当内存空间不足时，Java虚拟机宁愿抛出OutOfMemoryError错误，使程序异常终止，也不会靠随意回收具有强引用的对象来解决内存不足的问题。
 
@@ -1841,7 +1823,6 @@ public class Test {
 ### 数组的取消强引用
 
 <div align="center"> <img src=".\pictures\java-vm\Snipaste_2019-08-13_14-51-40.jpg" width="420px"/> </div><br>
-
 在ArrayList类中定义了一个elementData数组，在调用clear方法清空数组时，每个数组元素被赋值为null。
 不同于elementData=null，强引用仍然存在，避免在后续调用add()等方法添加元素时进行内存的重新分配。
 使用如clear()方法内存数组中存放的引用类型进行内存释放特别适用，这样就可以及时释放内存。
@@ -1912,7 +1893,7 @@ obj = null;
  ## 虚引用
 
 
- 
+
 又称为幽灵引用或者幻影引用，一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象。
 
 为一个对象设置虚引用的唯一目的是能在这个对象被回收时收到一个系统通知。
