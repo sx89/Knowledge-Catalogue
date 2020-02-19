@@ -156,7 +156,7 @@ public static Integer valueOf(int i) {
 
 ## 概览
 
-String 被声明为 final，因此它不可被继承。
+**String 被声明为 final，因此它不可被继承。**
 
 在 Java 8 中，String 内部使用 char 数组存储数据。
 
@@ -197,7 +197,6 @@ value 数组被 1. 声明为 final，这意味着 value 数组初始化之后就
 
 
 <div align="center"> <img src="pics/9112288f-23f5-4e53-b222-a46fdbca1603.png" width="300px"> </div><br>
-
 **3. 安全性** 
 
 String 经常作为参数，String 不可变性可以保证参数不可变。例如在作为网络连接参数的情况下如果 String 是可变的，那么在网络连接过程中，String 被改变，改变 String 对象的那一方以为现在连接的是其它主机，而实际情况却不一定是。
@@ -784,7 +783,7 @@ f是父类对象，子类的实例aaa指向强转的父类,在编译时不报错
 
 4.为了安全的类型转换，最好先用 if(A instanceof  B) 判断一下下~~
 
-``` 
+```
 ## 静态分派和动态分派
 
 TODO
@@ -818,7 +817,6 @@ TODO
 另外还有 返回值,修饰符,抛出异常,参数列表方面的不同:
 
 <div align="center"> <img src="pictures\java-basic\Snipaste_2019-08-11_19-55-46.jpg" width="600"/> </div><br>
-
 # Object 通用方法
 
 ## 概览
@@ -1514,7 +1512,7 @@ private static void printFields(){
   public java.lang.String mSonBirthday
   public java.lang.String mFatherName
   public int mFatherAge
-  ```
+```
 
 调用 getDeclaredFields() ， 输出 SonClass 类的所有成员变量，不问访问权限。
 ```java
@@ -1522,9 +1520,9 @@ private static void printFields(){
   private java.lang.String mSonName
   protected int mSonAge
   public java.lang.String mSonBirthday
-  ```
+```
 
-  
+
 ### 使用反射获取方法信息
 
 ```java
@@ -1592,7 +1590,7 @@ private static void printMethods(){
   public final native java.lang.Class getClass(  )
   public final native void notify(  )
   public final native void notifyAll(  )
-  ```
+```
 
 调用 getDeclaredMethods() 方法
 
@@ -1724,8 +1722,7 @@ if("hello".equals("world")){
 Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： **Error**  和 **Exception**。
 
 <div align="center"> <img src="pics/PPjwP.png" width="600"/> </div><br>
-
-**注意：异常(exception)和错误(error)的区别：异常能被程序本身可以处理，错误是无法处理。**
+**注意：异常(exception)和错误(error)的区别：异常能被程序本身处理，错误是无法处理。**
 
 **Error**  
 用来表示 JVM 无法处理的错误，大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。例如，Java虚拟机运行错误（Virtual MachineError），当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。
@@ -1765,7 +1762,6 @@ try-catch语句还可以包括第三部分，就是finally子句。它表示无�
 
 3)当try捕获到异常，catch语句块里有处理此异常的情况：在try语句块中是按照顺序来执行的，当执行到某一条语句出现异常时，程序将跳到catch语句块，并与catch语句块逐一匹配，找到与之对应的处理程序，其他的catch语句块将不会被执行，而try语句块中，出现异常之后的语句也不会被执行，catch语句块执行完后，执行finally语句块里的语句，最后执行finally语句块后的语句；
 <div align="center"> <img src=".\pictures\java-basic\Snipaste_2019-08-23_13-58-16.jpg" width="600"/> </div><br>
-
 ## 异常链
 Java方法抛出的可查异常将依据调用栈、沿着方法调用的层次结构一直传递到具备处理能力的调用方法，最高层次到main方法为止。
 
@@ -2120,7 +2116,6 @@ RUNTIME：注解信息将在运行期(JVM)也保留，因此可以通过反射�
 
 <div align="center"> <img src=" .\pictures\java-basic\Snipaste_2019-09-20_22-08-25.jpg" width="600px"> </div><br>
 
-
 # 内部类
 ## 定义
 内部类是指在一个外部类的内部再定义一个类。内部类作为外部类的一个成员，并且依附于外部类而存在的。内部类可为静态，可用protected和private修饰（而外部类只能使用public和缺省的包访问权限）。内部类主要有以下几类：成员内部类、局部内部类、静态内部类、匿名内部类
@@ -2148,7 +2143,7 @@ RUNTIME：注解信息将在运行期(JVM)也保留，因此可以通过反射�
 成员内部类也是最普通的内部类，它是外围类的一个成员，所以他是可以无限制的访问外围类的所有 成员属性和方法，尽管是private的，但是外围类要访问内部类的成员属性和方法则需要通过内部类实例来访问。
 
 在成员内部类中要注意两点，第一：成员内部类中不能存在任何static的变量和方法；第二：成员内部类是依附于外围类的，所以只有先创建了外围类才能够创建内部类。
- 
+
 ### 局部内部类  
 
 局部内部类作用域方法和属性
