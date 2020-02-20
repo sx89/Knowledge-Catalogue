@@ -809,6 +809,12 @@ public class Solution {
 
 [NowCoder](https://www.nowcoder.com/practice/9023a0c988684a53960365b889ceaf5e?tpId=13&tqId=11210&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
+
+
+@1.有右子树,就找最左边
+
+@2.无右子树, 则pNode分为 1. pNode 是左子树,2.pNode是右子树
+
 **题目描述**
 
 给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
@@ -862,7 +868,7 @@ class TreeLinkNode {
 ```
 
 
-# @@9. 用两个栈实现队列
+# @9. 用两个栈实现队列
 
 [NowCoder](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
@@ -1760,10 +1766,10 @@ public ListNode deleteDuplication(ListNode pHead) {
                 }
                 if (p.charAt(j) == '*') {
                     if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
-                                                   // ##c    ##cp*  i  和 j-2
-                        //##p     ##p*    i  和  j-1
-                        //##ppp   ##p*    i-1 和  j
-                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
+                        // ##cp    ##cpp*  i  和 j-2   p*匹配0个
+                        //##p     ##p*    i-1  和  j-2   p*  匹配1个
+                        //##ppp   ##p*    i-1 和  j   p* 匹配多个
+                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i ][j-1] || dp[i][j + 1];
                     } else {
                         // ##c  要和  ##p*匹配   i  和  j-2
                         dp[i + 1][j + 1] = dp[i + 1][j - 1];
@@ -2454,7 +2460,7 @@ public int min() {
 改进: minStack不能用一个记录最小值的int来替代.因为pop一次,再求最小值,int里面的值不符合要求了.
 ```
 
-# @31. 栈的压入、弹出序列
+# @@@@31. 栈的压入、弹出序列
 
 [NowCoder](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&tqId=11174&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2646,7 +2652,7 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     }
 ```
 
-# @@@@33. 二叉搜索树的后序遍历序列
+# @@33. 二叉搜索树的后序遍历序列
 
 [NowCoder](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&tqId=11176&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -3815,7 +3821,7 @@ dp[n]只由dp[n-1]决定,
     }
 ```
 
-# @@49. 丑数
+# @49. 丑数
 
 @思路不难,难在如何找下一个丑数,因为`2*2*2*2  > 3*3`
 
@@ -4004,6 +4010,8 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
         int leftIdx = low, rightIdx = mid + 1, tempIdx = low;
         while (leftIdx <= mid || rightIdx <= high) {
             if (leftIdx > mid) {
+                //123  456
+                //456  123
                 tmp[tempIdx] = array[rightIdx++];
             } else if (rightIdx > high) {
                 tmp[tempIdx] = array[leftIdx++];
@@ -4898,6 +4906,8 @@ public int maxProfit1(int[] prices) {
 ```
 
 # @@65. 不用加减乘除做加法
+
+@num2不要写成>0  因为 进位如果是 1001 其实是一个负数. 这个时候进位是没用完的,但是不符合大于0的要求了
 
 [NowCoder](https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
