@@ -20,7 +20,7 @@
 ##  分布式基础 
 
 - [系统设计基础]()(未开始)
-- [分布式]()(未开始)
+- [分布式]()(已完成)
 - [开发框架-SpringBoot](https://github.com/sx89/summary-of-all-my-repositories)(在编写)
 - [高速缓存-Redis](https://github.com/sx89/Java-notes/blob/master/notes/redis.md)(已完成)
 - [消息队列-RocketMQ](https://github.com/sx89/rocketmq4.0-code)(在编写)
@@ -40,12 +40,12 @@
 ## 计算机网络 
 
 - [计算机网络](https://github.com/sx89/Java-notes/blob/master/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C.md)(在编写)
-- [HTTP]()(未开始)
-- [Socket]()(未开始)
+- [HTTP]()(在编写)
+- [Socket]()(在编写)
 
 ## Linux 
 
-- [Linux]()(未开始)
+- [Linux]()(在编写)
 
 
 
