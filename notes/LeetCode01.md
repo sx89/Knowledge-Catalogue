@@ -401,10 +401,6 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
 
 
 
-@研究一下什么时候中途求max
-
-什么时候返回dp[len-1]即可.
-
 
 
 ```java
