@@ -61,7 +61,6 @@
 ## Collection
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/73403d84-d921-49f1-93a9-d8fe050f3497.png" width="800px"> </div><br>
-
 ### 1. Set
 
 - TreeSet：基于红黑树实现，支持有序性操作，例如根据一个范围查找元素的操作。但是查找效率不如 HashSet，HashSet 查找的时间复杂度为 O(1)，TreeSet 则为 O(logN)。
@@ -119,7 +118,6 @@ element() 和 peek() 用于在队列的头部查询元素。与 remove() 方法�
 ## Map
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/774d756b-902a-41a3-a3fd-81ca3ef688dc.png" width="500px"> </div><br>
-
 - TreeMap：基于红黑树实现。
 
 - HashMap：基于哈希表实现。
@@ -128,13 +126,23 @@ element() 和 peek() 用于在队列的头部查询元素。与 remove() 方法�
 
 - LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
 
+- ```java
+    public LinkedHashMap(int initialCapacity,
+                             float loadFactor,
+                             boolean accessOrder) {
+            super(initialCapacity, loadFactor);
+            this.accessOrder = accessOrder;
+        }
+    ```
+
+    
+
 
 # 二、容器中的设计模式
 
 ## 迭代器模式
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/93fb1d38-83f9-464a-a733-67b2e6bfddda.png" width="600px"> </div><br>
-
 Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
 
 从 JDK 1.5 之后可以使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
@@ -195,7 +203,6 @@ private static final int DEFAULT_CAPACITY = 10;
 ```
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/52a7744f-5bce-4ff3-a6f0-8449334d9f3d.png" width="400px"> </div><br>
-
 ### 2. 扩容
 
 添加元素时使用 ensureCapacityInternal() 方法来保证容量足够，如果不够时，需要使用 grow() 方法进行扩容，新容量的大小为 `oldCapacity + (oldCapacity >> 1)`，也就是旧容量的 1.5 倍。
@@ -458,7 +465,6 @@ transient Node<E> last;
 ```
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/c8563120-cb00-4dd6-9213-9d9b337a7f7c.png" width="500px"> </div><br>
-
 ### 2. 与 ArrayList 的比较
 
 ArrayList是实现了基于动态数组的结构，而LinkedList则是基于实现链表的数据结构。而两种数据结构在程序上体现出来的优缺点在于增删和改查的速率;
@@ -487,7 +493,6 @@ transient Entry[] table;
 Entry 存储着键值对。它包含了四个字段，从 next 字段我们可以看出 Entry 是一个链表。即数组中的每个位置被当成一个桶，一个桶存放一个链表。HashMap 使用拉链法来解决冲突，同一个链表中存放哈希值和散列桶取模运算结果相同的 Entry。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/9420a703-1f9d-42ce-808e-bcb82b56483d.png" width="550px"> </div><br>
-
 ```java
 static class Entry<K,V> implements Map.Entry<K,V> {
     final K key;
@@ -563,7 +568,6 @@ map.put("K3", "V3");
 - 在链表上顺序查找，时间复杂度显然和链表的长度成正比。
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e0870f80-b79e-4542-ae39-7420d4b0d8fe.png" width="550px"> </div><br>
-
 ### 3. put 操作
 
 ```java
@@ -926,7 +930,6 @@ static final int DEFAULT_CONCURRENCY_LEVEL = 16;
 ```
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/db808eff-31d7-4229-a4ad-b8ae71870a3a.png" width="550px"> </div><br>
-
 ### hashentry
 图中淡蓝色的部分就是两个hashentry,在HashEntry类中，key，hash和next域都被声明为final的，value域被volatile所修饰(所以其可以确保被读线程读到最新的值)，因此HashEntry对象几乎是不可变的，这是ConcurrentHashmap读操作并不需要加锁的重要原因。 next域被声明为final本身就意味着我们不能从hash链的中间或尾部添加或删除节点，因为这需要修改next引用值，因此所有的节点的修改只能从头部开始。remove的时候需要全部重新new一遍
 
