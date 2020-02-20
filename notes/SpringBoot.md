@@ -1,4 +1,22 @@
-<!-- TOC -->autoauto- [切面编程，Aspect Oriented Programming](#切面编程aspect-oriented-programming)auto    - [spring定义](#spring定义)auto    - [AOP例子](#aop例子)auto- [依赖注入与控制反转](#依赖注入与控制反转)auto    - [控制反转介绍](#控制反转介绍)auto    - [IoC能做什么](#ioc能做什么)auto    - [依赖注入（DI，DI—Dependency Injection）](#依赖注入dididependency-injection)auto    - [控制反转与依赖注入的理解](#控制反转与依赖注入的理解)auto- [切面编程实现原理:发射与动态代理](#切面编程实现原理发射与动态代理)auto- [常用注解](#常用注解)auto    - [@AutoWired](#autowired)auto- [springboot热部署的两种方式](#springboot热部署的两种方式)auto- [spring mvc的执行流程](#spring-mvc的执行流程)auto    - [组件说明：](#组件说明)auto    - [SpringMVC执行流程:](#springmvc执行流程)autoauto<!-- /TOC -->
+<!-- TOC -->
+
+- [切面编程，Aspect Oriented Programming](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8baspect-oriented-programming)
+  - [spring定义](#spring%e5%ae%9a%e4%b9%89)
+  - [AOP例子](#aop%e4%be%8b%e5%ad%90)
+- [依赖注入与控制反转](#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e4%b8%8e%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac)
+  - [控制反转介绍](#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac%e4%bb%8b%e7%bb%8d)
+  - [IoC能做什么](#ioc%e8%83%bd%e5%81%9a%e4%bb%80%e4%b9%88)
+  - [依赖注入（DI，DI—Dependency Injection）](#%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5dididependency-injection)
+  - [控制反转与依赖注入的理解](#%e6%8e%a7%e5%88%b6%e5%8f%8d%e8%bd%ac%e4%b8%8e%e4%be%9d%e8%b5%96%e6%b3%a8%e5%85%a5%e7%9a%84%e7%90%86%e8%a7%a3)
+- [切面编程实现原理:发射与动态代理](#%e5%88%87%e9%9d%a2%e7%bc%96%e7%a8%8b%e5%ae%9e%e7%8e%b0%e5%8e%9f%e7%90%86%e5%8f%91%e5%b0%84%e4%b8%8e%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86)
+- [常用注解](#%e5%b8%b8%e7%94%a8%e6%b3%a8%e8%a7%a3)
+  - [@AutoWired](#autowired)
+- [springboot热部署的两种方式](#springboot%e7%83%ad%e9%83%a8%e7%bd%b2%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e5%bc%8f)
+- [spring mvc的执行流程](#spring-mvc%e7%9a%84%e6%89%a7%e8%a1%8c%e6%b5%81%e7%a8%8b)
+  - [组件说明：](#%e7%bb%84%e4%bb%b6%e8%af%b4%e6%98%8e)
+  - [SpringMVC执行流程:](#springmvc%e6%89%a7%e8%a1%8c%e6%b5%81%e7%a8%8b)
+
+<!-- /TOC -->
 
 
 # 切面编程，Aspect Oriented Programming

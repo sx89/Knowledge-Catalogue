@@ -1,8 +1,93 @@
+<!-- TOC -->
 
+- [[617. 合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)](#617-合并二叉树httpsleetcode-cncomproblemsmerge-two-binary-trees)
+- [[@538. 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)](#538-把二叉搜索树转换为累加树httpsleetcode-cncomproblemsconvert-bst-to-greater-tree)
+- [[226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)](#226-翻转二叉树httpsleetcode-cncomproblemsinvert-binary-tree)
+- [[@104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)](#104-二叉树的最大深度httpsleetcode-cncomproblemsmaximum-depth-of-binary-tree)
+- [[@136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)](#136-只出现一次的数字httpsleetcode-cncomproblemssingle-number)
+- [[169. 多数元素](https://leetcode-cn.com/problems/majority-element/)](#169-多数元素httpsleetcode-cncomproblemsmajority-element)
+- [[21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)](#21-合并两个有序链表httpsleetcode-cncomproblemsmerge-two-sorted-lists)
+- [[283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)](#283-移动零httpsleetcode-cncomproblemsmove-zeroes)
+- [[448. 找到所有数组中消失的数字](https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/)](#448-找到所有数组中消失的数字httpsleetcode-cncomproblemsfind-all-numbers-disappeared-in-an-array)
+- [[160. 相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)](#160-相交链表httpsleetcode-cncomproblemsintersection-of-two-linked-lists)
+- [[@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)](#53-最大子序和httpsleetcode-cncomproblemsmaximum-subarray)
+- [[155. 最小栈](https://leetcode-cn.com/problems/min-stack/)](#155-最小栈httpsleetcode-cncomproblemsmin-stack)
+- [[1. 两数之和](https://leetcode-cn.com/problems/two-sum/)](#1-两数之和httpsleetcode-cncomproblemstwo-sum)
+- [[141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)](#141-环形链表httpsleetcode-cncomproblemslinked-list-cycle)
+- [@[234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)](#234-回文链表httpsleetcode-cncomproblemspalindrome-linked-list)
+- [[20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)](#20-有效的括号httpsleetcode-cncomproblemsvalid-parentheses)
+- [@[39. 组合总和](https://leetcode-cn.com/problems/combination-sum/)](#39-组合总和httpsleetcode-cncomproblemscombination-sum)
+- [[22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)](#22-括号生成httpsleetcode-cncomproblemsgenerate-parentheses)
+- [[105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)](#105-从前序与中序遍历序列构造二叉树httpsleetcode-cncomproblemsconstruct-binary-tree-from-preorder-and-inorder-traversal)
+- [[102. 二叉树的层次遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)](#102-二叉树的层次遍历httpsleetcode-cncomproblemsbinary-tree-level-order-traversal)
+- [@[347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)](#347-前-k-个高频元素httpsleetcode-cncomproblemstop-k-frequent-elements)
+- [[17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)](#17-电话号码的字母组合httpsleetcode-cncomproblemsletter-combinations-of-a-phone-number)
+- [[4. 寻找两个有序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)](#4-寻找两个有序数组的中位数httpsleetcode-cncomproblemsmedian-of-two-sorted-arrays)
+- [要再刷一遍](#要再刷一遍)
+- [[46. 全排列](https://leetcode-cn.com/problems/permutations/)](#46-全排列httpsleetcode-cncomproblemspermutations)
+- [[78. 子集](https://leetcode-cn.com/problems/subsets/)](#78-子集httpsleetcode-cncomproblemssubsets)
+- [[@338. 比特位计数](https://leetcode-cn.com/problems/counting-bits/)](#338-比特位计数httpsleetcode-cncomproblemscounting-bits)
+- [543. [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)](#543-二叉树的直径httpsleetcode-cncomproblemsdiameter-of-binary-tree)
+- [@[96. 不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)](#96-不同的二叉搜索树httpsleetcode-cncomproblemsunique-binary-search-trees)
+- [[64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)](#64-最小路径和httpsleetcode-cncomproblemsminimum-path-sum)
+- [[437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)](#437-路径总和-iiihttpsleetcode-cncomproblemspath-sum-iii)
+- [[238. 除自身以外数组的乘积](https://leetcode-cn.com/problems/product-of-array-except-self/)](#238-除自身以外数组的乘积httpsleetcode-cncomproblemsproduct-of-array-except-self)
+- [[48. 旋转图像](https://leetcode-cn.com/problems/rotate-image/)](#48-旋转图像httpsleetcode-cncomproblemsrotate-image)
+- [[49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)](#49-字母异位词分组httpsleetcode-cncomproblemsgroup-anagrams)
+- [[@739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)](#739-每日温度httpsleetcode-cncomproblemsdaily-temperatures)
+- [[@406. 根据身高重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)](#406-根据身高重建队列httpsleetcode-cncomproblemsqueue-reconstruction-by-height)
+- [[@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)](#11-盛最多水的容器httpsleetcode-cncomproblemscontainer-with-most-water)
+- [[@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)](#647-回文子串httpsleetcode-cncomproblemspalindromic-substrings)
+- [[198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)](#198-打家劫舍httpsleetcode-cncomproblemshouse-robber)
+- [[@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)](#279-完全平方数httpsleetcode-cncomproblemsperfect-squares)
+- [[75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)](#75-颜色分类httpsleetcode-cncomproblemssort-colors)
+- [[142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)](#142-环形链表-iihttpsleetcode-cncomproblemslinked-list-cycle-ii)
+- [[@@@@@@@394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)](#394-字符串解码httpsleetcode-cncomproblemsdecode-string)
+- [[@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)](#337-打家劫舍-iiihttpsleetcode-cncomproblemshouse-robber-iii)
+- [[121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)](#121-买卖股票的最佳时机httpsleetcode-cncomproblemsbest-time-to-buy-and-sell-stock)
+- [[309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)](#309-最佳买卖股票时机含冷冻期httpsleetcode-cncomproblemsbest-time-to-buy-and-sell-stock-with-cooldown)
+- [[@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)](#123-买卖股票的最佳时机-iiihttpsleetcode-cncomproblemsbest-time-to-buy-and-sell-stock-iii)
+- [[@@@621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)](#621-任务调度器httpsleetcode-cncomproblemstask-scheduler)
+- [[@@@146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)](#146-lru缓存机制httpsleetcode-cncomproblemslru-cache)
+- [[@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)](#416-分割等和子集httpsleetcode-cncomproblemspartition-equal-subset-sum)
+- [[@494. 目标和](https://leetcode-cn.com/problems/target-sum/)](#494-目标和httpsleetcode-cncomproblemstarget-sum)
+- [[@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)](#300-最长上升子序列httpsleetcode-cncomproblemslongest-increasing-subsequence)
+- [[@560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)](#560-和为k的子数组httpsleetcode-cncomproblemssubarray-sum-equals-k)
+- [[@221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)](#221-最大正方形httpsleetcode-cncomproblemsmaximal-square)
+- [[@34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)](#34-在排序数组中查找元素的第一个和最后一个位置httpsleetcode-cncomproblemsfind-first-and-last-position-of-element-in-sorted-array)
+- [[240. 搜索二维矩阵 II](https://leetcode-cn.com/problems/search-a-2d-matrix-ii/)](#240-搜索二维矩阵-iihttpsleetcode-cncomproblemssearch-a-2d-matrix-ii)
+- [[@79. 单词搜索](https://leetcode-cn.com/problems/word-search/)](#79-单词搜索httpsleetcode-cncomproblemsword-search)
+- [[19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)](#19-删除链表的倒数第n个节点httpsleetcode-cncomproblemsremove-nth-node-from-end-of-list)
+- [[@322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)](#322-零钱兑换httpsleetcode-cncomproblemscoin-change)
+- [[@152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)](#152-乘积最大子序列httpsleetcode-cncomproblemsmaximum-product-subarray)
+- [[2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)](#2-两数相加httpsleetcode-cncomproblemsadd-two-numbers)
+- [[98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)](#98-验证二叉搜索树httpsleetcode-cncomproblemsvalidate-binary-search-tree)
+- [[@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)](#31-下一个排列httpsleetcode-cncomproblemsnext-permutation)
+- [[@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)](#33-搜索旋转排序数组httpsleetcode-cncomproblemssearch-in-rotated-sorted-array)
+- [背包问题的理解](#背包问题的理解)
+- [01背包](#01背包)
+- [完全背包](#完全背包)
+- [多重背包](#多重背包)
+- [[3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)](#3-无重复字符的最长子串httpsleetcode-cncomproblemslongest-substring-without-repeating-characters)
+- [[5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)](#5-最长回文子串httpsleetcode-cncomproblemslongest-palindromic-substring)
+- [[@15. 三数之和](https://leetcode-cn.com/problems/3sum/)](#15-三数之和httpsleetcode-cncomproblems3sum)
+- [[@56. 合并区间](https://leetcode-cn.com/problems/merge-intervals/)](#56-合并区间httpsleetcode-cncomproblemsmerge-intervals)
+- [[@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)](#128-最长连续序列httpsleetcode-cncomproblemslongest-consecutive-sequence)
+- [[@23. 合并K个排序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)](#23-合并k个排序链表httpsleetcode-cncomproblemsmerge-k-sorted-lists)
+- [[124. 二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)](#124-二叉树中的最大路径和httpsleetcode-cncomproblemsbinary-tree-maximum-path-sum)
+- [[@@@239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)](#239-滑动窗口最大值httpsleetcode-cncomproblemssliding-window-maximum)
+- [[@84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)](#84-柱状图中最大的矩形httpsleetcode-cncomproblemslargest-rectangle-in-histogram)
+- [[76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)](#76-最小覆盖子串httpsleetcode-cncomproblemsminimum-window-substring)
+- [[@438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)](#438-找到字符串中所有字母异位词httpsleetcode-cncomproblemsfind-all-anagrams-in-a-string)
+- [[200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)](#200-岛屿数量httpsleetcode-cncomproblemsnumber-of-islands)
+- [[@@139. 单词拆分](https://leetcode-cn.com/problems/word-break/)](#139-单词拆分httpsleetcode-cncomproblemsword-break)
+- [](#)
+- [[55. 跳跃游戏](https://leetcode-cn.com/problems/jump-game/)](#55-跳跃游戏httpsleetcode-cncomproblemsjump-game)
+- [@归并排序(mergeSort)](#归并排序mergesort)
+- [@快速排序(quickSort)](#快速排序quicksort)
+- [@@但凡是有关left,right的函数,一般要判断left>right return](#但凡是有关leftright的函数一般要判断leftright-return)
 
-
-
-
+<!-- /TOC -->
 
 @@的意思是第一次做的不顺利,第二天要再刷一遍
 
@@ -995,7 +1080,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 
 
 
-# 要再刷一遍
+#### 要再刷一遍
 
 
 
@@ -2789,7 +2874,7 @@ public int search(int[] nums, int target) {
 
 
 
-### 背包问题的理解
+#### 背包问题的理解
 
 #### 01背包
 
@@ -2939,7 +3024,7 @@ public String longestPalindrome(String s) {
 
 ```java
 改进:1.数组排序
-    2. 以i为左起点,nums[i]大于0则可以剪枝,否则L++R--来寻找组合
+    1. 以i为左起点,nums[i]大于0则可以剪枝,否则L++R--来寻找组合
     3.num[i]可能会有重复,要用最左边的num[i],不然比如 -1  -1 0 1 2,用最右边的nums[i]会漏掉 -1 -1 2 这种情况
     4.找到 num[i] nums[L] nums[R]的组合之后  L要一直++ R要一直--,直到nums[L]!=nums[L],为的是去除重复解
     比如 -2 -1 -1 0 3 3

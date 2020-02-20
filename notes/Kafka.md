@@ -1,4 +1,22 @@
+<!-- TOC -->
 
+- [基本概念](#基本概念)
+    - [Broker](#broker)
+    - [Topic](#topic)
+    - [Partition](#partition)
+    - [Consumer Group 即 User Group](#consumer-group-即-user-group)
+    - [Offset](#offset)
+- [Kafka和RocketMq的不同](#kafka和rocketmq的不同)
+- [kafka消息的同步机制](#kafka消息的同步机制)
+    - [Producer的三种保证](#producer的三种保证)
+    - [Consumer的三种保证](#consumer的三种保证)
+    - [消息传递过程](#消息传递过程)
+- [Kafka的offset与提交关系](#kafka的offset与提交关系)
+    - [自动提交](#自动提交)
+    - [手动提交](#手动提交)
+        - [手动提交的三种方式 同步 异步 混合(针对提交失败的处理方式)](#手动提交的三种方式-同步-异步-混合针对提交失败的处理方式)
+
+<!-- /TOC -->
 
 # 基本概念
 

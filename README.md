@@ -36,7 +36,7 @@
 
 - [剑指 Offer 题解](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
 - [Leetcode 01](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(已完成)
-- - [Leetcode 02](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(在编写)
+- [Leetcode 02](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(在编写)
 - [算法](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
 
 ##  操作系统
