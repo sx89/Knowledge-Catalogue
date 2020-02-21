@@ -3,7 +3,8 @@
 
 状态:已完成/在编写/未开始
 
-##Golang
+## Golang
+
 - [Golang 基础](https://github.com/sx89/Java-notes/blob/master/notes/Golang.md)(已完成)
 - [b站轻视频服务端开发](https://github.com/sx89/Java-notes/blob/master/notes/%E8%A7%86%E9%A2%91%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.md)(已完成)
 ##  Java
@@ -16,6 +17,15 @@
 - [Java 设计模式](https://github.com/sx89/Java-notes/blob/master/notes/Java-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)(在编写)
 - [设计模式](https://github.com/sx89/Java-notes/blob/master/notes/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)(在编写)
 - [面向对象思想](https://github.com/sx89/Java-notes/blob/master/notes/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%80%9D%E6%83%B3.md)(在编写)
+
+## 算法
+
+- [剑指 Offer](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
+- [LeetCode-part1](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(已完成)
+- [LeetCode-part2](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(在编写)
+- [算法](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
+
+
 ##  MySQL数据库
 
 - [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(未开始)
@@ -32,12 +42,6 @@
 - [容器技术-Docker](https://github.com/sx89/docker-note)(在编写)
 - [Kafka](https://github.com/sx89/Java-notes/blob/master/notes/Kafka.md)(在编写)
 
-## 算法
-
-- [剑指 Offer 题解](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
-- [Leetcode 01](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(已完成)
-- [Leetcode 02](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(在编写)
-- [算法](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
 
 ##  操作系统
 
