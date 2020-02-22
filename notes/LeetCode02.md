@@ -1397,7 +1397,30 @@ public ListNode sortList(ListNode head) {
 ```
 
 
+private TreeNode pre = null;
 
+    public void flatten(TreeNode root) {
+        preOrder(root);
+    }
+
+    private void preOrder(TreeNode root) {
+
+        if (root == null) {
+            return;
+        }
+        //需要提前把左右子树存储好
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if (pre != null) {
+            pre.right = root;
+
+        }
+        pre = root;
+        root.left = null;
+        preOrder(left);
+        preOrder(right);
+
+    }
 
 
 
