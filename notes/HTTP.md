@@ -1,4 +1,3 @@
-
 <!-- TOC -->
 
 - [1. 一 、基础概念](#1-%e4%b8%80-%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5)
@@ -361,7 +360,7 @@ HTTP/1.x 实现简单是以牺牲性能为代价的：
 - 不会压缩请求和响应首部，从而导致不必要的网络流量；
 - 不支持有效的资源优先级，致使底层 TCP 连接的利用率低下。
 
-## 6.2. 二进制分帧层
+## 6.2. 二进制分帧层/底层tcp
 
 HTTP/2.0 将报文分成 HEADERS 帧和 DATA 帧，它们都是二进制格式的。
 
@@ -375,13 +374,13 @@ HTTP/2.0 将报文分成 HEADERS 帧和 DATA 帧，它们都是二进制格式�
 
 <div align="center"> <img src="pics/af198da1-2480-4043-b07f-a3b91a88b815.png" width="600"/> </div><br>
 
-## 6.3. 服务端推送
+## 6.3. 服务端关联资源推送
 
 HTTP/2.0 在客户端请求一个资源时，会把相关的资源一起发送给客户端，客户端就不需要再次发起请求了。例如客户端请求 page.html 页面，服务端就把 script.js 和 style.css 等与之相关的资源一起发给客户端。
 
 <div align="center"> <img src="pics/e3f1657c-80fc-4dfa-9643-bf51abd201c6.png" width="800"/> </div><br>
 
-## 6.4. 首部压缩
+## 6.4. 请求头压缩
 
 HTTP/1.1 的首部带有大量信息，而且每次都要重复发送。
 
@@ -574,6 +573,7 @@ Cookie 曾一度用于客户端数据的存储，因为当时并没有其它合�
 ### cookie的获取,通过postman来模拟前端请求
 从前端页面获取请求url:
 f12  network  查看url
+
 <div align="center"> <img src="./pictures/HTTP/Snipaste_2019-11-04_19-17-54.png" width="600"/> </div>
 
 获取cookie:

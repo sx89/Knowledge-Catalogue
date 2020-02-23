@@ -28,7 +28,7 @@
 
 ##  MySQL数据库
 
-- [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(未开始)
+- [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(在编写)
 - [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(已完成)
 
 ##  分布式基础 

@@ -1,4 +1,10 @@
 
+# 常用sql语句锦集
+```
+insert into tablename (name,sexy,height) values("sx","female",123)
+
+
+```
 
 # 一、基础
 
