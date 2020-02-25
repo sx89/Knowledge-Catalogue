@@ -484,10 +484,6 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
 
 #### [@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
-
-
-
-
 ```java
     public int maxSubArray(int[] nums) {
         int len = nums.length;
@@ -2093,7 +2089,7 @@ class LRUCache {
     }
 ```
 
-#### [@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+#### [@@@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 
 本质是背包类的动态规划. 选第i个物品的时候,目标重量或者最大重量由i-1决定.
 
@@ -2134,7 +2130,7 @@ public boolean canPartition(int[] nums) {
 
 
 
-#### [@494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+#### [@@@494. 目标和](https://leetcode-cn.com/problems/target-sum/)
 
 背包类的动态规划,跟  分割等和子集 是一类题目.  i处选不选物品 由i-1处决定.
 
@@ -2220,7 +2216,7 @@ public int lengthOfLIS(int[] nums) {
 
 
 
-#### [@560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+#### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 @很容易想到梯度,但是没想到sum-k的形式.
 
@@ -2569,7 +2565,7 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 
 
 
-#### [@322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+#### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 
 @好题  第一遍作对了
 
