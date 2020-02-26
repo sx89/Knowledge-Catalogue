@@ -1,5 +1,5 @@
-# Java-notes
-计算机基础+Java核心知识+分布式核心知识
+# Introduction
+计算机基础+Java核心知识+分布式核心知识+Golang知识与项目
 
 状态:已完成/在编写/未开始
 
@@ -16,27 +16,26 @@
 
 ## 算法
 
-- [剑指 Offer](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
+- [剑指Offer](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)(在编写)
 - [LeetCode-part1](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(已完成)
 - [LeetCode-part2](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)(在编写)
-- [算法](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
+- [排序算法总结](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)(在编写)
 
 
 ##  MySQL数据库
 
-- [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(在编写)
 - [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(已完成)
+- [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)(在编写)
 
-##  分布式基础 
+##  分布式知识
 
-- [系统设计基础]()(未开始)
-- [分布式](https://github.com/sx89/Java-notes/blob/master/notes/%E5%88%86%E5%B8%83%E5%BC%8F.md)(已完成)
+- [分布式基础知识](https://github.com/sx89/Java-notes/blob/master/notes/%E5%88%86%E5%B8%83%E5%BC%8F.md)(已完成)
 - [开发框架-SpringBoot](https://github.com/sx89/summary-of-all-my-repositories)(在编写)
 - [高速缓存-Redis](https://github.com/sx89/Java-notes/blob/master/notes/redis.md)(已完成)
-- [消息队列-RocketMQ](https://github.com/sx89/rocketmq4.0-code)(在编写)
-- [网络编程-Netty](https://github.com/sx89/network_and_protocol)(在编写)
+- [消息中间件-RocketMQ](https://github.com/sx89/rocketmq4.0-code)(在编写)
+- [百万连接-Netty](https://github.com/sx89/network_and_protocol)(在编写)
 - [容器技术-Docker](https://github.com/sx89/docker-note)(在编写)
-- [Kafka](https://github.com/sx89/Java-notes/blob/master/notes/Kafka.md)(在编写)
+- [消息中间件-Kafka](https://github.com/sx89/Java-notes/blob/master/notes/Kafka.md)(在编写)
 
 
 ##  操作系统
@@ -53,7 +52,6 @@
 
 - [Golang 基础](https://github.com/sx89/Java-notes/blob/master/notes/Golang.md)(已完成)
 - [b站轻视频服务端开发](https://github.com/sx89/Java-notes/blob/master/notes/%E8%A7%86%E9%A2%91%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.md)(已完成)
-
 
 
 ## Linux 
