@@ -727,6 +727,17 @@ mixed：statement与row的混合。Mysql决定什么时候写statement格式的�
 <div align="center"> <img src=".\pictures\mysql\Snipaste_2019-09-08_15-20-07.jpg" width=""/> </div><br>
 
 ## 四种事务隔离机制
+
+读未提交:事物开始/假/真/事务提交
+
+读提交:事务开始/旧/真/事务提交
+
+可重复读:事务开始/旧旧旧/事务提交/真.
+
+
+
+
+
 未提交读(Read Uncommitted)：允许脏读，也就是可能读取到其他会话中未提交事务修改的数据
 
 提交读(Read Committed)：只能读取到已经提交的数据。Oracle等多数数据库默认都是该级别 (不重复读)

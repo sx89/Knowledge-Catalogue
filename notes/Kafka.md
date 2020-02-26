@@ -23,6 +23,12 @@
 同一个topic的消息,有多个分区,会被平均分配(不是复制)到这几个分区,  
 同一个组的多个消费者,会分别负责一个分区,来取他们中的消息消费;如果是多个消费者负责一个分区,会有offset来控制消费顺序.
 
+
+
+该图中只有一个topic ,该topic下有t0,t1,t2,t3四个消息.
+
+如果还有第二个topic,topic下的消息有t8,t9,t10,t11.那么跟t0123的分配方式是一样的.
+
 <div align="center"> <img src="./pictures/kafka/Snipaste_2019-11-04_19-50-53.png" width="600"/> </div>
 
 ## Broker
@@ -83,6 +89,7 @@ producer 的deliver guarantee 可以通过request.required.acks参数的设置�
 读完消息先commit再处理消息。这种模式下，如果consumer在commit后还没来得及处理消息就crash了，下次重新开始工作后就无法读到刚刚已提交而未处理的消息，这就对应于At most once
 
 读完消息先处理再commit。这种模式下，如果处理完了消息在commit之前consumer crash了，下次重新开始工作时还会处理刚刚未commit的消息，实际上该消息已经被处理过了。这就对应于At least once（默认）
+
 如果一定要做到Exactly once，就需要协调offset和实际操作的输出。精典的做法是引入两阶段提交。如果能让offset和操作输入存在同一个地方，会更简洁和通用。这种方式可能更好，因为许多输出系统可能不支持两阶段提交。比如，consumer拿到数据后可能把数据放到HDFS，如果把最新的offset和数据本身一起写到HDFS，那就可以保证数据的输出和offset的更新要么都完成，要么都不完成，间接实现Exactly once。（目前就high level API而言，offset是存于Zookeeper中的，无法存于HDFS，而low level API的offset是由自己去维护的，可以将之存于HDFS中）
 
 ## 消息传递过程
