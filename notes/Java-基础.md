@@ -1,4 +1,3 @@
-
 <!-- TOC -->
 
 - [数据类型](#数据类型)
@@ -432,13 +431,10 @@ Java中的继承只能单继承，但是可以通过内部类继承其他类来�
 用访问修饰符来保证类内部的数据不会被外部随意访问修改
 
 ```java
-default (即默认，什么也不写）: 在同一包内可见，不使用任何修饰符。使用对象：类、接口、变量、方法。
-
 private : 在同一类内可见。使用对象：变量、方法。 注意：不能修饰类（外部类）
-
-public : 对所有类可见。使用对象：类、接口、变量、方法
-
+default (即默认，什么也不写）: 在同一包内可见，不使用任何修饰符。使用对象：类、接口、变量、方法。
 protected : 对同一包内的类和所有子类可见。使用对象：变量、方法。 注意：不能修饰类（外部类）。
+public : 对所有类可见。使用对象：类、接口、变量、方法
 ```
 
 
@@ -2379,8 +2375,8 @@ public class OuterClass$InnerClass {
 
 **New highlights in Java SE 8** 
 
-1. Lambda Expressions
-2. Pipelines and Streams
+1. **Lambda Expressions**
+2. **Pipelines and Streams**
 3. Date and Time API
 4. Default Methods
 5. Type Annotations
@@ -2498,3 +2494,14 @@ wait方法会让当前线程等待直到另外一个线程调用对象的notify�
 finalize方法是一个protected方法，Object类的默认实现是不进行任何操作
 
 该方法的作用是实例被垃圾回收器回收的时候触发的操作，就好比 “死前的最后一波挣扎”
+
+# 常见扩容
+
+1.初始  2.扩容后的倍数.
+
+StringBuilder len+16,2+1
+
+ArrayList 10,  1.5+1
+
+map   16  装填因子  2倍。
+

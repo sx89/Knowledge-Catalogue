@@ -370,6 +370,10 @@ java.text.Format
 java.io.Serializable接口
 接口功能：只有实现了Serializable接口的类才能序列化，此接口中没有任何方法，只是为类标记实现了此接口的类可以进行序列化。而如果一个类想要序列化，除了实现这个接口外，还要自己写ReadObject()，WriteObject()方法，用于对流的读取和输出。
 
+## 观察者模式
+
+类观察到变量的变化,让类们自动改变
+
 # Spring中的设计模式
 
 

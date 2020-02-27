@@ -396,6 +396,140 @@ customer_id_selectivity: 0.0373
 
 - 但是对于特大型的表，建立和维护索引的代价将会随之增长。这种情况下，需要用到一种技术可以直接区分出需要查询的一组数据，而不是一条记录一条记录地匹配，例如可以使用分区技术。
 
+
+
+# 索引失效的情况
+
+虽然你这列上建了索引，查询条件也是索引列，但最终执行计划没有走它的索引。下面是引起这种问题的几个关键点。
+
+## 列与列对比
+
+某个表中，有两列（id和c_id）都建了单独索引，下面这种查询条件不会走索引
+
+select * from test where id=c_id;
+
+这种情况会被认为还不如走全表扫描。
+
+## 存在NULL值条件
+
+我们在设计数据库表时，应该尽力避免NULL值出现，如果非要不可避免的要出现NULL值，也要给一个DEFAULT值，数值型可以给0、-1之类的， 字符串有时候给空串有问题，就给一个空格或其他。如果索引列是可空的，是不会给其建索引的，索引值是少于表的count(*)值的，所以这种情况下，执行计划自然就去扫描全表了。
+
+select * from test where id is not null;
+
+
+## NOT条件
+
+我们知道建立索引时，给每一个索引列建立一个条目，如果查询条件为等值或范围查询时，索引可以根据查询条件去找对应的条目。反过来当查询条件为非时，索引定位就困难了，执行计划此时可能更倾向于全表扫描，这类的查询条件有：<>、NOT、in、not exists
+
+select * from test where id<>500;
+select * from test where id in (1,2,3,4,5);
+select * from test where not in (6,7,8,9,0);
+select * from test where not exists (select 1 from test_02 where test_02.id=test.id);
+
+
+## LIKE通配符
+
+当使用模糊搜索时，尽量采用后置的通配符，例如：name||’%’，因为走索引时，其会从前去匹配索引列，这时候是可以找到的，如果采用前匹配，那么查索引就会很麻烦，比如查询所有姓张的人，就可以去搜索’张%’。相反如果你查询所有叫‘明’的人，那么只能是%明。这时候索引如何定位呢？前匹配的情况下，执行计划会更倾向于选择全表扫描。后匹配可以走INDEX RANGE SCAN。
+所以业务设计的时候，尽量考虑到模糊搜索的问题，要更多的使用后置通配符。
+
+select * from test where name like 张||'%';
+
+
+## 条件上包括函数
+
+查询条件上尽量不要对索引列使用函数，比如下面这个SQL
+
+select * from test where upper(name)='SUNYANG';
+
+这样是不会走索引的，因为索引在建立时会和计算后可能不同，无法定位到索引。但如果查询条件不是对索引列进行计算，那么依然可以走索引。比如
+
+select * from test where name=upper('sunyang');
+--INDEX RANGE SCAN
+这样的函数还有：to_char、to_date、to_number、trunc等
+
+## 复合索引前导列区分大
+
+当复合索引前导列区分小的时候，我们有INDEX SKIP SCAN，当前导列区分度大，且查后导列的时候，前导列的分裂会非常耗资源，执行计划想，还不如全表扫描来的快，然后就索引失效了。
+
+select * from test where owner='sunyang';
+
+
+## 数据类型的转换
+
+当查询条件存在隐式转换时，索引会失效。比如在数据库里id存的number类型，但是在查询时，却用了下面的形式：
+
+select * from sunyang where id='123';
+
+Connect By Level
+使用connect by level时，不会走索引。
+
+## 谓词运算
+
+我们在上面说，不能对索引列进行函数运算，这也包括加减乘除的谓词运算，这也会使索引失效。建立一个sunyang表，索引为id，看这个SQL：
+
+select * from sunyang where id/2=:type_id;
+
+这里很明显对索引列id进行了’/2’除二运算，这时候就会索引失效，这种情况应该改写为：
+
+select * from sunyang where id=:type_id*2;
+
+就可以使用索引了。
+
+## Vistual Index
+
+先说明一下，虚拟索引的建立是否有用，需要看具体的执行计划，如果起作用就可以建一个，如果不起作用就算了。
+普通索引这么建：
+
+create index idx_test_id on test(id);
+
+虚拟索引Vistual Index这么建：
+
+create index idx_test_id on test(id) nosegment;
+
+做了一个实验，首先创建一个表：
+
+CREATE TABLE test_1116( 
+id number, 
+a number 
+); 
+
+CREATE INDEX idx_test_1116_id on test_1116(id); 
+CREATE INDEX idx_test_1116_a on test_1116(a)nosegment; 
+
+其中id为普通索引，a为虚拟索引。
+在表中插入十万条数据
+
+begin 
+for i in 1 .. 100000 loop 
+        insert into test_1116 values (i,i); 
+end loop; 
+commit; 
+end; 
+
+接着分别去执行下面的SQL看时间，由于在内网机做实验，图贴不出来，数据保证真实性。
+
+select count(id) from test_1116;
+--第一次耗时：0.061秒
+--第二次耗时：0.016秒
+
+select count(a) from test_1116; 
+--第一次耗时：0.031秒
+--第二次耗时：0.016秒
+因为在执行过一次后，oracle对结果集缓存了，所以第二次执行耗时不走索引，走内存就都一样了。
+可以看到在这种情况下，虚拟索引比普通索引快了一倍。
+具体虚拟索引的使用细节，这里不再展开讨论。
+
+## Invisible Index
+
+Invisible Index是oracle 11g提供的新功能，对优化器（还接到前面博客里讲到的CBO吗）不可见，我感觉这个功能更主要的是测试用，假如一个表上有那么多索引，一个一个去看执行计划调试就很慢了，这时候不如建一个对表和查询都没有影响的Invisible Index来进行调试，就显得很好了。
+通过下面的语句来操作索引
+
+alter index idx_test_id invisible;
+alter index idx_test_id visible;
+如果想让CBO看到Invisible Index，需要加入这句：
+
+alter session set optimizer_use_invisible_indexes = true;
+
 # 二、查询性能优化
 
 ## 使用 Explain 进行分析
@@ -921,14 +1055,14 @@ commit;
 悲观锁，顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如**行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。**
 
 ### 共享锁(读锁,S锁)
-被加锁的对象可以被持锁事务读取，但是不能被修改，其他事务也可以在上面再加共享锁。
+**被加锁的对象可以被持锁事务读取，但是不能被修改**，其他事务也可以在上面再加共享锁。
 
 兼容性：如果数据资源上放置了共享锁，还能再放置共享锁和更新锁。
 
 并发性能：具有良好的并发性能，当数据被放置共享锁后，还可以再放置共享锁或更新锁。所以并发性能很好。
 
 ### 排他锁(写锁,X锁)
-被加锁的对象只能被持有锁的事务读取和修改，其他事务无法在该对象上加其他锁，也不能读取和修改该对象
+**被加锁的对象只能被持有锁的事务读取和修改，其他事务无法在该对象上加其他锁，也不能读取和修改该对象**
 
 兼容性：独占锁不能和其他锁兼容，如果数据资源上已经加了独占锁，就不能再放置其他的锁了。同样，如果数据资源上已经放置了其他锁，那么也就不能再放置独占锁了。
 

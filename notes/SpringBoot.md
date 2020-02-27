@@ -71,7 +71,7 @@ IoC 不是一种技术，只是一种思想，一个重要的面向对象编程�
 
 + 谁注入谁：很明显是IoC容器注入应用程序某个对象，应用程序依赖的对象；
 
-+ 注入了什么：就是注入某个对象所需要的外部资源（包括对象、资源、常量数据）。
++ 注入了什么：**就是注入某个对象所需要的外部资源（包括对象、资源、常量数据）**。
 
 　　IoC和DI由什么关系呢？其实它们是同一个概念的不同角度描述，由于控制反转概念比较含糊（可能只是理解为容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以2004年大师级人物Martin Fowler又给出了一个新的名字：“依赖注入”，相对IoC 而言，“依赖注入”明确描述了“被注入对象依赖IoC容器配置依赖对象”。
 
@@ -80,7 +80,7 @@ IoC 不是一种技术，只是一种思想，一个重要的面向对象编程�
 ## 控制反转与依赖注入的理解
 在平时的java应用开发中，我们要实现某一个功能或者说是完成某个业务逻辑时至少需要两个或以上的对象来协作完成，在没有使用Spring的时候，每个对象在需要使用他的合作对象时，自己均要使用像new object() 这样的语法来将合作对象创建出来，这个合作对象是由自己主动创建出来的，创建合作对象的主动权在自己手上，自己需要哪个合作对象，就主动去创建，创建合作对象的主动权和创建时机是由自己把控的，而这样就会使得对象间的耦合度高了，A对象需要使用合作对象B来共同完成一件事，A要使用B，那么A就对B产生了依赖，也就是A和B之间存在一种耦合关系，并且是紧密耦合在一起，而使用了Spring之后就不一样了，创建合作对象B的工作是由Spring来做的，Spring创建好B对象，然后存储到一个容器里面，当A对象需要使用B对象时，Spring就从存放对象的那个容器里面取出A要使用的那个B对象，然后交给A对象使用，至于Spring是如何创建那个对象，以及什么时候创建好对象的，A对象不需要关心这些细节问题(你是什么时候生的，怎么生出来的我可不关心，能帮我干活就行)，A得到Spring给我们的对象之后，两个人一起协作完成要完成的工作即可。
 
-　　所以控制反转IoC(Inversion of Control)是说创建对象的控制权进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，比如转移交给了IoC容器，它就是一个专门用来创建对象的工厂，你要什么对象，它就给你什么对象，有了 IoC容器，依赖关系就变了，原先的依赖关系就没了，它们都依赖IoC容器了，通过IoC容器来建立它们之间的关系。
+　　**所以控制反转IoC(Inversion of Control)是说创建对象的控制权进行转移**，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，比如转移交给了IoC容器，它就是一个专门用来创建对象的工厂，你要什么对象，它就给你什么对象，有了 IoC容器，依赖关系就变了，原先的依赖关系就没了，它们都依赖IoC容器了，通过IoC容器来建立它们之间的关系。
 
 　　这是我对Spring的IoC(控制反转)的理解。DI(依赖注入)其实就是IOC的另外一种说法，DI是由Martin Fowler 在2004年初的一篇论文中首次提出的。他总结：控制的什么被反转了？就是：获得依赖对象的方式反转了
 
@@ -140,3 +140,53 @@ View:是Spring MVC的封装对象，是一个接口, Spring MVC框架提供了�
 
 11.DispatcherServlet响应用户。
 
+
+
+# spring cloud使用Feign实现远程接口的调用	
+
+在开发中，我们常用httpClient去远程调用其他系统的接口，一般情况下，需要我们指定调用的url，feign也实现了一套远程调用的方法，并且更为优雅。
+1.添加依赖
+
+```
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-feign</artifactId>
+</dependency>
+```
+
+
+2.创建FeignClient接口（用于指定远程调用的服务）
+
+2.创建FeignClient接口（用于指定远程调用的服务）
+
+```
+// 申明这是一个Feign客户端，并且指明服务id
+@FeignClient(value = "com-spring-caclulate") 
+public interface CacluFeignClient {
+
+ // 这里定义了类似于SpringMVC用法的方法，就可以进行RESTful的调用了
+@RequestMapping(value = "/caclu/{num}", method = RequestMethod.GET)
+public Item caclulate(@PathVariable("num") Integer num);
+
+}
+```
+
+注意：这里就是一个接口。
+3.在需要进行远程调用的方法里注入该接口，并调用对应的api接口方法
+
+注意：这里就是一个接口。
+3.在需要进行远程调用的方法里注入该接口，并调用对应的api接口方法
+
+```
+@Autowired
+private CacluFeignClient cacluFeignClient ;
+
+@GetMapping(value = "query/result")
+public Integer caclulate() {
+    cacluFeignClient.caclulate(1);
+}
+```
+
+4.在启动类上添加注解 @EnableFeignClients，表示支持Feign
+
+FeignClient接口和spring mvc接口的格式一致，在调用方的方法中，我们只需要调用本系统中定义的接口即可。

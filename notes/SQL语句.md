@@ -3,7 +3,7 @@
 ```
 insert into tablename (name,sexy,height) values("sx","female",123)
 
-
+写的顺序：select ... from... where.... group by... having... order by..
 ```
 
 # 一、基础

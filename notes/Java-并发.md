@@ -1049,11 +1049,53 @@ before
 after
 ```
 
-# 七、J.U.C - AQS
+# 七、J.U.C 
 
-java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。AbstractQueuedSynchronizer，即抽象队列同步器,是一个用来构建锁和同步器的框架.它底层用了 CAS 技术来保证操作的原子性，同时利用 FIFO 队列实现线程间的锁竞争，将基础的同步相关抽象细节放在 AQS，这也是 ReentrantLock、CountDownLatch 等同步工具实现同步的底层实现机制。
+## AQS(使用了cas,是大多数juc工具的基础)
 
-## CountDownLatch
+java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。AbstractQueuedSynchronizer，即抽象队列同步器,是一个用来构建锁和同步器的框架.它底层用了 CAS 技术来保证操作的原子性，同时利用 FIFO 队列实现线程间的锁竞争，将基础的同步相关抽象细节放在 AQS，这也是 ReentrantLock,CountDownLatch,CyclicBarrier,Semaphore 等同步工具实现同步的底层实现机制。
+
+## J.U.C常用组件
+
+### ReentrantLock
+
+ReentrantLock 是 java.util.concurrent（J.U.C）包中的锁。
+
+```java
+public class LockExample {
+    
+    private Lock lock = new ReentrantLock();
+
+    public void func() {
+        lock.lock();
+        try {
+            for (int i = 0; i < 10; i++) {
+                System.out.print(i + " ");
+            }
+        } finally {
+            lock.unlock(); // 确保释放锁，从而避免发生死锁。
+        }
+    }
+}
+```
+
+```java
+public static void main(String[] args) {
+    LockExample lockExample = new LockExample();
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    executorService.execute(() -> lockExample.func());
+    executorService.execute(() -> lockExample.func());
+}
+```
+
+```html
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+```
+
+
+## 
+
+### CountDownLatch
 
 用来控制一个或者多个线程等待多个线程。
 
@@ -1085,7 +1127,7 @@ public class CountdownLatchExample {
 run..run..run..run..run..run..run..run..run..run..end
 ```
 
-## CyclicBarrier
+### CyclicBarrier
 
 用来控制多个线程互相等待，只有当多个线程都到达时，这些线程才会继续执行。
 
@@ -1137,7 +1179,7 @@ public class CyclicBarrierExample {
 before..before..before..before..before..before..before..before..before..before..after..after..after..after..after..after..after..after..after..after..
 ```
 
-## Semaphore
+### Semaphore
 
 Semaphore 类似于操作系统中的信号量，可以控制对互斥资源的访问线程数。
 
@@ -1173,9 +1215,8 @@ public class SemaphoreExample {
 ```
 
 
-# 八、J.U.C - 其它组件
 
-## FutureTask
+### FutureTask
 
 在介绍 Callable 时我们知道它可以有返回值，返回值通过 Future<V> 进行封装。FutureTask 实现了 RunnableFuture 接口，该接口继承自 Runnable 和 Future<V> 接口，这使得 FutureTask 既可以当做一个任务执行，也可以有返回值。
 
@@ -1227,7 +1268,7 @@ other task is running...
 4950
 ```
 
-## BlockingQueue
+### BlockingQueue
 
 java.util.concurrent.BlockingQueue 接口有以下阻塞队列的实现：
 
@@ -1291,9 +1332,9 @@ public static void main(String[] args) {
 produce..produce..consume..consume..produce..consume..produce..consume..produce..consume..
 ```
 
-## ForkJoin
+### ForkJoin
 
-主要用于并行计算中，和 MapReduce 原理类似，都是把大的计算任务拆分成多个小任务并行计算。
+**主要用于并行计算中，和 MapReduce 原理类似，都是把大的计算任务拆分成多个小任务并行计算。**
 
 ```java
 public class ForkJoinExample extends RecursiveTask<Integer> {
