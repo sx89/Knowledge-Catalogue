@@ -4031,7 +4031,7 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
     }
 ```
 
-# 52. 两个链表的第一个公共结点
+# @@52. 两个链表的第一个公共结点
 
 [NowCoder](https://www.nowcoder.com/practice/6ab1d9a29e88450685099d45c9e31e46?tpId=13&tqId=11189&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4046,13 +4046,25 @@ long	Long.MAX_VALUE=9223372036854775807  19位,最高位为9
 
 ```java
 public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
-    ListNode l1 = pHead1, l2 = pHead2;
-    while (l1 != l2) {
-        l1 = (l1 == null) ? pHead2 : l1.next;
-        l2 = (l2 == null) ? pHead1 : l2.next;
+        ListNode l1 = pHead1;
+        ListNode l2 = pHead2;
+        while (l1 != l2) {
+            
+            if (l1 == null) {
+                l1 = pHead2;
+            } else {
+                l1 = l1.next;
+            }
+            
+            if (l2 == null) {
+                l2 = pHead1;
+            } else {
+                l2 = l2.next;
+            }
+            
+        }
+        return l1;
     }
-    return l1;
-}
 
 改进:
 下面的方法好理解求size1 size2   和 deta差.
