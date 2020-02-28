@@ -824,6 +824,20 @@ public synchronized static void fun() {
 
 ## ReentrantLock
 
+### 该锁有公平和不公平两种.
+
+#### FairSync 公平锁
+
+公平锁就是每个线程在获取锁时会先查看此锁维护的等待队列，如果为空，或者当前线程线程是等待队列的第一个，就占有锁，否则就会加入到等待队列中，以后会按照FIFO的规则从队列中获取，下面是FairSync 的源码：
+
+#### 非公平锁
+
+https://blog.csdn.net/rickiyeat/article/details/78307739
+
+
+
+### ReentrantLock简介
+
 ReentrantLock 是 java.util.concurrent（J.U.C）包中的锁。
 
 ```java

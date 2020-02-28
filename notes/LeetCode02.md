@@ -35,6 +35,16 @@
 
 <!-- /TOC -->
 
+#### 习惯问题:
+
+先跟面试官沟通题目的意思
+
+注意边界情况  判空, 单数双数,正负数,有相同重复数据(map,index),
+
+写完后把代码规整起来
+
+主动分析时间复杂度和空间复杂度
+
 
 
 
@@ -1402,9 +1412,9 @@ private TreeNode pre = null;
     public void flatten(TreeNode root) {
         preOrder(root);
     }
-
+    
     private void preOrder(TreeNode root) {
-
+    
         if (root == null) {
             return;
         }
@@ -1413,43 +1423,223 @@ private TreeNode pre = null;
         TreeNode right = root.right;
         if (pre != null) {
             pre.right = root;
-
+    
         }
         pre = root;
         root.left = null;
         preOrder(left);
         preOrder(right);
-
+    
     }
 
 
 
+#### [48. 旋转图像](https://leetcode-cn.com/problems/rotate-image/)
+
+```java
+ public void rotate(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = i + 1; j < matrix.length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length / 2; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][matrix.length - 1 - j];
+                matrix[i][matrix.length - 1 - j] = temp;
+            }
+        }
+    }
+```
+
+
+
+#### @@01序列的最大长度
+
+利用梯度+hashmap存梯度索引
+
+给定一个数组，数组中只包含0和1。请找到一个最长的子序列，其中0和1的数量是相同的
+
+```java
+ public int getMaxLen(int[] nums) {
+
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                nums[i] = -1;
+            }
+        }
+        int maxLen = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum = 0;
+        map.put(0, -1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            nums[i] = sum;
+            if (map.containsKey(nums[i])) {
+                int len = i - map.get(nums[i]);
+                maxLen = Math.max(len, maxLen);
+            } else {
+                map.put(sum, i);
+            }
+        }
+        return maxLen;
+    }
+```
+
+
+
+#### @@相亲数
+
+@约的求解1.边界是`i*i<=num   2.i*i==num的时候只算一个i    `
+
+@相亲数的寻找  i= 220  sum[i] = 284  sum[284] = 220  所以  sum[sum[i]] = i. 并且要注意 i= 6; sum[6]=6这种特殊情况 
 
 
 
 
 
+amicable number, 两个正整数中，彼此的全部正约数之和与另一方相等
+
+* 约数又叫因数，b是a的约数，则a%b==0，整除没有余数
+* 220的所有因子\(除了自己以外的因子\)：1+2+4+5+10+11+20+22+44+55+110 = 284
+* 284的所有因子：1+2+4+71+142 = 220
+* 
+
+```java
+ private int getSum(int num) {
+        int sum = 0;
+        for (int i = 1; i * i <= num; i++) {
+
+            //i的三种特殊情况  假设num为100, i=10的时候只算一个10
+            //i=1的时候  不加 100/1
+            //其他时候 如果num%i==0   比如 i=2   则 2和50都加到sum里
+            if (i * i == num) {
+                return sum + i;
+            }
+            if (i == 1) {
+                sum += 1;
+                continue;
+            }
+            if (num % i == 0) {
+                sum += i;
+                sum += num / i;
+            }
+        }
+
+        return sum;
+    }
+
+    public ArrayList<Integer> getAllNum(int maxNum) {
+        ArrayList<Integer> ret = new ArrayList<>();
+        int[] sum = new int[maxNum + 1];
+        for (int i = 2; i <= maxNum; i++) {
+            sum[i] = getSum(i);
+        }
+        for (int i = 2; i <= maxNum; i++) {
+            if (sum[i] > maxNum) {
+                continue;
+            }
+            if (sum[i] != i && sum[sum[i]] == i) {
+                ret.add(i);
+            }
+        }
+        return ret;
+    }
+```
 
 
 
+#### 全排列
+
+https://leetcode.com/problems/permutations/
 
 
 
+```java
+List<List<Integer>> ret = new ArrayList<>();
+    boolean[] visited = null;
+    int len = 0;
+    ArrayList<Integer> path = new ArrayList<Integer>();
+
+    public List<List<Integer>> permute(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return ret;
+        }
+        len = nums.length;
+        visited = new boolean[len];
+        for (int i = 0; i < len; i++) {
+            path.add(nums[i]);
+            visited[i] = true;
+            backtracing(nums, i, path);
+            visited[i] = false;
+            path.remove(path.size() - 1);
+        }
+        return ret;
+
+    }
+
+    private void backtracing(int[] nums, int index, ArrayList<Integer> path) {
+
+        if (path.size() == len) {
+            ret.add(new ArrayList<Integer>(path));
+            return;
+        }
+        for (int i = 0; i < len; i++) {
+            if (visited[i] == false) {
+                path.add(nums[i]);
+                visited[i] = true;
+                backtracing(nums, i, path);
+                visited[i] = false;
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+```
 
 
 
+#### 012组合数
 
+一道是长度为N的数组，每个元素为0或1或2，找到满足a\[i\]&lt;a\[j\]&lt;a\[k\]的\(i, j, k\)的数量
 
+```java
+ public int func(int[] nums) {
+        int[][] remember = new int[nums.length][2];
+        int countZero = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i == 0) {
+                remember[i][0] = 0;
+            } else {
+                remember[i][0] = countZero;
+            }
 
+            if (nums[i] == 0) {
+                countZero++;
+            }
+        }
+        int countTwo = 0;
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (i == nums.length - 1) {
+                remember[i][1] = 0;
+            } else {
+                remember[i][1] = countTwo;
+            }
 
-
-
-
-
-
-
-
-
-
+            if (nums[i] == 2) {
+                countTwo++;
+            }
+        }
+        int ret = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 1) {
+                ret += remember[i][0] * remember[i][1];
+            }
+        }
+        return ret;
+    }
+```
 
 
