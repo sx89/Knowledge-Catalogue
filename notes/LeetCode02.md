@@ -1187,69 +1187,6 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 
 
-#### [@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
-
-```java
- public int longestCommonSubsequence(String text1, String text2) {
-        int len1 = text1.length();
-        int len2 = text2.length();
-        int[][] dp = new int[len1 + 1][len2 + 1];
-        for (int i = 0; i <= len1; i++) {
-            for (int j = 0; j <= len2; j++) {
-                if (j == 0 || i == 0) {
-                    dp[i][j] = 0;
-                    continue;
-                }
-                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-                }
-            }
-        }
-        return dp[len1][len2];
-    }
-```
-
-
-
-#### 删除最少字符变成回文串
-
-题目描述：给定一字符串s,求最少删除多少个字符可以使得s成为回文串。例如：s="abca",答案是1.
-
-思路:把自身翻转, 自身和翻转的lcs,就是最大回文长度,str.length()-lcs 即为要删除的字符.
-
-```java
-public int minChange(String str) {
-        int lcs = longestCommonSubsequence(str, null);
-        return str.length() - lcs;
-    }
-
-    public int longestCommonSubsequence(String text1, String text2) {
-        int len1 = text1.length();
-        StringBuffer stringBuffer = new StringBuffer(text1);
-        text2 = stringBuffer.reverse().toString();
-        int len2 = text2.length();
-        int[][] dp = new int[len1 + 1][len2 + 1];
-        for (int i = 0; i <= len1; i++) {
-            for (int j = 0; j <= len2; j++) {
-                if (j == 0 || i == 0) {
-                    dp[i][j] = 0;
-                    continue;
-                }
-                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-                }
-            }
-        }
-        return dp[len1][len2];
-    }
-```
-
-
-
 
 
 
@@ -1665,5 +1602,89 @@ List<List<Integer>> ret = new ArrayList<>();
 * A遍历自己，一直到终点再从B开始。B也如此，遍历完自己再遍历A。
 * 如果中间有相同节点了，那么就相交，否则不相交。
 * 因为如果相交的话，那么都会走到len\(A\)+len\(B\)-len\(A∩B\)的地方停下来
+```
+
+#### @@@链表环入口
+
+https://leetcode.com/problems/linked-list-cycle-ii/submissions/
+
+@第一步  先  快指针 2个  慢指针1个  再 判断是否相遇
+
+@第二步 快指针和慢指针都1个    在判断是否相遇.
+
+
+
+```java
+public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && slow != null) {
+            fast = fast.next;
+            if (fast != null) {
+                fast = fast.next;
+            }
+            slow = slow.next;
+            //fast判空
+            if (fast != null && fast == slow) {
+                fast = head;
+                break;
+            }
+        }
+
+        while (fast != null && slow != null) {
+            if (fast == slow) {
+                return fast;
+            }
+            //第二次循环是每人走一步.
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
+    }
+```
+
+
+
+#### 随机数的生成
+
+https://blog.csdn.net/wangruitao1991/article/details/51678815
+
+已知rand5生成rand7.
+
+1. 首先用  5*(rand5-1)生成  0  5 10 15...20
+
+2. 再用  5*(rand5-1)+rand5  生成  1~25均匀整数
+
+3. 因为7在25下的最大倍数是21,所以 如果步骤2里面生成的数字大于21,就重新生成,小于21就进行第4步
+
+4. 1~21之间的数,用来%7, 求出0~6.  再+1 即可 1~7的随机分布.
+
+```
+int Rand7(){
+    int x = ~(1<<31); // max int
+    while(x > 21)
+        x = 5 * (Rand5() - 1) + Rand5() // Rand25
+    return x%7 + 1;
+}
+```
+
+
+
+再比如用rand100生成rand150
+
+```
+int rand150(){
+	int x = 0;
+	x = 100* ( rand100() - 1 ) +rand100();
+	//10000> 150*60=9900
+	while(x>9900){
+		x = 100* ( rand100() - 1 ) +rand100();
+	}
+	return x%150+1;
+}
 ```
 

@@ -1521,68 +1521,6 @@ public int maxArea(int[] height) {
 }
 ```
 
-#### [@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
-
-本题可以看成是字符串类的动态规划
-
-
-
-中心扩展法比动态规划效率高.
-
-因为动态规划是从短串到长串都要判断,不好剪枝
-
-中心扩展从短串到长串的过程中,如果短串不成立,则长串终止.
-
-```java
-改进:动态规划的做法
-     i-j<2  在i-j为0的时候,i和j为同一个值;i-j为1的时候由于前面的
-     s.charAt(i)==s.charAt(j)也决定了它们是相等的
-public int countSubstrings(String s) {
-    int len = s.length();
-    boolean[][] dp = new boolean[len][len];
-    int ret = 0;
-    for (int i = 0; i < len; i++) {
-        for (int j = i; j >= 0; j--) {
-            //i-j<2  在i-j为0的时候,i和j为同一个值;i-j为1的时候由于前面的
-            //s.charAt(i)==s.charAt(j)也决定了它们是相等的
-            if (s.charAt(i) == s.charAt(j) && ((i - j < 2) || dp[i - 1][j + 1])) {
-                dp[i][j] = true;
-                ret++;
-            }
-        }
-    }
-    return ret;
-}
-改进: 从中间往两边扩展,注意拓展方式有两种,  aba 以b为对称线  和 aa以两个a之间为对称线
-    对应的代码是  int left = i;
-           		 int right = left;
-				left = i;
-           		 right = left + 1;
-	
-     public int countSubstrings(String s) {
-        int len = s.length();
-        int res = 0;
-        for (int i = 0; i < len; i++) {
-            int left = i;
-            int right = left;
-            while (left >= 0 && right < len && s.charAt(left) == s.charAt(right)) {
-                left--;
-                right++;
-                res++;
-            }
-            left = i;
-            right = left + 1;
-            while (left >= 0 && right < len && s.charAt(left) == s.charAt(right)) {
-                left--;
-                right++;
-                res++;
-            }
-
-        }
-        return res;
-    }
-```
-
 
 
 #### [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
@@ -2833,7 +2771,7 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 
 
 
-#### [@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
 ```java
 改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
@@ -2959,54 +2897,6 @@ public int lengthOfLongestSubstring(String s) {
 ```
 
 
-
-
-
-#### [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
-
-```java
-改进:利用动规:dp[i][j] = dp[i-1][j+1] +1 (如果len>2的情况下,并且char[i] == char[j])
-    dp[i][j]的含义是 以为i终点,j为起点的字符串中对称字符的长度.
-
-public String longestPalindrome(String s) {
-    if (s == null || s.length() == 0) {
-        return "";
-    }
-    int maxLen = 0;
-    int maxRow = 0;
-    int maxCol = 0;
-    int len = s.length();
-    int[][] dp = new int[len][len];
-    for (int i = 0; i < len; i++) {
-        for (int j = i; j >= 0; j--) {
-
-            if (s.charAt(i) == s.charAt(j)) {
-                if (i == j) {//长度为1
-                    dp[i][j] = 1;
-                } else if (i == j + 1) {//长度为2
-                    dp[i][j] = 2;
-                } else { //长度大于2
-                    if (dp[i - 1][j + 1] != 0) {
-                        dp[i][j] = dp[i - 1][j + 1] + 2;
-
-                    } else {
-                        dp[i][j] = 0;
-                    }
-                }
-                if (maxLen < dp[i][j]) {
-                    maxLen = dp[i][j];
-                    maxRow = i;
-                    maxCol = j;
-                }
-            } else {
-                //char i  与 char j 不相等
-                dp[i][j] = 0;
-            }
-        }
-    }
-    return s.substring(maxCol, maxRow + 1);
-}
-```
 
 
 

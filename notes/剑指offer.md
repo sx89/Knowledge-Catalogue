@@ -2103,7 +2103,11 @@ public ListNode FindKthToTail(ListNode head, int k) {
     }
 ```
 
-# 23. 链表中环的入口结点
+# @@@@@23. 链表中环的入口结点
+
+@第一步  先  快指针 2个  慢指针1个  再 判断是否相遇
+
+@第二步 快指针和慢指针都1个    在判断是否相遇.
 
 [NowCoder](https://www.nowcoder.com/practice/253d2c59ec3e4bc68da16833f79a38e4?tpId=13&tqId=11208&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -2119,6 +2123,52 @@ public ListNode FindKthToTail(ListNode head, int k) {
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/bb7fc182-98c2-4860-8ea3-630e27a5f29f.png" width="500"/> </div><br>
 ```java
+
+public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && slow != null) {
+
+            fast = fast.next;
+            if (fast != null) {
+                fast = fast.next;
+            }
+            slow = slow.next;
+            if (fast != null && fast == slow) {
+                fast = head;
+                break;
+            }
+        }
+
+        while (fast != null && slow != null) {
+            if (fast == slow) {
+                return fast;
+            }
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public ListNode EntryNodeOfLoop(ListNode pHead) {
     if (pHead == null || pHead.next == null)
         return null;
