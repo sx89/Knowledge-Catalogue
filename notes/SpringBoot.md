@@ -190,3 +190,23 @@ public Integer caclulate() {
 4.在启动类上添加注解 @EnableFeignClients，表示支持Feign
 
 FeignClient接口和spring mvc接口的格式一致，在调用方的方法中，我们只需要调用本系统中定义的接口即可。
+
+
+
+
+# bean
+
+## 产生机制
+
+
+
+## 作用域
+
+| Scope                                                        | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [singleton](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-singleton) | （默认的）在每个`Spring IoC`容器中，一个`bean`定义对应只会有唯一的一个`bean`实例。 |
+| [prototype](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-prototype) | 一个`bean`定义可以有多个`bean`实例。                         |
+| [request](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-request) | 一个`bean`定义对应于单个`HTTP` 请求的生命周期。也就是说，每个`HTTP` 请求都有一个`bean`实例，且该实例仅在这个`HTTP` 请求的生命周期里有效。该作用域仅适用于`WebApplicationContext`环境。 |
+| [session](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-session) | 一个`bean` 定义对应于单个`HTTP Session` 的生命周期，也就是说，每个`HTTP Session` 都有一个`bean`实例，且该实例仅在这个`HTTP Session` 的生命周期里有效。该作用域仅适用于`WebApplicationContext`环境。 |
+| [application](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-application) | 一个`bean` 定义对应于单个`ServletContext` 的生命周期。该作用域仅适用于`WebApplicationContext`环境。 |
+| [websocket](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#websocket-stomp-websocket-scope) | 一个`bean` 定义对应于单个`websocket` 的生命周期。该作用域仅适用于`WebApplicationContext`环境。 |

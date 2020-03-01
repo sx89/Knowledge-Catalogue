@@ -2,6 +2,8 @@
 # 常用sql语句锦集
 ```
 insert into tablename (name,sexy,height) values("sx","female",123)
+查询一个表名中重名的人 select myname, count(*) from tab group by myname having count(*) > 1
+查询表中不重名人数   select count(distinct name ) from table
 
 写的顺序：select ... from... where.... group by... having... order by..
 ```

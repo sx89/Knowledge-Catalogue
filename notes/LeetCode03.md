@@ -285,7 +285,15 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### [435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+#### @@@[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+求无重叠区间cnt,然后用len-ret就是需要移除的最少区间数
+
+把区间按照endTime从小到大排序. 然后往后找,如果后面的区间的startTime<该endTime,则有重叠.
+
+如果endTIme>=startTime无重叠,此时endTime更新到下个区间,cnt++
+
+
 
 ```java
 public int eraseOverlapIntervals(int[][] intervals) {
@@ -313,4 +321,333 @@ public int eraseOverlapIntervals(int[][] intervals) {
         return len - cnt;
     }
 ```
+
+
+
+
+
+#### @@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+
+```java
+ public String multiply(String num1, String num2) {
+        if (num1.equals("0") || num2.equals("0")) {
+            return "0";
+        }
+        int[] ret = new int[num1.length() + num2.length()];
+        for (int i = num1.length() - 1; i >= 0; i--) {
+            int a = num1.charAt(i) - '0';
+            for (int j = num2.length() - 1; j >= 0; j--) {
+                
+                int b = num2.charAt(j) - '0';
+                int sum = a * b + ret[i + j + 1];
+                
+                ret[i + j + 1] = sum % 10;
+                ret[i + j] += sum / 10;
+            }
+        }
+        StringBuilder retStr = new StringBuilder();
+        for (int i = 0; i < ret.length; i++) {
+            if (i == 0 && ret[i] == 0) {
+                while (ret[i] == 0) {
+                    i++;
+                }
+            }
+            retStr.append(ret[i] + "");
+        }
+        return retStr.toString();
+    }
+```
+
+
+
+
+
+#### @@@字符移位
+
+链接：https://www.nowcoder.com/questionTerminal/7e8aa3f9873046d08899e0b44dac5e43
+来源：牛客网
+
+小Q最近遇到了一个难题：把一个字符串的大写字母放到字符串的后面，各个字符的相对位置不变，且不能申请额外的空间。
+  你能帮帮小Q吗？ 
+
+##### **输入描述:**
+
+```
+输入数据有多组，每组包含一个字符串s，且保证:1<=s.length<=1000.
+  
+```
+
+##### **输出描述:**
+
+```
+对于每组数据，输出移位后的字符串。
+```
+
+```java
+思路1
+冒泡:
+@@@@@@@@@@@@@@@
+@要交换 i 0~len-1次
+@每次  j从 len-1  到  i进行扫描;逐渐冒泡,把一个小写字母冒到i的位置上.
+
+ public String func(String str) {
+        char[] chars = str.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            for (int j = chars.length - 2; j >= i; j--) {
+                if (chars[j] >= 'A' && chars[j] <= 'Z' && chars[j + 1] >= 'a' && chars[j + 1] <= 'z') {
+                    char temp = chars[j];
+                    chars[j] = chars[j + 1];
+                    chars[j + 1] = temp;
+                }
+            }
+        }
+        return new String(chars);
+    }
+
+
+
+思路2:
+选择排序:
+@@@@@@@@@@@@@@@@@@@
+@littleIndex代表下一个要插入小写字母的位置
+@i往后找,找到一个小写字母. 然后从littleIndex 到 i之间的字母往后移一位
+@然后把i处的字母插入到littleIndex处.
+
+ public String func(String str) {
+        char[] chars = str.toCharArray();
+        int littleIndex = 0;
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] >= 'a' && chars[i] <= 'z') {
+                char temp = chars[i];
+                for (int j = i; j >= littleIndex + 1; j--) {
+                    chars[j] = chars[j - 1];
+                }
+                chars[littleIndex] = temp;
+                littleIndex++;
+            }
+        }
+        return new String(chars);
+    }
+
+思路3:
+
+public static String getResult(String str) {
+        return str.replaceAll("[A-Z]", "") + str.replaceAll("[a-z]", "");
+    }
+```
+
+
+
+
+
+#### [295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
+
+@优先队列是log(n)的复杂度.
+
+```java
+
+class MedianFinder {
+    PriorityQueue<Integer> leftNums = null;
+    PriorityQueue<Integer> rightNums = null;
+
+    public MedianFinder() {
+        leftNums = new PriorityQueue<Integer>(10, (o2, o1) -> (o1 - o2));
+        rightNums = new PriorityQueue<Integer>(10, (o1, o2) -> (o1 - o2));
+
+    }
+
+    public void addNum(int num) {
+        if (leftNums.size() > rightNums.size()) {
+            rightNums.add(num);
+        } else {
+            leftNums.add(num);
+        }
+        if (!rightNums.isEmpty() && rightNums.peek() < leftNums.peek()) {
+            int leftNum = leftNums.poll();
+            int rightNum = rightNums.poll();
+            leftNums.add(rightNum);
+            rightNums.add(leftNum);
+        }
+    }
+
+    public double findMedian() {
+        if (leftNums.size() == rightNums.size()) {
+            return (double) (leftNums.peek() + rightNums.peek()) / 2;
+        }
+        return leftNums.peek();
+    }
+}
+```
+
+
+
+#### 图的m着色问题(dfs)
+
+[问题描述]
+
+给定无向连通图G和m种不同的颜色，用这些颜色给图的各个顶点着一种颜色，若某种方案使得图中每条边的2个顶点的颜色都不相同，则是一个满足的方案，找出所有的方案。
+
+输入格式
+ 第一行有3个正整数n，k和m，分别表示n个顶点，k条边，m种颜色
+接下来k行，每行2个正整数，保送一条边的两个顶点
+
+所有不同的着色方案数
+输入样例】
+5 8 4 
+1 2
+1 3 
+1 4
+2 3
+2 4
+2 5
+3 4
+4 5
+输出样例
+48
+
+```java
+  public class Main {
+    static int[][] matrix = null;
+    int[] pointColor = null;
+    int len = 0;
+    int numPoint = 0;
+    int numEdge = 0;
+    int ret = 0;
+    int numColor = 0;
+
+    public int getResult(int numPoint, int numEdge, int numColor) {
+        len = numPoint;
+        this.numColor = numColor;
+        this.numEdge = numEdge;
+        this.numPoint = numPoint;
+//        this.matrix = new int[numPoint + 1][numPoint + 1];
+        pointColor = new int[numPoint + 1];
+        backtracing(1, 1);
+        return ret;
+    }
+
+    private boolean uniqueColor(int index) {
+        for (int i = 1; i <= numPoint; i++) {
+            if (matrix[index][i] == 1 && pointColor[index] == pointColor[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void backtracing(int index, int cnt) {
+        if (cnt >= numPoint + 1) {
+            return;
+        }
+        //先染色
+        for (int j = 1; j <= numColor; j++) {
+            pointColor[index] = j;
+            //如果颜色符合要求
+            if (uniqueColor(index)) {
+                if (cnt == numPoint) {
+                    ret++;
+                }
+                //从与index相连的  第一个没有被访问过的 顶点开始染色
+                //为什么是第一个,假设1与2,3相连,我给1染颜色1,2染颜色2,3染颜色3.
+                //1->2->3  和  1->3->2  其实是同一种颜色组合.
+                for (int k = 1; k <= numPoint; k++) {
+                    if (matrix[index][k] == 1 && pointColor[k] == 0) {
+                        backtracing(k, cnt + 1);
+                        break;
+                    }
+                }
+            }
+            pointColor[index] = 0;
+        }
+    }
+
+    private void initialMatrix(String str) {
+        for (int i = 0; i < str.length(); i = i + 2) {
+            int x = str.charAt(i) - '0';
+            int y = str.charAt(i + 1) - '0';
+            matrix[x][y] = 1;
+            matrix[y][x] = 1;
+        }
+    }
+
+    public static void main(String[] args) {
+        Main main = new Main();
+        String str = "1213142324253445";
+        matrix = new int[6][6];
+        main.initialMatrix(str);
+
+        int func = main.getResult(5, 8, 4);
+        System.out.println(func);
+
+    }
+}
+```
+
+
+
+```
+ 下面的做法错误的原因是  
+ 1->2->3和
+ 1->3->2 假设1涂红,2涂蓝,3涂绿,这被认为是两种情况了.
+ 
+ static int[][] matrix = null;
+    int[] pointColor = null;
+    int len = 0;
+    int numPoint = 0;
+    int numEdge = 0;
+    int ret = 0;
+    int numColor = 0;
+
+    public int func(int numPoint, int numEdge, int numColor) {
+        len = numPoint;
+        this.numColor = numColor;
+        this.numEdge = numEdge;
+        this.numPoint = numPoint;
+//        this.matrix = new int[numPoint + 1][numPoint + 1];
+        pointColor = new int[numPoint + 1];
+        backtracing(1, 1);
+        return ret;
+    }
+
+    private boolean uniqueColor(int index) {
+        for (int i = 1; i <= numPoint; i++) {
+            if (matrix[index][i] == 1 && pointColor[index] == pointColor[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void backtracing(int index, int cnt) {
+        if (cnt >= numPoint + 1) {
+            return;
+        }
+        for (int j = 1; j <= numColor; j++) {
+            pointColor[index] = j;
+            if (uniqueColor(index)) {
+                if (cnt == numPoint) {
+                    ret++;
+                }
+                for (int k = 1; k <= numPoint; k++) {
+                    if (matrix[index][k] == 1 && pointColor[k] == 0) {
+                        backtracing(k, cnt + 1);
+                    }
+                }
+            }
+            pointColor[index] = 0;
+        }
+    }
+```
+
+
+
+
+
+
+
+
+
+
+
+
 

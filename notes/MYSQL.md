@@ -1,4 +1,3 @@
-
 <!-- TOC -->
 
 - [一、索引](#一索引)
@@ -1100,6 +1099,49 @@ UPDATE accounts SET balance=900 WHERE id=1
 
 页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般  
 
+# 解决超卖
 
+场景：
+
+一个商品有库存，下单时先检查库存，如果>0，把库存-1然后下单，如果<=0，则不能下单，事务包含两条sql语句：
+
+```
+select quantity from products WHERE id=3;
+update products set quantity = ($quantity-1) WHERE id=3;
+```
+
+在并发情况下，可能会把库存减为负数(两个进程同时select出来的都>0,然后都会执行update)，怎么办呢？
+
+## 方法1：
+
+InnoDB支持通过特定的语句进行显示加锁：
+
+select...lock in share mode
+
+select...for udpate
+
+```
+select quantity from products WHERE id=3 for update;
+update products set quantity = ($quantity-1) WHERE id=3;
+```
+
+但是执行for update会产生一些其他的影响
+
+1.select语句变慢
+
+2.一些优化无法正常使用,例如索引覆盖扫描
+
+3.很容易造成服务器的锁争用问题
+
+## 方法二：
+
+把udpate语句写在前边，先把数量-1，之后select出库存如果>-1就commit,否则rollback。
+
+```
+update products set quantity = quantity-1 WHERE id=3;
+select quantity from products WHERE id=3 for update;
+```
+
+上边的事务中先执行了update，所以id=3的行被加了行锁,只有commit/rollback是才会被释放（事务中锁是逐步获得的，但是都是commit时所释放的）。很好的解决了并发问题。
 
 
