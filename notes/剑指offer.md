@@ -1,4 +1,4 @@
->借鉴CyC大佬复习框架,**代码原创,思路更新**
+
 
 <!-- TOC -->
 
@@ -4648,7 +4648,7 @@ Output:
 
 ```
 
-# 59. 滑动窗口的最大值
+# @@@@59. 滑动窗口的最大值
 
 [NowCoder](https://www.nowcoder.com/practice/1624bc35a45c42c0bc17d17fa0cba788?tpId=13&tqId=11217&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
@@ -4661,21 +4661,25 @@ Output:
 **解题思路**
 
 ```java
-public ArrayList<Integer> maxInWindows(int[] num, int size) {
-    ArrayList<Integer> ret = new ArrayList<>();
-    if (size > num.length || size < 1)
+@@@@@@更好地思路
+
+ public ArrayList<Integer> maxInWindows(int[] nums, int size) {
+        PriorityQueue<Integer> queue = new PriorityQueue<Integer>(10, (o2, o1) -> (o1 - o2));
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        if (size <= 0 || size > nums.length) {
+            return ret;
+        }
+        for (int i = 0; i < size; i++) {
+            queue.add(nums[i]);
+        }
+        ret.add(queue.peek());
+        for (int i = 0, j = i + size; j < nums.length; j++, i++) {
+            queue.remove(nums[i]);
+            queue.add(nums[j]);
+            ret.add(queue.peek());
+        }
         return ret;
-    PriorityQueue<Integer> heap = new PriorityQueue<>((o1, o2) -> o2 - o1);  /* 大顶堆 */
-    for (int i = 0; i < size; i++)
-        heap.add(num[i]);
-    ret.add(heap.peek());
-    for (int i = 0, j = i + size; j < num.length; i++, j++) {            /* 维护一个大小为 size 的大顶堆 */
-        heap.remove(num[i]);
-        heap.add(num[j]);
-        ret.add(heap.peek());
     }
-    return ret;
-}
 
 改进
     维护一个双端队列,队头放窗口内的最大值,当有num[i]>deque.getLast()的时候,删除deque中所有比num[i]小的节点的index,让num[i]的i成为队或者原来的deque.getFirst()保持队头.

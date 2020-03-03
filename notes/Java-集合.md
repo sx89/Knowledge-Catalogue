@@ -863,12 +863,109 @@ static final int tableSizeFor(int cap) {
 
 ### hashmap不支持并发的原因
 
-并发的hashmap在rehash时候会导致环形链表的错误:  
-put一个key,value对到hashmap中的时候,先计算hash值,然后计算索引位置,如果key存在则替换掉旧value,不存在则增加一个新的entry,增加entry的时候检查entry的数量是否超出了capicity*容量因子(即threshold);超出的话就会把旧的hash表的数据迁移到新的hash表中,其中,在迁移的过程中,entry下的链表部分会在迁移的时候,因为并发线程的挂起产生循环链表,报出HashMap Infinite Loop错误
+1. #### 向HashMap中插入数据的时候
+　　
+　　在HashMap做put操作的时候会调用到以下的方法：
 
-[参考博客](https://coolshell.cn/articles/9606.html)
+//向HashMap中添加Entry
+
+```
+void addEntry(int hash, K key, V value, int bucketIndex) {
+    if ((size >= threshold) && (null != table[bucketIndex])) {
+        resize(2 * table.length); //扩容2倍
+        hash = (null != key) ? hash(key) : 0;
+        bucketIndex = indexFor(hash, table.length);
+    }
+
+    createEntry(hash, key, value, bucketIndex);
+
+}
+//创建一个Entry
+void createEntry(int hash, K key, V value, int bucketIndex) {
+    Entry<K,V> e = table[bucketIndex];//先把table中该位置原来的Entry保存
+    //在table中该位置新建一个Entry，将原来的Entry挂到该Entry的next
+    table[bucketIndex] = new Entry<>(hash, key, value, e);
+    //所以table中的每个位置永远只保存一个最新加进来的Entry，其他Entry是一个挂一个，这样挂上去的
+    size++;
+}
+```
 
 
+　　现在假如A线程和B线程同时进入addEntry，然后计算出了相同的哈希值对应了相同的数组位置，因为此时该位置还没数据，然后对同一个数组位置调用createEntry，两个线程会同时得到现在的头结点，然后A写入新的头结点之后，B也写入新的头结点，那B的写入操作就会覆盖A的写入操作造成A的写入操作丢失。
+
+
+　　现在假如A线程和B线程同时进入addEntry，然后计算出了相同的哈希值对应了相同的数组位置，因为此时该位置还没数据，然后对同一个数组位置调用createEntry，两个线程会同时得到现在的头结点，然后A写入新的头结点之后，B也写入新的头结点，那B的写入操作就会覆盖A的写入操作造成A的写入操作丢失。
+
+　　现在假如A线程和B线程同时进入addEntry，然后计算出了相同的哈希值对应了相同的数组位置，因为此时该位置还没数据，然后对同一个数组位置调用createEntry，两个线程会同时得到现在的头结点，然后A写入新的头结点之后，B也写入新的头结点，那B的写入操作就会覆盖A的写入操作造成A的写入操作丢失。
+
+2. #### HashMap扩容的时候
+　　
+　　还是上面那个addEntry方法中，有个扩容的操作，这个操作会新生成一个新的容量的数组，然后对原数组的所有键值对重新进行计算和写入新的数组，之后指向新生成的数组。来看一下扩容的源码：
+
+//用新的容量来给table扩容  
+
+```
+void resize(int newCapacity) {  
+    Entry[] oldTable = table; //保存old table  
+    int oldCapacity = oldTable.length; //保存old capacity  
+    // 如果旧的容量已经是系统默认最大容量了，那么将阈值设置成整形的最大值，退出    
+    if (oldCapacity == MAXIMUM_CAPACITY) {  
+        threshold = Integer.MAX_VALUE;  
+        return;  
+    }  
+
+    //根据新的容量新建一个table  
+    Entry[] newTable = new Entry[newCapacity];  
+    //将table转换成newTable  
+    transfer(newTable, initHashSeedAsNeeded(newCapacity));  
+    table = newTable;  
+    //设置阈值  
+    threshold = (int)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY + 1);  
+
+} 
+```
+
+　　那么问题来了，当多个线程同时进来，检测到总数量超过门限值的时候就会同时调用resize操作，各自生成新的数组并rehash后赋给该map底层的数组table，结果最终只有最后一个线程生成的新数组被赋给table变量，其他线程的均会丢失。而且当某些线程已经完成赋值而其他线程刚开始的时候，就会用已经被赋值的table作为原始数组，这样也会有问题。所以在扩容操作的时候也有可能会引起一些并发的问题。
+
+
+
+#### get和resize导致死循环
+
+另外一个比较明显的线程不安全的问题是HashMap的get操作可能因为resize而引起死循环（cpu100%），具体分析如下：
+
+下面的代码是resize的核心内容：
+
+
+
+```java
+void transfer(Entry[] newTable, boolean rehash) {  
+        int newCapacity = newTable.length;  
+        for (Entry<K,V> e : table) {  
+  
+            while(null != e) {  
+                Entry<K,V> next = e.next;           
+                if (rehash) {  
+                    e.hash = null == e.key ? 0 : hash(e.key);  
+                }  
+                int i = indexFor(e.hash, newCapacity);   
+                e.next = newTable[i];  
+                newTable[i] = e;  
+                e = next;  
+            } 
+        }  
+    }  
+```
+
+这个方法的功能是将原来的记录重新计算在新桶的位置，然后迁移过去。
+
+![image-20200303160356687](pictures/Java-集合/image-20200303160356687.png)
+
+多线程HashMap的resize
+
+我们假设有两个线程同时需要执行resize操作，我们原来的桶数量为2，记录数为3，需要resize桶到4，原来的记录分别为：[3,A],[7,B],[5,C]，在原来的map里面，我们发现这三个entry都落到了第二个桶里面。
+ 假设线程thread1执行到了transfer方法的Entry next = e.next这一句，然后时间片用完了，此时的e = [3,A], next = [7,B]。线程thread2被调度执行并且顺利完成了resize操作，需要注意的是，此时的[7,B]的next为[3,A]。此时线程thread1重新被调度运行，此时的thread1持有的引用是已经被thread2 resize之后的结果。线程thread1首先将[3,A]迁移到新的数组上，然后再处理[7,B]，而[7,B]被链接到了[3,A]的后面，处理完[7,B]之后，就需要处理[7,B]的next了啊，而通过thread2的resize之后，[7,B]的next变为了[3,A]，此时，[3,A]和[7,B]形成了环形链表，在get的时候，如果get的key的桶索引和[3,A]和[7,B]一样，那么就会陷入死循环。
+
+如果在取链表的时候从头开始取（现在是从尾部开始取）的话，则可以保证节点之间的顺序，那样就不存在这样的问题了。
 
 ## 红黑树的介绍
 
