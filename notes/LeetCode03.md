@@ -585,7 +585,7 @@ class MedianFinder {
 
 
 
-```
+```java
  下面的做法错误的原因是  
  1->2->3和
  1->3->2 假设1涂红,2涂蓝,3涂绿,这被认为是两种情况了.
@@ -641,11 +641,235 @@ class MedianFinder {
 
 
 
+#### 
+
+#### 100亿数字排序,求中位数,平均数,求和
+
+今天要给100亿个数字排序，100亿个 int 型数字放在文件里面大概有 37.2GB，非常大，内存一次装不下了。那么肯定是要拆分成小的文件一个一个来处理，最终在合并成一个排好序的大文件。
+
+##### 实现思路
+
+1.把这个37GB的大文件，用哈希分成1000个小文件，每个小文件平均38MB左右（理想情况），把100亿个数字对1000取模，模出来的结果在0到999之间，每个结果对应一个文件，所以我这里取的哈希函数是 h = x % 1000，哈希函数取得"好"，能使冲突减小，结果分布均匀。
+
+2.拆分完了之后，得到一些几十MB的小文件，那么就可以放进内存里排序了，可以用快速排序，归并排序，堆排序等等。
+
+3.1000个小文件内部排好序之后，就要把这些内部有序的小文件，合并成一个大的文件，可以用**二叉堆**来做1000路合并的操作，每个小文件是一路，合并后的大文件仍然有序。
+
+- 首先遍历1000个文件，每个文件里面取第一个数字，组成 (数字, 文件号) 这样的组合加入到堆里（假设是从小到大排序，用小顶堆），遍历完后堆里有1000个 (数字，文件号) 这样的元素
+- 然后不断从堆顶拿元素出来，每拿出一个元素，把它的文件号读取出来，然后去对应的文件里，加一个元素进入堆，直到那个文件被读取完。拿出来的元素当然追加到最终结果的文件里。
+- 按照上面的操作，直到堆被取空了，此时最终结果文件里的全部数字就是有序的了。
+
+最后我用c++写了个实验程序，具体代码在[这里](https://link.jianshu.com?t=https://github.com/hehe520/Data-structure-and-algorithm/blob/master/海量数据处理/外部归并排序 - 分治.cpp)可以看到。
+
+##### 思维拓展
+
+类似的100亿个数字求和，求中位数，求平均数，套路就是一样的了。
+ 求和：统计每个小文件的和，返回给master再求和就可以了。
+ 求平均数：上面能求和了，再除以100亿就是平均数了
+ 求中位数：在排序的基础上，遍历到中间的那个数就是中位数了
+
+#### [113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+```java
+List<List<Integer>> ret = new ArrayList<>();
+
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        preOrder(root, sum, 0, new ArrayList<Integer>());
+        return ret;
+    }
+
+    public void preOrder(TreeNode root, int sum, int pathSum, List<Integer> path) {
+        if (root == null) {
+            return;
+        }
+        path.add(root.val);
+        pathSum += root.val;
+        if (root.left == null && root.right == null && pathSum == sum) {
+            ret.add(new ArrayList<Integer>(path));
+            path.remove(path.size() - 1);
+            return;
+        }
+        preOrder(root.left, sum, pathSum, path);
+        preOrder(root.right, sum, pathSum, path);
+        path.remove(path.size() - 1);
+    }
+```
 
 
 
 
 
+#### [@@@547. 朋友圈](https://leetcode-cn.com/problems/friend-circles/)
+
+```java
+
+public class Solution {
+    public int findCircleNum(int[][] M) {
+        if (M == null || M.length == 0) {
+            return 0;
+        }
+        int len = M.length;
+        UF u = new UF(len);
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                if (M[i][j] == 1) {
+                    u.union(i, j);
+                }
+            }
+        }
+        return u.getCount();
+    }
+}
+
+class UF {
+    private int count;
+    private int[] parent;
+    private int[] size;
+
+    public UF(int len) {
+        this.count = len;
+        this.parent = new int[len];
+        this.size = new int[len];
+        for (int i = 0; i < len; i++) {
+            size[i] = 1;
+            parent[i] = i;
+        }
+    }
+    public void union(int p, int q) {
+        int rootP = findParent(p);
+        int rootQ = findParent(q);
+        if (rootP == rootQ)
+            return;
+        if (size[rootP] > size[rootQ]) {
+            parent[rootQ] = rootP;
+            size[rootP] += size[rootQ];
+        } else {
+            parent[rootP] = rootQ;
+            size[rootQ] += size[rootP];
+        }
+        count--;
+    }
+    //路径压缩+寻找根节点
+    public int findParent(int p) {
+        while (parent[p] != p) {
+            //把 p的爷爷 替换成  p的爸爸
+            parent[p] = parent[parent[p]];
+            //把p变成p的爷爷
+            p = parent[p];
+        }
+        return p;
+    }
+
+    public int getCount() {
+        return count;
+    }
+     public boolean connected(int p, int q) {
+        int rootP = findParent(p);
+        int rootQ = findParent(q);
+        return rootP == rootQ;
+    }
+
+}
+```
+
+
+
+
+
+#### [@@@200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+
+
+@@查并集做法
+
+```java
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        int row = grid.length;
+        int col = grid[0].length;
+        UF uf = new UF(grid, grid.length, grid[0].length);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                //如果某个坐标是一座岛,就把这座岛与右边或者下边的连接岛 合并
+                //为什么没有左和上的岛,i,j是按照从左上往右下的顺序移动
+                // 合并前会把grid[i][j]置为0,所以左上的岛永远是空的
+                if (grid[i][j] == '1') {
+                    grid[i][j] = '0';
+                    if (j + 1 < col && grid[i][j + 1] == '1') {
+                        uf.union(i * col + j, i * col + j + 1);
+                    }
+                    if (i + 1 < row && grid[i + 1][j] == '1') {
+                        uf.union(i * col + j, (i + 1) * col + j);
+                    }
+                }
+            }
+        }
+        return uf.getCount();
+    }
+}
+
+class UF {
+    int count;
+    int[] parent;
+    int[] size;
+
+    public UF(char[][] grid, int row, int col) {
+        this.parent = new int[row * col];
+        this.size = new int[row * col];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                //如果某个坐标是导,就count++, parent初始化成自己,size初始化为1.
+                if (grid[i][j] == '1') {
+                    parent[i * col + j] = i * col + j;
+                    ++count;
+                    size[i * col + j] = 1;
+                }
+            }
+        }
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public boolean connected(int p, int q) {
+        int rootP = findParent(p);
+        int rootQ = findParent(q);
+        if (rootP == rootQ) {
+            return true;
+        }
+        return false;
+    }
+
+    public int findParent(int p) {
+        while (p != parent[p]) {
+            parent[p] = parent[parent[p]];
+            p = parent[p];
+        }
+        return p;
+    }
+
+    public void union(int p, int q) {
+        int rootP = findParent(p);
+        int rootQ = findParent(q);
+        if (rootQ == rootP) {
+            return;
+        }
+        if (size[rootP] > size[rootQ]) {
+            size[rootP] += size[rootQ];
+            parent[rootQ] = rootP;
+        } else {
+            size[rootQ] += size[rootP];
+            parent[rootP] = rootQ;
+        }
+        count--;
+    }
+
+}
+```
 
 
 
