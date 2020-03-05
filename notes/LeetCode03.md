@@ -1,4 +1,4 @@
-#### [@@@@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+[@@@@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
 ```java
  public int longestCommonSubsequence(String text1, String text2) {
@@ -873,5 +873,107 @@ class UF {
 
 
 
+#### 找到二叉树中与target之差的绝对值最小的node
 
+@如果node处的值小于target,则node左边的值跟target的差距只会越来越大
+
+比如target是10,如果node=9,则node左边的值,跟10的差距只会越来越大
+
+<img src="pictures/LeetCode03/image-20200303225244927.png" alt="image-20200303225244927" style="zoom:50%;" />
+
+在二叉查找树中，[查找与目标值最接近的节点并返回](https://www.geeksforgeeks.org/find-closest-element-binary-search-tree/)。如果有多个节点都符合要求，返回其中一个即可
+
+```java
+ public void maxDiffUtil(Node  ptr, int k)
+    {
+        if (ptr == null)
+            return ;
+
+        // If k itself is present 
+        if (ptr.key == k)
+        {
+            min_diff_key = k;
+            return;
+        }
+
+        // update min_diff and min_diff_key by checking 
+        // current node value 
+        if (min_diff > Math.abs(ptr.key - k))
+        {
+            min_diff = Math.abs(ptr.key - k);
+            min_diff_key = ptr.key;
+        }
+
+        // if k is less than ptr.key then move in 
+        // left subtree else in right subtree 
+        if (k < ptr.key)
+            maxDiffUtil(ptr.left, k);
+        else
+            maxDiffUtil(ptr.right, k);
+    }
+```
+
+
+
+
+
+#### @@@@二叉树的非递归后序遍历
+
+```java
+private void lastOrder(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        TreeNode lastVisited = null;
+        TreeNode nodeCur = root;
+        Stack<TreeNode> stack = new Stack<>();
+        while (nodeCur != null) {
+            stack.add(nodeCur);
+            nodeCur = nodeCur.left;
+        }
+        while (!stack.isEmpty()) {
+            nodeCur = stack.pop();
+            if (nodeCur.right == null || lastVisited == nodeCur.right) {
+                System.out.println(nodeCur.val);
+                lastVisited = nodeCur;
+            } else if (lastVisited == nodeCur.left) {
+                stack.add(nodeCur);
+                nodeCur = nodeCur.right;
+                while (nodeCur != null) {
+                    stack.add(nodeCur);
+                    nodeCur = nodeCur.left;
+                }
+            }
+        }
+    }
+```
+
+
+
+#### 有序数组重建平衡二叉树
+
+```java
+public TreeNode rebuildBST(int[] nums, int start, int end) {
+        if (start > end || start < 0 || end > nums.length - 1) {
+            return null;
+        }
+        int mid = start + (end - start) / 2;
+        TreeNode treeNode = new TreeNode(nums[mid]);
+        treeNode.left = rebuildBST(nums, start, mid - 1);
+        treeNode.right = rebuildBST(nums, mid + 1, end);
+        return treeNode;
+    }
+```
+
+#### 一个数组里找任意两个数之和的绝对值最小值
+
+```
+排序,left= 0,right = len-1, sum>0 right--,sum<0,left++.
+```
+
+#### 一个整数数组找任意两数的最小之差
+
+```
+排序,相邻的数的差最小
+```
 

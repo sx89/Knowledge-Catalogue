@@ -3697,7 +3697,15 @@ class Location {
 
 
 
-#### [@@139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+#### [@@@139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+这个题是一个背包问题.index往后面遍历,决定某个index是否符合要求的原因是index-str.len  ~index是否能构成一个单词
+
+for(;index<len;index++){
+
+​      for(String temp1:wordDict){
+
+@@@这个题 index往后遍历,
 
 ```java
 本来想用回溯的办法,但是像这种只要求一个boolean结果或者一个int结果的

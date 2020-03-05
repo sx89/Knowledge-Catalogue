@@ -864,7 +864,7 @@ static final int tableSizeFor(int cap) {
 ### hashmap不支持并发的原因
 
 1. #### 向HashMap中插入数据的时候
-　　
+
 　　在HashMap做put操作的时候会调用到以下的方法：
 
 //向HashMap中添加Entry
@@ -899,7 +899,7 @@ void createEntry(int hash, K key, V value, int bucketIndex) {
 　　现在假如A线程和B线程同时进入addEntry，然后计算出了相同的哈希值对应了相同的数组位置，因为此时该位置还没数据，然后对同一个数组位置调用createEntry，两个线程会同时得到现在的头结点，然后A写入新的头结点之后，B也写入新的头结点，那B的写入操作就会覆盖A的写入操作造成A的写入操作丢失。
 
 2. #### HashMap扩容的时候
-　　
+
 　　还是上面那个addEntry方法中，有个扩容的操作，这个操作会新生成一个新的容量的数组，然后对原数组的所有键值对重新进行计算和写入新的数组，之后指向新生成的数组。来看一下扩容的源码：
 
 //用新的容量来给table扩容  
@@ -1068,15 +1068,21 @@ static final int DEFAULT_CONCURRENCY_LEVEL = 16;
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/db808eff-31d7-4229-a4ad-b8ae71870a3a.png" width="550px"> </div><br>
 ### hashentry
-图中淡蓝色的部分就是两个hashentry,在HashEntry类中，key，hash和next域都被声明为final的，value域被volatile所修饰(所以其可以确保被读线程读到最新的值)，因此HashEntry对象几乎是不可变的，这是ConcurrentHashmap读操作并不需要加锁的重要原因。 next域被声明为final本身就意味着我们不能从hash链的中间或尾部添加或删除节点，因为这需要修改next引用值，因此所有的节点的修改只能从头部开始。remove的时候需要全部重新new一遍
+图中淡蓝色的部分就是两个hashentry,在HashEntry类中，
+
+**key，hash和next域都被声明为final的，**
+
+**value域被volatile所修饰(所以其可以确保被读线程读到最新的值)，因此HashEntry对象几乎是不可变的，这是ConcurrentHashmap读操作并不需要加锁的重要原因。**
+
+ next域被声明为final本身就意味着我们不能从hash链的中间或尾部添加或删除节点，因为这需要修改next引用值，因此所有的节点的修改只能从头部开始。**remove的时候需要全部重新new一遍**
 
 
 ### 2. size 操作
 size操作用来返回map的键值对个数
 
-每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。维护一个modCount变量来统计每个segment内部的操作次数,这个值只增不减.
+**每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。维护一个modCount变量来统计每个segment内部的操作次数,这个值只增不减.**
 
-size操作就是遍历了两次所有的Segments，每次记录Segment的modCount值，然后将两次的modCount进行比较，如果modCount相同，则表示期间没有发生过写入操作，就将原先遍历的count的求和结果返回，如果modCount求和不相同，则把这个过程再重复做一次;如果modCount求和再不相同，则就需要将所有的Segment都锁住，然后一个一个遍历了,求出segment的求和并返回.
+**size操作就是遍历了两次所有的Segments，每次记录Segment的modCount值，然后将两次的modCount进行比较，如果modCount相同，则表示期间没有发生过写入操作，就将原先遍历的count的求和结果返回，如果modCount求和不相同，则把这个过程再重复做一次;如果modCount求和再不相同，则就需要将所有的Segment都锁住，然后一个一个遍历了,求出segment的求和并返回.**
 
 
 ```java
