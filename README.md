@@ -47,7 +47,7 @@
 
 - [计算机网络](https://github.com/sx89/Java-notes/blob/master/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C.md)
 - [HTTP](https://github.com/sx89/Java-notes/blob/master/notes/HTTP.md)
-- [Socket]()
+- [Socket](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Socket.md)
 
 ## Golang
 
