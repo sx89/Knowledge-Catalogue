@@ -2337,3 +2337,53 @@ public class Test {
     }
 }
 ```
+
+# 并发编程题
+
+开n个线程,循环打印1~100的数字.
+
+```java
+
+public class Main {
+    static int count = 1;
+    public static void main(String[] args) throws InterruptedException {
+        int threadnNum = 3;
+
+        Thread[] threads = new Thread[threadnNum];
+        Semaphore[] semaphores = new Semaphore[threadnNum];
+        for (int i = 0; i < threadnNum; i++) {
+            semaphores[i] = new Semaphore(1);
+            semaphores[i].acquire();
+        }
+        semaphores[threadnNum - 1].release();
+        for (int i = 0; i < threadnNum; i++) {
+            final int index = i;
+            final Semaphore preSemph = i == 0 ? semaphores[threadnNum - 1] : semaphores[i - 1];
+            final Semaphore curSemph = semaphores[i];
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            preSemph.acquire();
+                            if (count > 20) {
+                                System.exit(0);
+                            }
+                            System.out.println("index:" + index + ",count:" + count++);
+                            curSemph.release();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            threads[i].start();
+        }
+    }
+}
+```
+
+
+
+
+
