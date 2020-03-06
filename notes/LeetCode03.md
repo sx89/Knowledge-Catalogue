@@ -977,3 +977,125 @@ public TreeNode rebuildBST(int[] nums, int start, int end) {
 排序,相邻的数的差最小
 ```
 
+#### [@@@208. 实现 Trie (前缀树)](https://leetcode-cn.com/problems/implement-trie-prefix-tree/)
+
+```java
+
+class Trie {
+    private TreeNode root = null;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Trie() {
+        root = new TreeNode();
+    }
+
+    public TreeNode getPrefixEnd(String word) {
+        TreeNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            if (node.containsKey(ch)) {
+                node = node.get(ch);
+            } else {
+                return null;
+            }
+        }
+        return node;
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+        TreeNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            if (!node.containsKey(ch)) {
+                node.put(ch, new TreeNode());
+            }
+            node = node.get(ch);
+        }
+        node.setEnd();
+    }
+
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+        TreeNode node = getPrefixEnd(word);
+        return node != null && node.isEnd();
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+        TreeNode node = getPrefixEnd(prefix);
+        return node != null;
+    }
+}
+
+class TreeNode {
+    private int len = 26;
+    private TreeNode[] links = null;
+    private boolean isEnd = false;
+
+    public TreeNode() {
+        links = new TreeNode[len];
+    }
+
+    public void put(char ch, TreeNode node) {
+        links[ch - 'a'] = node;
+    }
+
+    public TreeNode get(char ch) {
+        return links[ch - 'a'];
+    }
+
+    public boolean containsKey(char ch) {
+        return links[ch - 'a'] != null;
+    }
+
+    public boolean isEnd() {
+        return isEnd;
+    }
+
+    public void setEnd() {
+        isEnd = true;
+    }
+
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
