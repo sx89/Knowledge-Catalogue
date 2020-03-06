@@ -61,11 +61,5 @@
 
 
 
-## 面试
-
-- [面试复盘](https://github.com/sx89/Java-notes/blob/master/notes/%E9%9D%A2%E8%AF%95%E5%A4%8D%E7%9B%98.md)
-- [学长的面试经验](https://github.com/sx89/Java-notes/blob/master/notes/%E9%9D%A2%E8%AF%95%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93.md)
-
-
 
 
