@@ -706,7 +706,7 @@ Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问
 
 ## synchronized
 
-**1. 同步一个代码块** 
+### **1. 同步一个代码块** 
 
 ```java
 public void func() {
@@ -716,7 +716,7 @@ public void func() {
 }
 ```
 
-它只作用于同一个对象，如果调用两个对象上的同步代码块，就不会进行同步。
+**它只作用于同一个对象，如果调用两个对象上的同步代码块，就不会进行同步。**
 
 对于以下代码，使用 ExecutorService 执行了两个线程，由于调用的是同一个对象的同步代码块，因此这两个线程会进行同步，当一个线程进入同步语句块时，另一个线程就必须等待。
 
@@ -762,8 +762,7 @@ public static void main(String[] args) {
 0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9
 ```
 
-
-**2. 同步一个方法** 
+### **2. 同步一个方法** 
 
 ```java
 public synchronized void func () {
@@ -773,7 +772,7 @@ public synchronized void func () {
 
 它和同步代码块一样，作用于同一个对象。
 
-**3. 同步一个类** 
+### **3. 同步一个类** 
 
 ```java
 public void func() {
@@ -783,7 +782,7 @@ public void func() {
 }
 ```
 
-作用于整个类，也就是说两个线程调用同一个类的不同对象上的这种同步语句，也会进行同步。
+**作用于整个类，也就是说两个线程调用同一个类的不同对象上的这种同步语句，也会进行同步**。
 
 ```java
 public class SynchronizedExample {
@@ -812,7 +811,7 @@ public static void main(String[] args) {
 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
 ```
 
-**4. 同步一个静态方法** 
+### **4. 同步一个静态方法** 
 
 ```java
 public synchronized static void fun() {
@@ -820,7 +819,7 @@ public synchronized static void fun() {
 }
 ```
 
-作用于整个类。
+**作用于整个类。**
 
 ## ReentrantLock
 

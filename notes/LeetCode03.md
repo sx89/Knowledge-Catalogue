@@ -1071,6 +1071,633 @@ class TreeNode {
 
 
 
+#### [209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+
+
+
+思路一:滑动窗口  复杂度 O(n)
+
+思路二:二分长度法   len = 8 先搜len=4,如果sum>s,搜len=2,如果sum<s,搜len=6.  在长度上用二分法.
+
+
+
+#### [60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
+
+permutation在全排列中的index
+
+```
+思路1.回溯+剪枝,到了k个的时候,返回
+    
+思路二,利用每一位的权重. @@@@用于没有重复数字的情况.如果有重复数字,比如  112.  一共只有3种组合,就比较难想.
+
+
+```
+
+
+
+#### [@@@@60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
+
+
+
+@@特别注意使用  
+
+k-1来除以factor        而不是   k/factor[index]    因为 1/1  =  1. 而我这时候想要的是0位上的数
+
+k =k - numIndex*factor  而不是  k = k%factor[index]   因为   1%1 = 0   而我这时候想要的是 k=1.方便下一步 (k-1)/1 =0.
+
+```java
+String getPermutation(int n, int k) {
+        if (n == 0) {
+            return "";
+        }
+        StringBuffer strRet = new StringBuffer();
+        int[] factor = new int[n + 1];
+        factor[0] = 1;
+        ArrayList<Integer> list = new ArrayList<>();
+
+        for (int i = 1; i <= n; i++) {
+            factor[i] = factor[i - 1] * i;
+            list.add(i);
+        }
+        int factorIndex = n - 1;
+        for (int strIndex = 0; strIndex < n; strIndex++) {
+
+            int numIndex = (k - 1) / factor[factorIndex];
+            k = k - numIndex * factor[factorIndex];
+
+            int num = list.get(numIndex);
+            strRet.append(num);
+
+            list.remove(numIndex);
+            factorIndex--;
+
+        }
+        return strRet.toString();
+    }
+```
+
+
+
+#### 一个数组的值先从小到大递增后从大到小递减，找出最大的值
+
+@@@如果数组中有平峰,比如  1,4,3,3,3,,3,3,3,3,1;可以考虑先去重,再调用下面的代码.
+
+思路：最简单的办法就是从第二个值开始，判断是否满足 A[i] > A[i-1] && A[i] > A[i+1]. 如果满足，i 就是那个最大值的下标。该算法复杂度为O(n).
+
+我们可以改进这种算法，因为这个数组是排好序的，所以我们可以利用二分查找的思想，更快速的找到最大值，时间复杂度为O(lg n)。
+
+```java
+ public int findPeak(int[] nums) {
+        int len = nums.length;
+        return findPeakFunc(nums, 0, len - 1);
+    }
+
+    private int findPeakFunc(int[] nums, int left, int right) {
+        int mid = left + (right - left) / 2;
+        if (mid == 0 || mid == nums.length - 1 || (nums[mid] > nums[mid + 1] && nums[mid] > nums[mid - 1])) {
+            return nums[mid];
+        } else if (nums[mid] < nums[mid - 1]) {
+            return findPeakFunc(nums, left, mid - 1);
+        } else {
+            return findPeakFunc(nums, mid + 1, right);
+        }
+    }
+```
+
+
+
+#### [@@@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)
+
+这个题不能用dfs来做,假设dict是100.那么dfs要遍历所有的路径,复杂度是100的100次方,大概就是1*10的200次方,复杂度是指数级别的
+
+
+
+用BFS来做,就可以找到最少的转换次数,因为有level层来控制.复杂度变成了  dict表长*字符串的len
+
+
+
+```java
+   boolean[] visited = null;
+    String target = null;
+    List<String> wordList = null;
+
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        target = endWord;
+        this.wordList = wordList;
+        visited = new boolean[wordList.size()];
+
+        if (!wordList.contains(endWord)) {
+            return 0;
+        }
+
+        for (int i = 0; i < wordList.size(); i++) {
+            if (beginWord.equals(wordList.get(i))) {
+                visited[i] = true;
+            }
+        }
+
+        LinkedList<Pair<String, Integer>> queue = new LinkedList<>();
+        queue.add(new Pair(beginWord, 1));
+        while (!queue.isEmpty()) {
+            //每一层
+            for (int queueIndex = 0; queueIndex < queue.size(); queueIndex++) {
+                String curStr = queue.peek().getKey();
+                int level = queue.poll().getValue();
+                //每一层的某个string,能否往下转换
+                for (int i = 0; i < wordList.size(); i++) {
+                    String nextStr = wordList.get(i);
+                    if (visited[i] == false && canTrans(curStr, nextStr)) {
+                        if (nextStr.equals(endWord)) {
+                            return level + 1;
+                        }
+                        queue.add(new Pair<>(nextStr, level + 1));
+                        visited[i] = true;
+                    }
+                }
+            }
+
+        }
+
+        return 0;
+    }
+
+
+    private boolean canTrans(String curStr, String nextStr) {
+        int diffCount = 0;
+        if (curStr.equals(nextStr)) {
+            return false;
+        }
+        for (int i = 0; i < curStr.length(); i++) {
+            if (curStr.charAt(i) != nextStr.charAt(i)) {
+                diffCount++;
+            }
+            if (diffCount > 1) {
+                return false;
+            }
+        }
+        return diffCount == 1;
+    }
+```
+
+
+
+
+
+#### [@@@@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+
+迭代法:
+
+@@@mid和mid+1的比较是很有水平的.因为while里面是left<right.所以mid求出来之后,mid+1不会越界,但mid-1会越界
+
+所以可以
+
+```java
+ if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+        } else if (nums[mid] <= nums[mid + 1]) {
+            left = mid + 1;
+        }
+```
+
+但是不能用
+
+```java
+if(nums[mid-1]<nums[mid]){
+    left = mid;
+}else if(nums[mid-1]>=nums[mid]){
+    right = mid-1;
+}
+```
+
+```java
+public int findPeakElement(int[] nums) {
+    int left = 0;
+    int right = nums.length - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+        } else if (nums[mid] <= nums[mid + 1]) {
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+```
+
+递归法:边界的判断.
+
+```java
+ public int findPeakElement(int[] nums) {
+        return func(nums, 0, nums.length - 1);
+    }
+
+    private int func(int[] nums, int left, int right) {
+        if (left == right) {
+            return left;
+        }
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+            return func(nums, left, right);
+        } else {
+            left = mid + 1;
+            return func(nums, left, right);
+        }
+    }
+```
+
+
+
+
+
+#### 实现一个数据结构，判断某个IP是否在1秒内请求了>=100次，用来在服务器上防止拒绝服务攻击
+
+```
+用循环数组，只需要长度为100，后来的请求覆盖掉之前的请求，然后判断最新的一个请求和队列中最早的请求时间差是否>=1。
+```
+
+
+
+
+
+#### ab替换成c,b替换成ef
+
+输入一个char\[\] str，要求把str中所有的"ab"都替换成"c"，把所有单个的"b"都替换成"ef"。要求in-place，并且保证str中"ab"的个数 &gt;"b"的个数（也就是str的长度足够放下替换后的结果）
+
+```java
+//ab替换成c
+//b替换成ef
+
+
+private String handleStr(char[] chars) {
+    int fillIndex = 0;
+    int countB = 0;
+    for (int i = 0; i < chars.length; ) {
+        char ch = chars[i];
+        if (ch == 'a') {
+            if (i + 1 < chars.length && chars[i + 1] == 'b') {
+                i++;
+                chars[fillIndex++] = 'c';
+            }
+            i++;
+        } else {
+            if (ch == 'b') {
+                countB++;
+            }
+            chars[fillIndex++] = chars[i++];
+        }
+    }
+    for (int j = fillIndex; j < chars.length; j++) {
+        chars[j] = 0;
+
+    }
+    int rightIndex = fillIndex + countB - 1;
+    for (int i = fillIndex - 1; i >= 0; ) {
+        char ch = chars[i];
+        if (ch == 'b') {
+            chars[rightIndex--] = 'f';
+            chars[rightIndex--] = 'e';
+            i--;
+        } else {
+            chars[rightIndex--] = chars[i--];
+        }
+    }
+    return new String(chars);
+}
+```
+
+
+
+
+
+#### [@@@4. 寻找两个有序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)
+
+@@@各种边界 非常麻烦
+
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    int len1 = nums1.length;
+    int len2 = nums2.length;
+    int sum = len1 + len2;
+    if (sum % 2 == 1) {
+        return findKth(nums1, 0, len1 - 1, nums2, 0, len2 - 1, sum / 2 + 1);
+    } else {
+        return (findKth(nums1, 0, len1 - 1, nums2, 0, len2 - 1, sum / 2) + findKth(nums1, 0, len1 - 1, nums2, 0, len2 - 1, sum / 2 + 1)) * 0.5;
+    }
+}
+
+public int findKth(int[] nums1, int left1, int right1, int[] nums2, int left2, int right2, int k) {
+    int len1 = right1 - left1 + 1;
+    int len2 = right2 - left2 + 1;
+    if (len1 > len2) {
+        return findKth(nums2, left2, right2, nums1, left1, right1, k);
+    }
+    if (len1 == 0) {
+        return nums2[left2 + k - 1];
+    }
+    if (k == 1) {
+        return Math.min(nums1[left1], nums2[left2]);
+    }
+    int index1 = left1 + Math.min(len1, k / 2) - 1;
+    int index2 = left2 + Math.min(len2, k / 2) - 1;
+    if (nums1[index1] < nums2[index2]) {
+        return findKth(nums1, index1 + 1, right1, nums2, left2, right2, k - (index1 - left1 + 1));
+    } else {
+        return findKth(nums1, left1, right1, nums2, index2 + 1, right2, k - (index2 - left2 + 1));
+    }
+}
+```
+
+#### [@@@701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
+
+```java
+public TreeNode insertIntoBST(TreeNode root, int val) {
+    if (root == null) {
+        return new TreeNode(val);
+    }
+    if (root.val < val) {
+        root.right = insertIntoBST(root.right, val);
+    } else {
+        root.left = insertIntoBST(root.left, val);
+    }
+    return root;
+}
+```
+
+
+
+#### [@@@@@@@@@@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
+
+```java
+public TreeNode deleteNode(TreeNode root, int key) {
+    if (root == null) {
+        return null;
+    }
+
+    if (root.val > key) {
+        root.left = deleteNode(root.left, key);
+        return root;
+    } else if (root.val < key) {
+        root.right = deleteNode(root.right, key);
+        return root;
+    }
+    //else if(key==root.val)
+    if (root.left == null) {
+        TreeNode right = root.right;
+        root.right = null;
+        return right;
+    } else if (root.right == null) {
+        TreeNode left = root.left;
+        root.left = null;
+        return left;
+    }
+    //如果左右子树都不为空
+    TreeNode leftMaxChild = getLeftMaxChild(root.left);
+    TreeNode leftMaxChildCopy = new TreeNode(leftMaxChild.val);
+    leftMaxChildCopy.left = delLeftMaxChild(root.left);
+    leftMaxChildCopy.right = root.right;
+    return leftMaxChildCopy;
+}
+
+private TreeNode delLeftMaxChild(TreeNode node) {
+    if (node.right == null) {
+        TreeNode left = node.left;
+        node.left = null;
+        return left;
+    }
+    node.right = delLeftMaxChild(node.right);
+    return node;
+}
+
+private TreeNode getLeftMaxChild(TreeNode node) {
+    while (node.right != null) {
+        node = node.right;
+    }
+    return node;
+}
+```
+
+
+
+
+
+#### [@@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+
+```java
+public TreeNode constructMaximumBinaryTree(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return null;
+    }
+    return construct(nums, 0, nums.length - 1);
+}
+
+private TreeNode construct(int[] nums, int left, int right) {
+    if (left > right) {
+        return null;
+    }
+    int[] ret = findMax(nums, left, right);
+    TreeNode node = new TreeNode(ret[0]);
+    node.left = construct(nums, left, ret[1] - 1);
+    node.right = construct(nums, ret[1] + 1, right);
+    return node;
+}
+
+private int[] findMax(int[] nums, int left, int right) {
+    if (left > right) {
+        return new int[]{};
+    }
+    int max = Integer.MIN_VALUE;
+    int maxIndex = -1;
+    for (int i = left; i <= right; i++) {
+        if (nums[i] > max) {
+            max = nums[i];
+            maxIndex = i;
+        }
+    }
+    return new int[]{max, maxIndex};
+}
+```
+
+
+
+
+
+
+
+#### [@@@273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+
+```java
+class Solution {
+    public String numberToWords(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+        int billion = num / 1000000000;
+        int million = (num % 1000000000) / 1000000;
+        int thousand = (num % 1000000) / 1000;
+        int rest = num % 1000;
+
+        String ret = "";
+        if (billion != 0) {
+            ret = three(billion) + " " + "Billion";
+        }
+        if (million != 0) {
+            if (!ret.isEmpty()) {
+                ret += " ";
+            }
+            ret += three(million) + " " + "Million";
+        }
+        if (thousand != 0) {
+            if (!ret.isEmpty()) {
+                ret += " ";
+            }
+            ret += three(thousand) + " " + "Thousand";
+        }
+        if (rest != 0) {
+            if (!ret.isEmpty()) {
+                ret += " ";
+            }
+            ret += three(rest);
+        }
+        return ret;
+    }
+
+    public String one(int num) {
+        switch (num) {
+            case 1:
+                return "One";
+            case 2:
+                return "Two";
+            case 3:
+                return "Three";
+            case 4:
+                return "Four";
+            case 5:
+                return "Five";
+            case 6:
+                return "Six";
+            case 7:
+                return "Seven";
+            case 8:
+                return "Eight";
+            case 9:
+                return "Nine";
+        }
+        return "";
+    }
+
+    public String twoLessThan20(int num) {
+        switch (num) {
+            case 10:
+                return "Ten";
+            case 11:
+                return "Eleven";
+            case 12:
+                return "Twelve";
+            case 13:
+                return "Thirteen";
+            case 14:
+                return "Fourteen";
+            case 15:
+                return "Fifteen";
+            case 16:
+                return "Sixteen";
+            case 17:
+                return "Seventeen";
+            case 18:
+                return "Eighteen";
+            case 19:
+                return "Nineteen";
+        }
+        return "";
+    }
+
+    public String ten(int num) {
+        switch (num) {
+            case 2:
+                return "Twenty";
+            case 3:
+                return "Thirty";
+            case 4:
+                return "Forty";
+            case 5:
+                return "Fifty";
+            case 6:
+                return "Sixty";
+            case 7:
+                return "Seventy";
+            case 8:
+                return "Eighty";
+            case 9:
+                return "Ninety";
+        }
+        return "";
+    }
+
+    public String two(int num) {
+        if (num == 0) {
+            return "";
+        }
+        int two = num / 10;
+        int rest = num % 10;
+        if (num < 10) {
+            return one(num);
+        } else if (num < 20) {
+            return twoLessThan20(num);
+        } else {
+            if (two != 0 && rest != 0) {
+                return ten(two) + " " + one(rest);
+            } else if (two != 0 && rest == 0) {
+                return ten(two);
+            } 
+        }
+        return "";
+    }
+
+    public String three(int num) {
+        if (num == 0) {
+            return "";
+        }
+        int hundred = num / 100;
+        int rest = num % 100;
+        String ret = "";
+        if (rest != 0 && hundred != 0) {
+            return one(hundred) + " " + "Hundred" + " " + two(rest);
+        } else if (hundred != 0) {
+            return one(hundred) + " " + "Hundred";
+        } else if (rest != 0) {
+            return two(rest);
+        }
+        return "";
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        String s = solution.numberToWords(10);
+        System.out.println(s);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
