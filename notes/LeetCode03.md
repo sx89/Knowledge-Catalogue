@@ -1,20 +1,35 @@
-[@@@@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+
+
+#### 动态规划和贪心算法的区别
+
+动态规划和贪心算法都是一种递推算法 
+均有局部最优解来推导全局最优解 
+
+不同点： 
+贪心算法： 
+1.贪心算法中，作出的每步贪心决策都无法改变，因为贪心策略是由上一步的最优解推导下一步的最优解，而上一部之前的最优解则不作保留。 
+2.由（1）中的介绍，可以知道贪心法正确的条件是：每一步的最优解一定包含上一步的最优解。 
+
+
+
+
+
+#### [@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
 ```java
- public int longestCommonSubsequence(String text1, String text2) {
+public int longestCommonSubsequence(String text1, String text2) {
+        if (text1 == null || text2 == null) {
+            return 0;
+        }
         int len1 = text1.length();
         int len2 = text2.length();
         int[][] dp = new int[len1 + 1][len2 + 1];
-        for (int i = 0; i <= len1; i++) {
-            for (int j = 0; j <= len2; j++) {
-                if (j == 0 || i == 0) {
-                    dp[i][j] = 0;
-                    continue;
-                }
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                    dp[i][j] = Math.max(dp[i - 1][j - 1] + 1, dp[i][j]);
                 } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][j - 1], dp[i - 1][j]));
                 }
             }
         }
@@ -24,7 +39,9 @@
 
 
 
-#### @@@删除最少字符变成回文串
+#### @删除最少字符变成回文串
+
+<img src="pictures/LeetCode03/image-20200309172717801.png" alt="image-20200309172717801" style="zoom:50%;" />
 
 题目描述：给定一字符串s,求最少删除多少个字符可以使得s成为回文串。例如：s="abca",答案是1.
 
@@ -61,11 +78,9 @@ public int minChange(String str) {
 
 
 
-#### [@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)(数量)
+#### [@@647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)(数量)
 
 本题可以看成是字符串类的动态规划
-
-
 
 中心扩展法比动态规划效率高.
 
@@ -188,7 +203,6 @@ public String longestPalindrome(String s) {
 
 
 ```java
-
 思路:startTime排序,每到一个startTime,usedRoom就+1.如果在该时间之前有结束的会议室(endTime[endPointer]<=startTime[startPointer]).usedRoom就-1;
 public int minMeetingRooms(int[][] intervals) {
         int len = intervals.length;
@@ -218,74 +232,9 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
 
-
-write read,chBegin的妙用
-
-if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件很重要
-
-```java
- public int compress(char[] chars) {
-        int read = 0;
-        int write = 0;
-        int chBegin = 0;
-        for (read = 0; read < chars.length; read++) {
-            if (read == chars.length - 1 || chars[read] != chars[read + 1]) {
-                int count = read - chBegin + 1;
-                chars[write++] = chars[read];
-                if (count >= 2) {
-                    String temp = count + "";
-                    for (int i = 0; i < temp.length(); i++) {
-                        chars[write++] = temp.charAt(i);
-                    }
-                }
-                chBegin = read + 1;
-            }
-        }
-        return write;
-    }
-```
-
-
-
-#### [@253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
-
-
-
-```java
-
-思路:startTime排序,每到一个startTime,usedRoom就+1.如果在该时间之前有结束的会议室(endTime[endPointer]<=startTime[startPointer]).usedRoom就-1;
-public int minMeetingRooms(int[][] intervals) {
-        int len = intervals.length;
-
-        int max = 0;
-        int[] startTime = new int[len];
-        int[] endTime = new int[len];
-        for (int i = 0; i < len; i++) {
-            startTime[i] = intervals[i][0];
-            endTime[i] = intervals[i][1];
-        }
-        Arrays.sort(startTime);
-        Arrays.sort(endTime);
-        int usedRooms = 0;
-        int endPointer = 0;
-        for (int startPointer = 0; startPointer < len; ) {
-            if (endTime[endPointer] <= startTime[startPointer]) {
-                usedRooms--;
-                endPointer++;
-            }
-            usedRooms++;
-            startPointer++;
-        }
-        return usedRooms;
-    }
-```
-
-
-
-#### @@@[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+#### @[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
 
 求无重叠区间cnt,然后用len-ret就是需要移除的最少区间数
 
@@ -326,7 +275,41 @@ public int eraseOverlapIntervals(int[][] intervals) {
 
 
 
-#### @@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
+
+
+
+write read,chBegin的妙用
+
+if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件很重要
+
+```java
+ public int compress(char[] chars) {
+        int read = 0;
+        int write = 0;
+        int chBegin = 0;
+        for (read = 0; read < chars.length; read++) {
+            if (read == chars.length - 1 || chars[read] != chars[read + 1]) {
+                int count = read - chBegin + 1;
+                chars[write++] = chars[read];
+                if (count >= 2) {
+                    String temp = count + "";
+                    for (int i = 0; i < temp.length(); i++) {
+                        chars[write++] = temp.charAt(i);
+                    }
+                }
+                chBegin = read + 1;
+            }
+        }
+        return write;
+    }
+```
+
+
+
+
+
+#### @@@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
 
 ```java
  public String multiply(String num1, String num2) {
@@ -362,7 +345,7 @@ public int eraseOverlapIntervals(int[][] intervals) {
 
 
 
-#### @@@字符移位
+#### 字符移位
 
 链接：https://www.nowcoder.com/questionTerminal/7e8aa3f9873046d08899e0b44dac5e43
 来源：牛客网
@@ -1686,19 +1669,169 @@ class Solution {
 
 
 
+#### [272. 最接近的二叉搜索树值 II](https://leetcode-cn.com/problems/closest-binary-search-tree-value-ii/)
+
+```java
+private PriorityQueue<Pair<Double, Integer>> queue = null;
+int k = 0;
+public List<Integer> closestKValues(TreeNode root, double target, int k) {
+    Comparator<Pair<Double, Integer>> c = new Comparator<Pair<Double, Integer>>() {
+        public int compare(Pair<Double, Integer> p1, Pair<Double, Integer> p2) {
+            if ((p1.getKey() - p2.getKey()) < 0) {
+                return 1;
+            }
+            return -1;
+        }
+    };
+    queue = new PriorityQueue<Pair<Double, Integer>>(10, c);
+    this.k = k;
+    inOrder(root, target);
+    ArrayList<Integer> ret = new ArrayList<Integer>();
+    while (!queue.isEmpty()) {
+        ret.add(queue.poll().getValue());
+    }
+    return ret;
+}
+
+public void inOrder(TreeNode root, double target) {
+
+    if (root == null) {
+        return;
+    }
+    inOrder(root.left, target);
+    double diff = Math.abs((double) root.val - target);
+    if (queue.size() < k) {
+        queue.add(new Pair(diff, root.val));
+    } else {
+        if (queue.peek().getKey() > diff) {
+            queue.poll();
+            queue.add(new Pair(diff, root.val));
+        }
+    }
+    inOrder(root.right, target);
+}
+```
+
+
+
+#### [@@210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
+
+
+
+@思路1 拓扑排序(BFS)
+建立一个**入度表**  和 一个**邻接矩阵**.
+
+如果不涉及权值,为了节省空间和提升遍历效率,**邻接矩阵可以用 set数组代替,HashSet<Integer>[]**    
+
+```java
+
+
+int[] inCount = null;
+int[][] grid = null;
+int[] ret = null;
+ArrayList<Integer> retList = null;
+Queue<Integer> queue = new LinkedList<Integer>();
+
+public int[] findOrder(int numCourses, int[][] prerequisites) {
+    if (numCourses <= 0) {
+        return new int[]{};
+    }
+    int len = numCourses;
+    inCount = new int[len];
+    grid = new int[len][len];
+    retList = new ArrayList<>();
+    ret = new int[len];
+
+    for (int i = 0; i < prerequisites.length; i++) {
+        int to = prerequisites[i][0];
+        int from = prerequisites[i][1];
+        grid[from][to] = 1;
+        inCount[to]++;
+    }
+
+    for (int i = 0; i < len; i++) {
+        if (inCount[i] == 0) {
+            queue.add(i);
+            retList.add(i);
+        }
+    }
+    while (!queue.isEmpty()) {
+        Integer node = queue.poll();
+        for (int i = 0; i < len; i++) {
+            if (grid[node][i] == 1) {
+                grid[node][i] = 0;
+                inCount[i]--;
+                if (inCount[i] == 0) {
+                    queue.add(i);
+                    retList.add(i);
+                }
+            }
+        }
+    }
+    System.out.println(retList);
+    if (retList.size() == len) {
+        for (int i = 0; i < len; i++) {
+            ret[i] = retList.get(i);
+        }
+        return ret;
+    }
+    return new int[]{};
+}
+```
 
 
 
 
 
+#### [@@@207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+@思路1 
 
 
 
+@思路2  DFS  这不是排序,而是用flags的0,-1,1代表三种状态,来判断是否有环,如果没有环的话,那一定能满足拓扑排序.
 
+```java
+private int[] flags = null;
+private int[][] grid = null;
+int len = 0;
 
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+    this.len = numCourses;
+    grid = new int[len][len];
+    flags = new int[len];
+    for (int i = 0; i < prerequisites.length; i++) {
+        int to = prerequisites[i][0];
+        int from = prerequisites[i][1];
+        grid[from][to] = 1;
+    }
+    for (int i = 0; i < len; i++) {
+        if (!dfs(grid, flags, i)) {
+            return false;
+        }
+    }
+    return true;
+}
 
-
-
+private boolean dfs(int[][] grid, int[] flags, int start) {
+    if (flags[start] == 1) {
+        return false;
+    }
+    if (flags[start] == -1) {
+        return true;
+    }
+    flags[start] = 1;
+    for (int i = 0; i < len; i++) {
+        if (grid[start][i] == 1) {
+            if (!dfs(grid, flags, i)) {
+                return false;
+            }
+        }
+    }
+    flags[start] = -1;
+    return true;
+}
+```
 
 
 
