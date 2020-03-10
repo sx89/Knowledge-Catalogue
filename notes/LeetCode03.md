@@ -311,6 +311,12 @@ if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件
 
 #### @@@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
 
+
+
+@i 和 j长的数字 乘出来的最大长度是 i+j 所以创建数组 new int[i+j]
+
+@i和 j 都是从len1-1   len2-1 开始往小走, 乘出来的数据放在i+j+1的地方
+
 ```java
  public String multiply(String num1, String num2) {
         if (num1.equals("0") || num2.equals("0")) {
@@ -353,14 +359,14 @@ if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件
 小Q最近遇到了一个难题：把一个字符串的大写字母放到字符串的后面，各个字符的相对位置不变，且不能申请额外的空间。
   你能帮帮小Q吗？ 
 
-##### **输入描述:**
+**输入描述:**
 
 ```
 输入数据有多组，每组包含一个字符串s，且保证:1<=s.length<=1000.
   
 ```
 
-##### **输出描述:**
+**输出描述:**
 
 ```
 对于每组数据，输出移位后的字符串。
@@ -464,7 +470,19 @@ class MedianFinder {
 
 
 
-#### 图的m着色问题(dfs)
+#### @@@@图的m着色问题(dfs)
+
+@color数组,0代表还未染色,并且可以用来当visited数组
+
+@先染色,染色后找到第一个未访问的point进行dfs.
+
+@如果图中任意两点都是连通的，那么图被称作连通图。 如果有图如下,5那里在我的代码里不适用原因是
+
+1.我用回溯的cnt作为ret++的条件,应该改成cnt为全量,并且1节点每换一次颜色,cnt置零
+
+2.backtracing往下走的时候,只会选择第一个联通point,后续point会被抛弃,比如图中5
+
+<img src="pictures/LeetCode03/image-20200309235552816.png" alt="image-20200309235552816" style="zoom:50%;" />
 
 [问题描述]
 
@@ -630,7 +648,7 @@ class MedianFinder {
 
 今天要给100亿个数字排序，100亿个 int 型数字放在文件里面大概有 37.2GB，非常大，内存一次装不下了。那么肯定是要拆分成小的文件一个一个来处理，最终在合并成一个排好序的大文件。
 
-##### 实现思路
+实现思路
 
 1.把这个37GB的大文件，用哈希分成1000个小文件，每个小文件平均38MB左右（理想情况），把100亿个数字对1000取模，模出来的结果在0到999之间，每个结果对应一个文件，所以我这里取的哈希函数是 h = x % 1000，哈希函数取得"好"，能使冲突减小，结果分布均匀。
 
@@ -644,7 +662,7 @@ class MedianFinder {
 
 最后我用c++写了个实验程序，具体代码在[这里](https://link.jianshu.com?t=https://github.com/hehe520/Data-structure-and-algorithm/blob/master/海量数据处理/外部归并排序 - 分治.cpp)可以看到。
 
-##### 思维拓展
+思维拓展
 
 类似的100亿个数字求和，求中位数，求平均数，套路就是一样的了。
  求和：统计每个小文件的和，返回给master再求和就可以了。
