@@ -83,13 +83,6 @@
 
 
 
-
-#### 88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
-
-```
-nums1因为后方有空余位置,所以让nums1从后往前填充,可以达到时间复杂度O(m+n)空间复杂度O(1)
-```
-
 #### [@253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
 
 

@@ -198,7 +198,7 @@ public String longestPalindrome(String s) {
 
     
 
-#### @253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
+#### @[253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
 
 
 
@@ -275,7 +275,7 @@ public int eraseOverlapIntervals(int[][] intervals) {
 
 
 
-#### [@443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
+#### [443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
 
 
@@ -285,21 +285,27 @@ if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件
 
 ```java
  public int compress(char[] chars) {
-        int read = 0;
+        if (chars == null) {
+            return 0;
+        }
+        int left = 0;
         int write = 0;
-        int chBegin = 0;
-        for (read = 0; read < chars.length; read++) {
-            if (read == chars.length - 1 || chars[read] != chars[read + 1]) {
-                int count = read - chBegin + 1;
-                chars[write++] = chars[read];
-                if (count >= 2) {
-                    String temp = count + "";
-                    for (int i = 0; i < temp.length(); i++) {
-                        chars[write++] = temp.charAt(i);
-                    }
-                }
-                chBegin = read + 1;
+        int len = chars.length;
+        for (int right = 0; right < len; ) {
+            char cur = chars[left];
+            while (right + 1 < len && chars[right] == chars[right + 1]) {
+                right++;
             }
+            chars[write++] = cur;
+            int cnt = right - left + 1;
+            if (cnt > 1) {
+                String temp = cnt + "";
+                for (int i = 0; i < temp.length(); i++) {
+                    chars[write++] = temp.charAt(i);
+                }
+            }
+            left = right + 1;
+            right++;
         }
         return write;
     }
@@ -702,6 +708,26 @@ List<List<Integer>> ret = new ArrayList<>();
 
 #### [@@@547. 朋友圈](https://leetcode-cn.com/problems/friend-circles/)
 
+@count,parent[],size[]
+
+@union ,getParent;
+
+@union的时候往根节点上union
+
+```
+if (size[rootP] > size[rootQ]) {
+            parent[rootQ] = rootP;
+            size[rootP] += size[rootQ];
+            count--;
+        } else {
+            parent[rootP] = rootQ;
+            size[rootQ] += size[rootP];
+            count--;
+        }
+```
+
+代码:
+
 ```java
 
 public class Solution {
@@ -744,11 +770,12 @@ class UF {
         if (size[rootP] > size[rootQ]) {
             parent[rootQ] = rootP;
             size[rootP] += size[rootQ];
+            count--;
         } else {
             parent[rootP] = rootQ;
             size[rootQ] += size[rootP];
+            count--;
         }
-        count--;
     }
     //路径压缩+寻找根节点
     public int findParent(int p) {
@@ -778,6 +805,16 @@ class UF {
 
 
 #### [@@@200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+@uf的初始化  
+
+i*col + j
+
+如果`gird[i][j]=='0'` 那`parent[i*col][j]=0 和 size[i*col][j]=0`
+
+@小岛的合并 
+
+如果`grid[i][j]=='1',先设为'0',然后跟右方和下方的岛合并`
 
 
 
@@ -874,7 +911,7 @@ class UF {
 
 
 
-#### 找到二叉树中与target之差的绝对值最小的node
+#### 找到二叉搜索树中与target之差的绝对值最小的node
 
 @如果node处的值小于target,则node左边的值跟target的差距只会越来越大
 
@@ -885,32 +922,23 @@ class UF {
 在二叉查找树中，[查找与目标值最接近的节点并返回](https://www.geeksforgeeks.org/find-closest-element-binary-search-tree/)。如果有多个节点都符合要求，返回其中一个即可
 
 ```java
- public void maxDiffUtil(Node  ptr, int k)
-    {
-        if (ptr == null)
-            return ;
-
-        // If k itself is present 
-        if (ptr.key == k)
-        {
-            min_diff_key = k;
+ private int minDiff = Integer.MAX_VALUE;
+    public void maxDiffUtil(TreeNode root, int target) {
+        if (root == null) {
             return;
         }
-
-        // update min_diff and min_diff_key by checking 
-        // current node value 
-        if (min_diff > Math.abs(ptr.key - k))
-        {
-            min_diff = Math.abs(ptr.key - k);
-            min_diff_key = ptr.key;
+        if (root.val == target) {
+            minDiff = 0;
+            return;
         }
+        int abs = Math.abs(root.val - target);
 
-        // if k is less than ptr.key then move in 
-        // left subtree else in right subtree 
-        if (k < ptr.key)
-            maxDiffUtil(ptr.left, k);
-        else
-            maxDiffUtil(ptr.right, k);
+        minDiff = Math.min(minDiff, abs);
+        if (target > root.val) {
+            maxDiffUtil(root.right, target);
+        } else {
+            maxDiffUtil(root.left, target);
+        }
     }
 ```
 
@@ -919,6 +947,10 @@ class UF {
 
 
 #### @@@@二叉树的非递归后序遍历
+
+
+
+
 
 ```java
 private void lastOrder(TreeNode root) {
@@ -951,7 +983,7 @@ private void lastOrder(TreeNode root) {
 
 
 
-#### 有序数组重建平衡二叉树
+#### @@@有序数组重建平衡二叉树
 
 ```java
 public TreeNode rebuildBST(int[] nums, int start, int end) {
@@ -972,13 +1004,13 @@ public TreeNode rebuildBST(int[] nums, int start, int end) {
 排序,left= 0,right = len-1, sum>0 right--,sum<0,left++.
 ```
 
-#### 一个整数数组找任意两数的最小之差
+#### 一个整数数组找任意两数的最小差
 
 ```
 排序,相邻的数的差最小
 ```
 
-#### [@@@208. 实现 Trie (前缀树)](https://leetcode-cn.com/problems/implement-trie-prefix-tree/)
+#### [@@208. 实现 Trie (前缀树)](https://leetcode-cn.com/problems/implement-trie-prefix-tree/)
 
 ```java
 
@@ -1072,33 +1104,20 @@ class TreeNode {
 
 
 
-#### [209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+#### [@@@209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
 
 
 
 思路一:滑动窗口  复杂度 O(n)
 
-思路二:二分长度法   len = 8 先搜len=4,如果sum>s,搜len=2,如果sum<s,搜len=6.  在长度上用二分法.
+@@@思路二:二分长度法   len = 8 先搜len=4,如果sum>s,搜len=2,如果sum<s,搜len=6.  在长度上用二分法.
 
 
 
-#### [60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
-
-permutation在全排列中的index
-
-```
-思路1.回溯+剪枝,到了k个的时候,返回
-    
-思路二,利用每一位的权重. @@@@用于没有重复数字的情况.如果有重复数字,比如  112.  一共只有3种组合,就比较难想.
-
-
-```
 
 
 
 #### [@@@@60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
-
-
 
 @@特别注意使用  
 
@@ -1139,35 +1158,81 @@ String getPermutation(int n, int k) {
 
 
 
-#### 一个数组的值先从小到大递增后从大到小递减，找出最大的值
 
-@@@如果数组中有平峰,比如  1,4,3,3,3,,3,3,3,3,1;可以考虑先去重,再调用下面的代码.
 
-思路：最简单的办法就是从第二个值开始，判断是否满足 A[i] > A[i-1] && A[i] > A[i+1]. 如果满足，i 就是那个最大值的下标。该算法复杂度为O(n).
+#### [@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 
-我们可以改进这种算法，因为这个数组是排好序的，所以我们可以利用二分查找的思想，更快速的找到最大值，时间复杂度为O(lg n)。
+迭代法:
+
+@@@mid和mid+1的比较是很有水平的.因为while里面是left<right.所以mid求出来之后,mid+1不会越界,但mid-1会越界
+
+所以可以
 
 ```java
- public int findPeak(int[] nums) {
-        int len = nums.length;
-        return findPeakFunc(nums, 0, len - 1);
+ if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+        } else if (nums[mid] <= nums[mid + 1]) {
+            left = mid + 1;
+        }
+```
+
+但是不能用
+
+```java
+if(nums[mid-1]<nums[mid]){
+    left = mid;
+}else if(nums[mid-1]>=nums[mid]){
+    right = mid-1;
+}
+```
+
+```java
+public int findPeakElement(int[] nums) {
+    int left = 0;
+    int right = nums.length - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+        } else if (nums[mid] <= nums[mid + 1]) {
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+```
+
+递归法:边界的判断.
+
+```java
+ public int findPeakElement(int[] nums) {
+        return func(nums, 0, nums.length - 1);
     }
 
-    private int findPeakFunc(int[] nums, int left, int right) {
+    private int func(int[] nums, int left, int right) {
+        if (left == right) {
+            return left;
+        }
         int mid = left + (right - left) / 2;
-        if (mid == 0 || mid == nums.length - 1 || (nums[mid] > nums[mid + 1] && nums[mid] > nums[mid - 1])) {
-            return nums[mid];
-        } else if (nums[mid] < nums[mid - 1]) {
-            return findPeakFunc(nums, left, mid - 1);
+        if (nums[mid] > nums[mid + 1]) {
+            right = mid;
+            return func(nums, left, right);
         } else {
-            return findPeakFunc(nums, mid + 1, right);
+            left = mid + 1;
+            return func(nums, left, right);
         }
     }
 ```
 
 
 
-#### [@@@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)
+
+
+
+
+
+
+#### [@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)
 
 这个题不能用dfs来做,假设dict是100.那么dfs要遍历所有的路径,复杂度是100的100次方,大概就是1*10的200次方,复杂度是指数级别的
 
@@ -1244,75 +1309,13 @@ String getPermutation(int n, int k) {
 
 
 
-#### [@@@@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
-
-迭代法:
-
-@@@mid和mid+1的比较是很有水平的.因为while里面是left<right.所以mid求出来之后,mid+1不会越界,但mid-1会越界
-
-所以可以
-
-```java
- if (nums[mid] > nums[mid + 1]) {
-            right = mid;
-        } else if (nums[mid] <= nums[mid + 1]) {
-            left = mid + 1;
-        }
-```
-
-但是不能用
-
-```java
-if(nums[mid-1]<nums[mid]){
-    left = mid;
-}else if(nums[mid-1]>=nums[mid]){
-    right = mid-1;
-}
-```
-
-```java
-public int findPeakElement(int[] nums) {
-    int left = 0;
-    int right = nums.length - 1;
-    while (left < right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] > nums[mid + 1]) {
-            right = mid;
-        } else if (nums[mid] <= nums[mid + 1]) {
-            left = mid + 1;
-        }
-    }
-    return left;
-}
-```
-
-递归法:边界的判断.
-
-```java
- public int findPeakElement(int[] nums) {
-        return func(nums, 0, nums.length - 1);
-    }
-
-    private int func(int[] nums, int left, int right) {
-        if (left == right) {
-            return left;
-        }
-        int mid = left + (right - left) / 2;
-        if (nums[mid] > nums[mid + 1]) {
-            right = mid;
-            return func(nums, left, right);
-        } else {
-            left = mid + 1;
-            return func(nums, left, right);
-        }
-    }
-```
 
 
 
 
+#### IP重复攻击
 
-#### 实现一个数据结构，判断某个IP是否在1秒内请求了>=100次，用来在服务器上防止拒绝服务攻击
+实现一个数据结构，判断某个IP是否在1秒内请求了>=100次，用来在服务器上防止拒绝服务攻击
 
 ```
 用循环数组，只需要长度为100，后来的请求覆盖掉之前的请求，然后判断最新的一个请求和队列中最早的请求时间差是否>=1。
@@ -1329,7 +1332,6 @@ public int findPeakElement(int[] nums) {
 ```java
 //ab替换成c
 //b替换成ef
-
 
 private String handleStr(char[] chars) {
     int fillIndex = 0;
@@ -1410,80 +1412,142 @@ public int findKth(int[] nums1, int left1, int right1, int[] nums2, int left2, i
 }
 ```
 
-#### [@@@701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
+#### [@@@@@701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
+
+@插入操作的思想:
+
+找到null,就创建并返回
+
+修改左子树或者右子树,就通过返回值来做更新
+
+最后把整个root返回回去,更新root的root.
 
 ```java
+递归写法:
+
 public TreeNode insertIntoBST(TreeNode root, int val) {
     if (root == null) {
         return new TreeNode(val);
     }
-    if (root.val < val) {
+    if(root.val==val){
+            return root;
+    }else if (root.val < val) {
         root.right = insertIntoBST(root.right, val);
     } else {
         root.left = insertIntoBST(root.left, val);
     }
     return root;
 }
+
+
+迭代写法:
+
+ public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        TreeNode node = root;
+        while (node != null) {
+            if (node.val == val) {
+                return root;
+            } else if (node.val > val) {
+                if (node.left == null) {
+                    node.left = new TreeNode(val);
+                    return root;
+                }
+                node = node.left;
+            } else {
+                if (node.right == null) {
+                    node.right = new TreeNode(val);
+                    return root;
+                }
+                node = node.right;
+            }
+        }
+
+        return root;
+    }
 ```
 
 
 
 #### [@@@@@@@@@@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 
+
+
+@@@最难的部分 (换了一下两个if else的顺序,变得好理解多了)
+
 ```java
-public TreeNode deleteNode(TreeNode root, int key) {
-    if (root == null) {
-        return null;
-    }
-
-    if (root.val > key) {
-        root.left = deleteNode(root.left, key);
-        return root;
-    } else if (root.val < key) {
-        root.right = deleteNode(root.right, key);
-        return root;
-    }
-    //else if(key==root.val)
-    if (root.left == null) {
-        TreeNode right = root.right;
-        root.right = null;
-        return right;
-    } else if (root.right == null) {
-        TreeNode left = root.left;
-        root.left = null;
-        return left;
-    }
-    //如果左右子树都不为空
-    TreeNode leftMaxChild = getLeftMaxChild(root.left);
-    TreeNode leftMaxChildCopy = new TreeNode(leftMaxChild.val);
-    leftMaxChildCopy.left = delLeftMaxChild(root.left);
-    leftMaxChildCopy.right = root.right;
-    return leftMaxChildCopy;
-}
-
 private TreeNode delLeftMaxChild(TreeNode node) {
-    if (node.right == null) {
+    if( node.right !=null){
+         node.right = delLeftMaxChild(node.right);
+   		 return node;
+    }else if (node.right == null) {
         TreeNode left = node.left;
         node.left = null;
         return left;
     }
-    node.right = delLeftMaxChild(node.right);
-    return node;
 }
+```
 
-private TreeNode getLeftMaxChild(TreeNode node) {
-    while (node.right != null) {
-        node = node.right;
+
+
+```java
+public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return null;
+        }
+        if (root.val == key) {
+            root = getDeletedLeftMaxChildTree(root, key);
+        } else if (root.val > key) {
+            root.left = deleteNode(root.left, key);
+        } else {
+            root.right = deleteNode(root.right, key);
+        }
+        return root;
     }
-    return node;
-}
+
+    private TreeNode getDeletedLeftMaxChildTree(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            return null;
+        } else if (root.left != null && root.right == null) {
+            TreeNode left = root.left;
+            root.left = null;
+            return left;
+        } else if (root.left == null && root.right != null) {
+            TreeNode right = root.right;
+            root.right = null;
+            return right;
+        } else {
+            TreeNode leftMaxChild = findMaxLeftChild(root);
+            TreeNode copyRootTree = new TreeNode(leftMaxChild.val);
+            copyRootTree.left = delLeftMaxTree(root.left);
+            copyRootTree.right = root.right;
+            return copyRootTree;
+        }
+    }
+
+    private TreeNode delLeftMaxTree(TreeNode root) {
+        if (root.right != null) {
+            root.right = delLeftMaxTree(root.right);
+            return root;
+        } else {
+            TreeNode left = root.left;
+            root.left = null;
+            return left;
+        }
+    }
 ```
 
 
 
 
 
-#### [@@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+#### [@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+
+
+
+@inOrder  +   数组递归建树的诀窍: left,maxIndex-1   和  maxIndex+1,right
 
 ```java
 public TreeNode constructMaximumBinaryTree(int[] nums) {
@@ -1527,6 +1591,10 @@ private int[] findMax(int[] nums, int left, int right) {
 
 
 #### [@@@273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)
+
+
+
+@one里面没有0的返回
 
 ```java
 class Solution {
@@ -1801,7 +1869,7 @@ public int[] findOrder(int numCourses, int[][] prerequisites) {
 
 
 
-#### [@@@207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+#### [@207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
 
 @思路1 
 
