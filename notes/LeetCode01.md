@@ -482,7 +482,7 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     }
 ```
 
-#### [@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+#### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
 ```java
     public int maxSubArray(int[] nums) {

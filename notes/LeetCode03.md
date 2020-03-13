@@ -12,7 +12,70 @@
 
 
 
+#### [@@@@72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
+@如果有一个字符串长度为0
+
+@初始化边界的方式
+
+@如果i和j相等,取的不是 `math.min(dp[i][j],dp[i-1][j-1])`;而是直接取`dp[i-1][j-1],因为dp[i][j]此时为0`
+
+@@@@@@@删除 插入 替换都是针对word1而言的
+
+```prolog
+讲一下我自己对状态转移方程的理解,麻烦大家看看我说得对不对有没有道理:
+(一)、当word1[i]==word2[j]时,由于遍历到了i和j,说明word1的0~i-1和word2的0~j-1的匹配结果已经生成,
+由于当前两个字符相同,因此无需做任何操作,dp[i][j]=dp[i-1][j-1]
+(二)、当word1[i]!=word2[j]时,可以进行的操作有3个:
+      ① 替换操作:可能word1的0~i-1位置与word2的0~j-1位置的字符都相同,
+           只是当前位置的字符不匹配,进行替换操作后两者变得相同,
+           所以此时dp[i][j]=dp[i-1][j-1]+1(这个加1代表执行替换操作)
+      ②删除操作:若此时word1的0~i-1位置与word2的0~j位置已经匹配了,
+         此时多出了word1的i位置字符,应把它删除掉,才能使此时word1的0~i(这个i是执行了删除操作后新的i)
+         和word2的0~j位置匹配,因此此时dp[i][j]=dp[i-1][j]+1(这个加1代表执行删除操作)
+      ③插入操作:若此时word1的0~i位置只是和word2的0~j-1位置匹配,
+          此时只需要在原来的i位置后面插入一个和word2的j位置相同的字符使得
+          此时的word1的0~i(这个i是执行了插入操作后新的i)和word2的0~j匹配得上,
+          所以此时dp[i][j]=dp[i][j-1]+1(这个加1代表执行插入操作)
+      ④由于题目所要求的是要最少的操作数:所以当word1[i] != word2[j] 时,
+          需要在这三个操作中选取一个最小的值赋格当前的dp[i][j]
+```
+
+
+
+```JAVA
+public int minDistance(String word1, String word2) {
+    if (word1 == null || word2 == null) {
+        return 0;
+    }
+    int len1 = word1.length();
+    int len2 = word2.length();
+    //如果其中有一个字符串长度为0
+    if (len1 * len2 == 0) {
+        return len1 + len2;
+    }
+    int[][] dp = new int[len1 + 1][len2 + 1];
+    //边界的初始化
+    for (int i = 0; i <= len1; i++) {
+        dp[i][0] = i;
+    }
+    for (int j = 0; j <= len2; j++) {
+        dp[0][j] = j;
+    }
+    //如果i和j的字符相等,则ij的编辑距离等于 i-1 j-1
+    //如果i j的字符不等,则ij的编辑距离取决于删除i-1 还是删除 j-1的字符会让编辑距离小一点
+    for (int i = 1; i <= len1; i++) {
+        for (int j = 1; j <= len2; j++) {
+            if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                dp[i][j] = dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j - 1], dp[i][j - 1]), dp[i - 1][j]) + 1;
+            }
+        }
+    }
+    return dp[len1][len2];
+}
+```
 
 #### [@1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
@@ -27,9 +90,9 @@ public int longestCommonSubsequence(String text1, String text2) {
         for (int i = 1; i <= len1; i++) {
             for (int j = 1; j <= len2; j++) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    dp[i][j] = Math.max(dp[i - 1][j - 1] + 1, dp[i][j]);
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
                 } else {
-                    dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][j - 1], dp[i - 1][j]));
+                    dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j]);
                 }
             }
         }
@@ -1536,6 +1599,16 @@ public TreeNode deleteNode(TreeNode root, int key) {
             root.left = null;
             return left;
         }
+    }
+
+ 	//仅用于左右子树都存在的情况
+    private TreeNode findMaxChild(TreeNode root){
+
+        TreeNode left = root.left;
+        while(left.right!=null){
+            left = left.right;
+        }
+        return left;
     }
 ```
 

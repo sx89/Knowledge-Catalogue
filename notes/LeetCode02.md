@@ -203,7 +203,7 @@ int maxLen = 0;
 
 
 
-#### [@@@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+#### [@@@@@297. 二叉树的序列化与反序列化](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
 
 
 
@@ -217,8 +217,8 @@ int maxLen = 0;
 
 ```java
  //return "#"很关键
-    String data = "";
-    
+   String data = null;
+
     public String serialize(TreeNode root) {
         if (root == null) {
             return "#";
@@ -227,33 +227,37 @@ int maxLen = 0;
     }
 
     public TreeNode deserialize(String str) {
-        data = str;
-        return Deserialize();
+        this.data = str;
+        return deserialize();
     }
 
-    private TreeNode Deserialize() {
+    private TreeNode deserialize() {
         if (data == null || data.length() == 0) {
             return null;
         }
-        int cutIndex = 0;
-        for (cutIndex = 0; cutIndex < data.length(); cutIndex++) {
-            if (data.charAt(cutIndex) == ' ') {
-                break;
-            }
-        }
-        String rootVal = data.substring(0, cutIndex);
-        if (cutIndex < data.length()) {
-            data = data.substring(cutIndex + 1);
+        String rootValStr = null;
+        int rootCutIndex = data.indexOf(" ");
+		//切割rootValStr  
+        if (rootCutIndex == -1) {
+            rootValStr = data;
         } else {
+            rootValStr = data.substring(0, rootCutIndex);
+        }
+		//切割剩余的Str
+        if (rootCutIndex == -1) {
             data = "";
+        } else {
+            data = data.substring(rootCutIndex + 1);
         }
-        if (rootVal.equals("#")) {
+		//rootValStr作解析
+        if (rootValStr.equals("#")) {
             return null;
+        } else {
+            TreeNode root = new TreeNode(Integer.parseInt(rootValStr));
+            root.left = deserialize();
+            root.right = deserialize();
+            return root;
         }
-        TreeNode root = new TreeNode(Integer.parseInt(rootVal));
-        root.left = Deserialize();
-        root.right = Deserialize();
-        return root;
     }
 
 
@@ -335,7 +339,7 @@ public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
 
 
 
-#### [@@151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+#### [@151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
 
 @trim
 
@@ -347,26 +351,30 @@ public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
 
 ```java
 public String reverseWords(String s) {
-    s = s.trim();
-    int len = s.length();
-    int index = len - 1;
-    int end = s.length() - 1;
-    int start = 0;
-    StringBuilder ret = new StringBuilder();
-    while (index > 0) {
-        if (s.charAt(index) == ' ') {
-            start = index + 1;
-            ret.append(s.substring(start, end + 1));
-            ret.append(" ");
-            while (s.charAt(index) == ' ') {
-                index--;
+        s = s.trim();
+        int len = s.length();
+        StringBuilder ret = new StringBuilder();
+        int wordEnd = len - 1;
+        int read = len - 1;
+        while (read >= 0) {
+            while (read >= 0 && s.charAt(read) != ' ') {
+                read--;
             }
-            end = index;
+            String temp = s.substring(read + 1, wordEnd + 1);
+            //最后一个单词末尾不append " "
+            if (read == -1) {
+                ret.append(temp);
+                return ret.toString();
+            } else {
+                ret.append(temp + " ");
+            }
+            while (read >= 0 && s.charAt(read) == ' ') {
+                read--;
+            }
+            wordEnd = read;
         }
-        index--;
+        return ret.toString();
     }
-    return ret.append(s.substring(0, end + 1)).toString();
-}
 ```
 
 
@@ -381,21 +389,32 @@ public String reverseWords(String s) {
             return null;
         }
         ListNode pHead = new ListNode(-1);
-        pHead.next = head;
-        ListNode prePre = pHead;
-        ListNode pre = pHead.next;
-        ListNode last = pre.next;
-        while (prePre != null && pre != null && last != null) {
-            ListNode temp = last.next;
-            pre.next = last.next;
-            last.next = pre;
-            prePre.next = last;
+        ListNode pNode = pHead;
 
-            prePre = pre;
-            pre = temp;
+        ListNode preNode = head;
+        ListNode laterNode = head.next;
+
+        while (preNode != null && laterNode != null) {
+            ListNode temp = laterNode.next;
+            //把laterNode插入
+            laterNode.next = null;
+            pNode.next = laterNode;
+            pNode = pNode.next;
+            //把preNode插入
+            preNode.next = null;
+            pNode.next = preNode;
+            pNode = pNode.next;
+
+            //pre 和 later都后移
+            preNode = temp;
             if (temp != null) {
-                last = temp.next;
+                laterNode = temp.next;
             }
+        }
+        //如果末尾还剩余一个节点,单独插入
+        if (preNode != null) {
+            preNode.next = null;
+            pNode.next = preNode;
         }
         return pHead.next;
     }
@@ -421,6 +440,27 @@ public String reverseWords(String s) {
 
 #### [@@@@@10. 正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
 
+
+
+
+
+```
+@为什么是 for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+            
+ 因为我dp[i][j]的含义是p的前j个字符串匹配  s的前i个.
+ dp[i][j]需要用到 i-1,j-1  所以 for i  for j;
+ 
+ 而且用j在前,i在后也可以 
+ for (int j = 0; j < len2; j++) {
+ 			for (int i = 0; i < len1; i++) {
+            
+ 
+ 
+```
+
+
+
 ```java
  public boolean isMatch(String s, String p) {
         if (s == null || p == null) {
@@ -437,7 +477,7 @@ public String reverseWords(String s) {
             }
         }
         for (int i = 0; i < len1; i++) {
-            for (int j = 0; j < len2; j++) {
+            for (int j = 0; j < len2; j++) { 
                 // ##s   ##p     与     ##s    ##.
                 if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
                     dp[i + 1][j + 1] = dp[i][j];
@@ -504,9 +544,30 @@ public String reverseWords(String s) {
 
 #### [@8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
 
+@trim前判空,trim完了要判断长度,防止越界
+
+@
+
+```
+if(ret<littleLimit){
+	return ....
+}
+if(ret==littleLimit){
+	if(ret*10<limit+digit){
+		return ...
+	}
+}
+ret = ret*10-digit;
+```
+
+
+
 ```java
 
 public int myAtoi(String str) {
+    	if(str==null){
+        	return 0;
+        }
         str = str.trim();
         if (str == null || str.length() == 0)
             return 0;
@@ -633,61 +694,7 @@ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
 
 
 
-#### [@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
-
-@叶子节点删自身
-
-@有右子树,root.val赋值为后驱节点值,删后驱节点,  
-
-@没右子树,只有左子树,root.val赋值为前驱节点值,删前驱节点
-
-```java
-public TreeNode deleteNode(TreeNode root, int key) {
-        return deleteNodeFunc(root, key);
-    }
-
-    private TreeNode deleteNodeFunc(TreeNode root, int key) {
-        if (root == null) {
-            return null;
-        }
-        if (key > root.val) {
-            root.right = deleteNodeFunc(root.right, key);
-        } else if (key < root.val) {
-            root.left = deleteNodeFunc(root.left, key);
-        } else {
-            if (root.left == null && root.right == null) {
-                root = null;
-            } else if (root.right != null) {
-                TreeNode laster = getLaster(root.right);
-                root.val = laster.val;
-                root.right = deleteNodeFunc(root.right, laster.val);
-            } else if (root.left != null) {
-                TreeNode pre = getPre(root.left);
-                root.val = pre.val;
-                root.left = deleteNodeFunc(root.left, pre.val);
-            }
-        }
-        return root;
-    }
-
-    private TreeNode getLaster(TreeNode root) {
-        while (root.left != null) {
-            root = root.left;
-        }
-        return root;
-    }
-
-    private TreeNode getPre(TreeNode root) {
-        while (root.right != null) {
-            root = root.right;
-        }
-        return root;
-    }
-```
-
-
-
-#### 循环节长度
+#### @循环节长度
 
 两个整数做除法，有时会产生循环小数，其循环部分称为：循环节。 
 比如，11/13=6=>0.846153846153….. 其循环节为[846153] 共有6位。 
@@ -697,24 +704,25 @@ public TreeNode deleteNode(TreeNode root, int key) {
 https://blog.csdn.net/weixin_41514525/article/details/97121292
 
 ```java
+思路:如果11/13 是循环的.那么将来的被除数中肯定还会出现11
 private int getCyc(int n, int m) {
+        if (m == 0) {
+            return -1;
+        }
+        int remain = n % m;
+        int remainFlag = remain;
         int count = 0;
-        int remain = 0;
-        HashMap<Integer, Integer> map = new HashMap<>();
-        n = n % m;
-        while (true) {
-            n = n * 10;
-            remain = n / m;
-            n = n % m;
-            if (n == 0) {//可以除尽,不是无限不循环
+        do {
+            count++;
+            remain = remain * 10 % m;
+            if (remain == 0) {
                 return -1;
             }
-            if (map.containsKey(remain)) {
-                return count - map.get(remain);
-            }
-            map.put(remain, count++);
-        }
+        } while (remain != remainFlag);
+        return count;
     }
+
+
 ```
 
 
@@ -769,7 +777,22 @@ public:
 
 
 
-#### [398. 随机数索引](https://leetcode-cn.com/problems/random-pick-index/)
+#### [@@398. 随机数索引](https://leetcode-cn.com/problems/random-pick-index/)
+
+**第k个数被选中的概率是  1/k.  前1~k-1个数平分 (k-1)/k的可能性(为什么? 用归纳推理可知, k=1时,概率为1,k=2时,两个元素概率为 1/2,1/2. k=3时,即为k的普遍情况.),所以最终每个元素都获得 1/k被选中的可能性.**
+
+
+
+@@蓄水池抽样问题
+首先从最简单的例子出发：数据流只有一个数据。我们接收数据，发现数据流结束了，直接返回该数据，该数据返回的概率为1。
+
+看来很简单，那么我们试试难一点的情况：假设数据流里有两个数据。我们读到了第一个数据，这次我们不能直接返回该数据，因为数据流没有结束。我们继续读取第二个数据，发现数据流结束了。因此我们只要保证以相同的概率返回第一个或者第二个数据就可以满足题目要求。因此我们生成一个0到1的随机数R,如果R小于0.5我们就返回第一个数据，如果R大于0.5，返回第二个数据。
+
+接着我们继续分析有三个数据的数据流的情况。为了方便，我们按顺序给流中的数据命名为1、2、3。我们陆续收到了数据1、2和前面的例子一样，我们只能保存一个数据，所以必须淘汰1和2中的一个。应该如何淘汰呢？不妨和上面例子一样，我们按照二分之一的概率淘汰一个，例如我们淘汰了2。继续读取流中的数据3，发现数据流结束了，我们知道在长度为3的数据流中，如果返回数据3的概率为1/3,那么才有可能保证选择的正确性。也就是说，目前我们手里有1,3两个数据，我们通过一次随机选择，以1/3的概率留下数据3，以2/3的概率留下数据1。那么数据1被最终留下的概率是多少呢？
+
+数据1被留下：（1/2）(2/3) = 1/3
+数据2被留下概率：（1/2）(2/3) = 1/3
+数据3被留下概率：1/3
 
 ```java
  Random random = new Random();
@@ -805,11 +828,63 @@ int i = random.nextInt(100);
     }
 ```
 
+#### @@随机数的生成
+
+
+
+```java
+Random函数的官方注释
+random.nextInt(5);  0~4
+//Returns a pseudorandom, uniformly distributed {@code int} value
+//between 0 (inclusive) and the specified value (exclusive),
+```
+
+
+
+https://blog.csdn.net/wangruitao1991/article/details/51678815
+
+已知rand5生成rand7.
+
+1. 首先用  5*(rand5-1)生成  0  5 10 15...20
+
+2. 再用  5*(rand5-1)+rand5  生成  1~25均匀整数
+
+3. 因为7在25下的最大倍数是21,所以 如果步骤2里面生成的数字大于21,就重新生成,小于21就进行第4步
+
+4. 1~21之间的数,用来%7, 求出0~6.  再+1 即可 1~7的随机分布.
+
+```
+int Rand7(){
+    int x = ~(1<<31); // max int
+    while(x > 21)
+        x = 5 * (Rand5() - 1) + Rand5() // Rand25
+    return x%7 + 1;
+}
+```
+
+
+
+再比如用rand100生成rand150
+
+```
+int rand150(){
+	int x = 0;
+	x = 100* ( rand100() - 1 ) +rand100();
+	//10000> 150*60=9900
+	while(x>9900){
+		x = 100* ( rand100() - 1 ) +rand100();
+	}
+	return x%150+1;
+}
+```
+
 
 
 
 
 #### [面试题 16.11. 跳水板](https://leetcode-cn.com/problems/diving-board-lcci/)
+
+@@@@注意 数组中的diff的次数是从0 到k
 
 ```java
 public int[] divingBoard(int shorter, int longer, int k) {
@@ -821,6 +896,7 @@ public int[] divingBoard(int shorter, int longer, int k) {
     if (shorter == longer) {
         return new int[]{k * shorter};
     }
+    //diff的个数是从0到k  所以是k+1
     int[] ret = new int[k + 1];
     for (int i = 0; i <= k; i++) {
         ret[i] = shorter * k + diff * i;
@@ -885,7 +961,7 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
-#### [@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+#### [@@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 
 @StringBuilder用于回溯
 
@@ -968,9 +1044,16 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
-#### [@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+#### [@@@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
 
 @每个递归,负责连两条线.
+
+@@@
+
+  	Node next = root.next;
+        if (right != null && next != null) {
+            right.next = next.left;
+        }
 
 
 
@@ -998,37 +1081,44 @@ public Node connect(Node root) {
 
 
 
-#### [90. 子集 II](https://leetcode-cn.com/problems/subsets-ii/)
+#### [@@@90. 子集 II](https://leetcode-cn.com/problems/subsets-ii/)
 
 @排序+第二次碰到相同的数字就跳过(注意是第二次碰到再跳过)比如 
 
 1  2   2  3  
 
-第一次到2的时候有组合:  2,22,223,
-
-当遇到第二个2的时候有组合 2,23   所以第二个2可以跳过
-
 ```java
-public List<List<Integer>> subsetsWithDup(int[] nums) {
-    List<List<Integer>> ans = new ArrayList<>();
-    Arrays.sort(nums); //排序
-    getAns(nums, 0, new ArrayList<>(), ans);
-    return ans;
-}
+ public List<List<Integer>> ret = null;
+    int[] nums = null;
 
-private void getAns(int[] nums, int start, ArrayList<Integer> temp, List<List<Integer>> ans) {
-    ans.add(new ArrayList<>(temp));
-    for (int i = start; i < nums.length; i++) {
-        //和上个数字相等就跳过
-        if (i > start && nums[i] == nums[i - 1]) {
-            continue;
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        ret = new ArrayList<>();
+        if (nums == null) {
+            return ret;
         }
-        temp.add(nums[i]);
-        getAns(nums, i + 1, temp, ans);
-        temp.remove(temp.size() - 1);
+        this.nums = nums;
+        Arrays.sort(nums);
+        backtacing(0, new ArrayList<Integer>());
+        return ret;
     }
-}
 
+    public void backtacing(int index, ArrayList<Integer> path) {
+        if (index > nums.length) {
+            return;
+        }
+        ret.add(new ArrayList<Integer>(path));
+        for (int i = index; i < nums.length; i++) {
+            while (i > index && i < nums.length && nums[i - 1] == nums[i]) {
+                i++;
+            }
+            if (i < nums.length) {
+                path.add(nums[i]);
+                backtacing(i + 1, path);
+                path.remove(path.size() - 1);
+            }
+        }
+
+    }
 ```
 
 
@@ -1140,207 +1230,6 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 
 
-#### 和为0的连续最长子序列
-
-@利用求和的梯度来做.
-
-```  
-{3,0,-1,-2,-3,1,1,1,2,3,1,-2,-1}   12
-
-{1，-1，1，-1，1，-1，1，-1}     8
-```
-
-```java
- public int func(int[] nums) {
-        int maxLen = 0;
-        int sum = 0;
-
-        HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(0, 0);
-        for (int i = 0; i < nums.length; i++) {
-            sum += nums[i];
-            if (map.containsKey(sum)) {
-                int len = i+1 - map.get(sum);
-                maxLen = Math.max(len, maxLen);
-            } else {
-                map.put(sum, i+1);
-            }
-        }
-        return maxLen;
-    }
-```
-
-#### @@链表快排.
-
-
-
-```java
-  public void listQuickSort(Node pHead) {
-        quickSort(pHead, null);
-    }
-
-    public void quickSort(Node pHead, Node pEnd) {
-        if (pHead == null || pHead == pEnd) {
-            return;
-        }
-        Node mid = partition(pHead, null);
-        quickSort(pHead, mid);
-        quickSort(mid.next, null);
-    }
-
-    private Node partition(Node start, Node end) {
-        if (start == null) {
-            return start;
-        }
-        int key = start.val;
-        Node itsNextIsRightNum = start;
-        Node node = start.next;
-        while (node != end) {
-            if (node.val < key) {
-                itsNextIsRightNum = itsNextIsRightNum.next;
-                swap(itsNextIsRightNum, node);
-            }
-
-            node = node.next;
-        }
-        swap(start, itsNextIsRightNum);
-        return itsNextIsRightNum;
-    }
-
-    private void swap(Node p1, Node p2) {
-        int temp = p1.val;
-        p1.val = p2.val;
-        p2.val = temp;
-    }
-```
-
-
-
-
-
-
-
-#### [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
-
-@归并排序,需要截断list
-
-@快速排序
-
-```java
-
-归并排序:
-public ListNode sortList(ListNode head) {
-        int len = 0;
-        ListNode temp = head;
-        while (head != null) {
-            head = head.next;
-            len++;
-        }
-        return mergeSort(temp, null, len);
-    }
-
-    private ListNode mergeSort(ListNode begin, ListNode end, int len) {
-        if (begin == null || begin == end) {
-            return begin;
-        }
-
-        int mid = len / 2;
-        ListNode midNode = begin;
-        int cnt = 1;
-        while (cnt < mid) {
-            cnt++;
-            midNode = midNode.next;
-        }
-
-        ListNode begin2 = midNode.next;
-        //记得把midNode截断这样l1和l2才是两段独立的链表.
-        midNode.next = null;
-        if (end != null) {
-            end.next = null;
-        }
-        ListNode l1 = mergeSort(begin, midNode, mid);
-        ListNode l2 = mergeSort(begin2, end, mid);
-        return merge(l1, l2);
-    }
-
-    private ListNode merge(ListNode l1, ListNode l2) {
-        ListNode head = new ListNode(-1);
-        ListNode node = head;
-        if (l1 != null && l2 != null) {
-            while (l1 != null && l2 != null) {
-                if (l1.val <= l2.val) {
-                    node.next = l1;
-                    l1 = l1.next;
-                } else {
-                    node.next = l2;
-                    l2 = l2.next;
-                }
-                node = node.next;
-            }
-            while (l1 != null) {
-                node.next = l1;
-                l1 = l1.next;
-                node = node.next;
-            }
-            while (l2 != null) {
-                node.next = l2;
-                l2 = l2.next;
-                node = node.next;
-            }
-            return head.next;
-        } else if (l2 != null) {
-            return l2;
-        } else {
-            return l1;
-        }
-    }
-
-
-快速排序:
-
-public ListNode sortList(ListNode head) {
-        quickSort(head, null);
-        return head;
-    }
-
-    private void quickSort(ListNode begin, ListNode end) {
-        if (begin == null || begin == end) {
-            return;
-        }
-        ListNode midNode = partition(begin, end);
-        quickSort(begin, midNode);
-        quickSort(midNode.next, end);
-    }
-
-    private ListNode partition(ListNode begin, ListNode end) {
-        if (begin == null || begin == end) {
-            return begin;
-        }
-        ListNode itsNextIsRightNum = begin;
-        int key = begin.val;
-        ListNode node = begin.next;
-        while (node != end) {
-            if (node.val <= key) {
-                itsNextIsRightNum = itsNextIsRightNum.next;
-                swap(itsNextIsRightNum, node);
-            }
-            node = node.next;
-        }
-        swap(itsNextIsRightNum, begin);
-        return itsNextIsRightNum;
-    }
-
-    private void swap(ListNode p1, ListNode p2) {
-        int temp = p1.val;
-        p1.val = p2.val;
-        p2.val = temp;
-    }
-```
-
-
-
-
-
 
 
 #### [114. 二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
@@ -1423,11 +1312,61 @@ private TreeNode pre = null;
 
 
 
-#### @@01序列的最大长度
 
-利用梯度+hashmap存梯度索引
+
+#### @连续子串=连续子序列!=子序列 ;
+
+**子串可能用滑动窗口或者梯度**
+
+**子序列可能是背包.但是也不绝对**
+
+
+
+#### @@和0为的连续最长子序列(子串,和为k)
+
+@**利用求和的梯度来做.**
+
+```  
+{3,0,-1,-2,-3,1,1,1,2,3,1,-2,-1}   12
+
+{1，-1，1，-1，1，-1，1，-1}     8
+```
+
+```java
+ public int func(int[] nums) {
+        int maxLen = 0;
+        int sum = 0;
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 0);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum)) {
+                int len = i+1 - map.get(sum);
+                maxLen = Math.max(len, maxLen);
+            } else {
+                map.put(sum, i+1);
+            }
+        }
+        return maxLen;
+    }
+```
+
+
+
+
+
+#### @@最大长度的01连续子序列
 
 给定一个数组，数组中只包含0和1。请找到一个最长的子序列，其中0和1的数量是相同的
+
+
+
+因为01数量要相同,可以把0转换成-1, 变成上面一道题"和为0的连续最长子序列"
+
+而上一道题的做法就是利用梯度+hashmap存梯度索引
+
+
 
 ```java
  public int getMaxLen(int[] nums) {
@@ -1456,65 +1395,6 @@ private TreeNode pre = null;
 ```
 
 
-
-#### @@相亲数
-
-@约的求解1.边界是`i*i<=num   2.i*i==num的时候只算一个i    `
-
-@相亲数的寻找  i= 220  sum[i] = 284  sum[284] = 220  所以  sum[sum[i]] = i. 并且要注意 i= 6; sum[6]=6这种特殊情况 
-
-
-
-
-
-amicable number, 两个正整数中，彼此的全部正约数之和与另一方相等
-
-* 约数又叫因数，b是a的约数，则a%b==0，整除没有余数
-* 220的所有因子\(除了自己以外的因子\)：1+2+4+5+10+11+20+22+44+55+110 = 284
-* 284的所有因子：1+2+4+71+142 = 220
-* 
-
-```java
- private int getSum(int num) {
-        int sum = 0;
-        for (int i = 1; i * i <= num; i++) {
-
-            //i的三种特殊情况  假设num为100, i=10的时候只算一个10
-            //i=1的时候  不加 100/1
-            //其他时候 如果num%i==0   比如 i=2   则 2和50都加到sum里
-            if (i * i == num) {
-                return sum + i;
-            }
-            if (i == 1) {
-                sum += 1;
-                continue;
-            }
-            if (num % i == 0) {
-                sum += i;
-                sum += num / i;
-            }
-        }
-
-        return sum;
-    }
-
-    public ArrayList<Integer> getAllNum(int maxNum) {
-        ArrayList<Integer> ret = new ArrayList<>();
-        int[] sum = new int[maxNum + 1];
-        for (int i = 2; i <= maxNum; i++) {
-            sum[i] = getSum(i);
-        }
-        for (int i = 2; i <= maxNum; i++) {
-            if (sum[i] > maxNum) {
-                continue;
-            }
-            if (sum[i] != i && sum[sum[i]] == i) {
-                ret.add(i);
-            }
-        }
-        return ret;
-    }
-```
 
 
 
@@ -1633,6 +1513,8 @@ List<List<Integer>> ret = new ArrayList<>();
 * 因为如果相交的话，那么都会走到len\(A\)+len\(B\)-len\(A∩B\)的地方停下来
 ```
 
+
+
 #### @@@链表环入口
 
 https://leetcode.com/problems/linked-list-cycle-ii/submissions/
@@ -1641,7 +1523,7 @@ https://leetcode.com/problems/linked-list-cycle-ii/submissions/
 
 @第二步 快指针和慢指针都1个    在判断是否相遇.
 
-
+@ if (fast != null && fast == slow)     fast==slow  == null  是一种没有环的情况,此时fast没必要赋值为head了
 
 ```java
 public ListNode detectCycle(ListNode head) {
@@ -1678,42 +1560,251 @@ public ListNode detectCycle(ListNode head) {
 
 
 
-#### 随机数的生成
 
-https://blog.csdn.net/wangruitao1991/article/details/51678815
 
-已知rand5生成rand7.
+#### @@相亲数
 
-1. 首先用  5*(rand5-1)生成  0  5 10 15...20
+amicable number, 两个正整数中，彼此的全部正约数之和与另一方相等
 
-2. 再用  5*(rand5-1)+rand5  生成  1~25均匀整数
+* 约数又叫因数，b是a的约数，则a%b==0，整除没有余数
+* 220的所有因子\(除了自己以外的因子\)：1+2+4+5+10+11+20+22+44+55+110 = 284
+* 284的所有因子：1+2+4+71+142 = 220
 
-3. 因为7在25下的最大倍数是21,所以 如果步骤2里面生成的数字大于21,就重新生成,小于21就进行第4步
+给出maxNum,求出0~maxNum的相亲数
 
-4. 1~21之间的数,用来%7, 求出0~6.  再+1 即可 1~7的随机分布.
 
+
+@约的求解1.边界是`i*i<=num   2.i*i==num的时候只算一个i    `
+
+@相亲数的寻找  i= 220  sum[i] = 284  sum[284] = 220  所以  sum[sum[i]] = i. 并且要注意 i= 6; sum[6]=6这种特殊情况 
+
+```java
+ private int getSum(int num) {
+        int sum = 0;
+        for (int i = 1; i * i <= num; i++) {
+
+            //i的三种特殊情况  假设num为100, i=10的时候只算一个10
+            //i=1的时候  不加 100/1
+            //其他时候 如果num%i==0   比如 i=2   则 2和50都加到sum里
+            if (i * i == num) {
+                return sum + i;
+            }
+            if (i == 1) {
+                sum += 1;
+                continue;
+            }
+            if (num % i == 0) {
+                sum += i;
+                sum += num / i;
+            }
+        }
+
+        return sum;
+    }
+
+    public ArrayList<Integer> getAllNum(int maxNum) {
+        ArrayList<Integer> ret = new ArrayList<>();
+        int[] sum = new int[maxNum + 1];
+        for (int i = 2; i <= maxNum; i++) {
+            sum[i] = getSum(i);
+        }
+        for (int i = 2; i <= maxNum; i++) {
+            if (sum[i] > maxNum) {
+                continue;
+            }
+            if (sum[i] != i && sum[sum[i]] == i) {
+                ret.add(i);
+            }
+        }
+        return ret;
+    }
 ```
-int Rand7(){
-    int x = ~(1<<31); // max int
-    while(x > 21)
-        x = 5 * (Rand5() - 1) + Rand5() // Rand25
-    return x%7 + 1;
-}
+
+
+
+#### @@@@@@@@链表快排.
+
+```java
+ public void listQuickSort(ListNode pHead) {
+        quickSort(pHead, null);
+    }
+
+    public void quickSort(ListNode pHead, ListNode pEnd) {
+        if (pHead == null || pHead == pEnd) {
+            return;
+        }
+        ListNode mid = partition(pHead, pEnd);
+        quickSort(pHead, mid);
+        quickSort(mid.next, null);
+    }
+
+    private ListNode partition(ListNode start, ListNode end) {
+        if (start == null) {
+            return null;
+        }
+        if (start.next == end) {
+            return start;
+        }
+        ListNode preOfSwapNum = start;
+        int key = start.val;
+        ListNode node = start.next;
+        while (node != end) {
+            if (node.val <= key) {
+                preOfSwapNum = preOfSwapNum.next;
+                swap(preOfSwapNum, node);
+            }
+            node = node.next;
+        }
+        swap(preOfSwapNum, start);
+        return preOfSwapNum;
+    }
+
+    private void swap(ListNode p1, ListNode p2) {
+        int temp = p1.val;
+        p1.val = p2.val;
+        p2.val = temp;
+    }
+
+    private ListNode forTestInitialNodeList(int[] nums) {
+        ListNode pHead = new ListNode(-1);
+        ListNode node = pHead;
+        for (int temp : nums) {
+            node.next = new ListNode(temp);
+            node = node.next;
+        }
+        return pHead.next;
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        ListNode node = solution.forTestInitialNodeList(new int[]{2, 1});
+        solution.listQuickSort(node);
+        while (node != null) {
+            System.out.println(node.val);
+            node = node.next;
+        }
+    }
 ```
 
 
 
-再比如用rand100生成rand150
 
+
+#### [@@@@@148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+@归并排序,需要截断list
+
+@快速排序
+
+```java
+归并排序:
+public ListNode sortList(ListNode head) {
+        int len = 0;
+        ListNode temp = head;
+        while (head != null) {
+            head = head.next;
+            len++;
+        }
+        return mergeSort(temp, null, len);
+    }
+
+    private ListNode mergeSort(ListNode begin, ListNode end, int len) {
+        if (begin == null || begin == end) {
+            return begin;
+        }
+
+        int mid = len / 2;
+        ListNode midNode = begin;
+        int cnt = 1;
+        while (cnt < mid) {
+            cnt++;
+            midNode = midNode.next;
+        }
+
+        ListNode begin2 = midNode.next;
+        //记得把midNode截断这样l1和l2才是两段独立的链表.
+        midNode.next = null;
+        if (end != null) {
+            end.next = null;
+        }
+        ListNode l1 = mergeSort(begin, midNode, mid);
+        ListNode l2 = mergeSort(begin2, end, mid);
+        return merge(l1, l2);
+    }
+
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(-1);
+        ListNode node = head;
+        if (l1 != null && l2 != null) {
+            while (l1 != null && l2 != null) {
+                if (l1.val <= l2.val) {
+                    node.next = l1;
+                    l1 = l1.next;
+                } else {
+                    node.next = l2;
+                    l2 = l2.next;
+                }
+                node = node.next;
+            }
+            while (l1 != null) {
+                node.next = l1;
+                l1 = l1.next;
+                node = node.next;
+            }
+            while (l2 != null) {
+                node.next = l2;
+                l2 = l2.next;
+                node = node.next;
+            }
+            return head.next;
+        } else if (l2 != null) {
+            return l2;
+        } else {
+            return l1;
+        }
+    }
+
+
+快速排序:
+
+public ListNode sortList(ListNode head) {
+        quickSort(head, null);
+        return head;
+    }
+
+    private void quickSort(ListNode begin, ListNode end) {
+        if (begin == null || begin == end) {
+            return;
+        }
+        ListNode midNode = partition(begin, end);
+        quickSort(begin, midNode);
+        quickSort(midNode.next, end);
+    }
+
+    private ListNode partition(ListNode begin, ListNode end) {
+        if (begin == null || begin == end) {
+            return begin;
+        }
+        ListNode itsNextIsRightNum = begin;
+        int key = begin.val;
+        ListNode node = begin.next;
+        while (node != end) {
+            if (node.val <= key) {
+                itsNextIsRightNum = itsNextIsRightNum.next;
+                swap(itsNextIsRightNum, node);
+            }
+            node = node.next;
+        }
+        swap(itsNextIsRightNum, begin);
+        return itsNextIsRightNum;
+    }
+
+    private void swap(ListNode p1, ListNode p2) {
+        int temp = p1.val;
+        p1.val = p2.val;
+        p2.val = temp;
+    }
 ```
-int rand150(){
-	int x = 0;
-	x = 100* ( rand100() - 1 ) +rand100();
-	//10000> 150*60=9900
-	while(x>9900){
-		x = 100* ( rand100() - 1 ) +rand100();
-	}
-	return x%150+1;
-}
-```
+
+
 
