@@ -462,35 +462,40 @@ public String reverseWords(String s) {
 
 
 ```java
- public boolean isMatch(String s, String p) {
+
+
+   public boolean isMatch(String s, String p) {
         if (s == null || p == null) {
             return false;
         }
         int len1 = s.length();
         int len2 = p.length();
-        boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
+        boolean[][] dp = new boolean[len1 + 1][len2 + 1];
+        //边界的初始化.
         dp[0][0] = true;
-        //初始化"" 与p的匹配关系  "" 和 a*a*a*是可以匹配的
-        for (int i = 0; i < len2; i++) {
-            if (p.charAt(i) == '*' && dp[0][i - 1]) {
-                dp[0][i + 1] = true;
+        //初始化"" 与p的匹配关系      "" 和 a*a*a*是可以匹配的
+        for (int j = 1; j <= len2; j++) {
+            if (p.charAt(j - 1) == '*' && dp[0][j - 2]) {
+                dp[0][j] = true;
             }
         }
-        for (int i = 0; i < len1; i++) {
-            for (int j = 0; j < len2; j++) { 
-                // ##s   ##p     与     ##s    ##.
-                if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
-                    dp[i + 1][j + 1] = dp[i][j];
-                }
-                if (p.charAt(j) == '*') {
-                    if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
-                        // ##cp    ##cpp*  i  和 j-2   p*匹配0个
-                        //##p     ##p*    i-1  和  j-2   p*  匹配1个
-                        //##ppp   ##p*    i-1 和  j   p* 匹配多个
-                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i ][j-1] || dp[i][j + 1];
+        //s不为空   p 为""  对应 dp[i][0] 全应为false
+
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                // xxp   xxp     或     xxs    xx.
+                if (s.charAt(i - 1) == p.charAt(j - 1) || p.charAt(j - 1) == '.') {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (p.charAt(j - 1) == '*') {
+                    //两个i-1  两个 j-2
+                    //xxp     xxp*    i-1  和  j-2   p*  匹配1个
+                    //xxppp   xxp*    i-1 和  j   p* 匹配多个
+                    // xxp    abpp*  i  和 j-2   p*匹配0个
+                    if (s.charAt(i - 1) == p.charAt(j - 2) || p.charAt(j - 2) == '.') {
+                        dp[i][j] = dp[i - 1][j - 2] || dp[i - 1][j] || dp[i][j - 2];
                     } else {
-                        // ##b  要和  ##c*匹配   i  和  j-2
-                        dp[i + 1][j + 1] = dp[i + 1][j - 1];
+                        // xx  要和  xxp*匹配   i  和  j-2   p*匹配0个
+                        dp[i][j] = dp[i][j - 2];
                     }
                 }
             }
@@ -499,43 +504,6 @@ public String reverseWords(String s) {
     }
 
 
-再做一遍
-    
-     public boolean isMatch(String s, String p) {
-        if (s == null || p == null) {
-            return false;
-        }
-        int len1 = s.length();
-        int len2 = p.length();
-        boolean[][] dp = new boolean[s.length() + 1][p.length() + 1];
-        dp[0][0] = true;
-        //初始化"" 与p的匹配关系  "" 和 a*a*a*是可以匹配的
-        for (int i = 0; i < len2; i++) {
-            if (p.charAt(i) == '*' && dp[0][i - 1]) {
-                dp[0][i + 1] = true;
-            }
-        }
-        for (int i = 0; i < len1; i++) {
-            for (int j = 0; j < len2; j++) {
-                // ##s   ##p     与     ##s    ##.
-                if (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.') {
-                    dp[i + 1][j + 1] = dp[i][j];
-                }
-                if (p.charAt(j) == '*') {
-                    if (p.charAt(j - 1) == s.charAt(i) || p.charAt(j - 1) == '.') {
-                        // ##cp    ##cpp*  i  和 j-2   p*匹配0个
-                        //##p     ##p*    i  和  j-1   p*  匹配1个
-                        //##ppp   ##p*    i-1 和  j   p* 匹配多个
-                        dp[i + 1][j + 1] = dp[i + 1][j - 1] || dp[i + 1][j] || dp[i][j + 1];
-                    } else {
-                        // ##b  要和  ##c*匹配   i  和  j-2
-                        dp[i + 1][j + 1] = dp[i + 1][j - 1];
-                    }
-                }
-            }
-        }
-        return dp[len1][len2];
-    }
 ```
 
 
