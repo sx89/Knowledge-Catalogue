@@ -490,7 +490,7 @@ public String reverseWords(String s) {
                     //两个i-1  两个 j-2
                     //xxp     xxp*    i-1  和  j-2   p*  匹配1个
                     //xxppp   xxp*    i-1 和  j   p* 匹配多个
-                    // xxp    abpp*  i  和 j-2   p*匹配0个
+                    // xxp    xxpp*  i  和 j-2   p*匹配0个
                     if (s.charAt(i - 1) == p.charAt(j - 2) || p.charAt(j - 2) == '.') {
                         dp[i][j] = dp[i - 1][j - 2] || dp[i - 1][j] || dp[i][j - 2];
                     } else {

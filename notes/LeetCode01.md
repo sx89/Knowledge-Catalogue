@@ -656,7 +656,7 @@ public boolean isPalindrome(ListNode head) {
 
 
 
-#### [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+#### [@20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
 
 ```java
 
@@ -1382,7 +1382,31 @@ public void rotate(int[][] matrix) {
     }
 ```
 
-#### [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+#### [@@@49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+
+方法1:下面代码:
+
+方法2: a 对应0  b对应1  c对应2.....
+
+int[] prime = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103 };
+
+例如 abc ，就对应 'a' - 'a'， 'b' - 'a'， 'c' - 'a'，即 0, 1, 2，也就是对应素数 2 3 5，然后相乘 2 * 3 * 5 = 30，就把 "abc" 映射到了 30。
+
+方法3: 
+
+首先初始化 key = "0#0#0#0#0#"，数字分别代表 abcde 出现的次数，# 用来分割。
+
+这样的话，"abb" 就映射到了 "1#2#0#0#0"。
+
+"cdc" 就映射到了 "0#0#2#1#0"。
+
+"dcc" 就映射到了 "0#0#2#1#0"。
+
+1. 用一个cout[]数组记录每个字符串中每个字母出现的次数
+2. key用StringBuilder来维护,把一个count[]数组append进key里面
+3. 把key作为map的key
+
+
 
 ```java
 改进:
@@ -1446,7 +1470,7 @@ public int[] dailyTemperatures(int[] T) {
             stack.push(i);
         }
         return ret;
-    }
+ }
 
 改进:获取比当前温度temp高的所有温度的日期,找距离当前日期最近的那个
 
@@ -1556,7 +1580,7 @@ public int rob(int[] nums) {
 }
 ```
 
-#### [@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+#### [@@@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 一维的,从小到大,但是不相邻的动态规划
 
@@ -1780,68 +1804,88 @@ private int lastOrder(TreeNode root) {
 }
 ```
 
-#### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+#### [@@@@@@121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+@/0-prices[i]而非dp[i-1][1]-prices[i]是为了防止多次买卖,
 
 ```java
-public int maxProfit(int[] prices) {
-    if (prices == null || prices.length == 0)
-        return 0;
-
-    int len = prices.length;
-    int[][] dp = new int[len][2];
-
-    for (int i = 0; i < len; i++) {
-        if (i == 0) {
-            dp[0][0] = 0;
-            dp[0][1] = -prices[0];
-        } else {
-
-            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
-            dp[i][1] = Math.max(0 - prices[i], dp[i - 1][1]);
-            //0-prices[i]而非dp[i-1][1]-prices[i]是为了防止多次买卖,
-
+ public int maxProfit(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
         }
+        int len = prices.length;
+        int[][] dp = new int[len + 1][2];
+        dp[1][0] = 0;
+        dp[1][1] = -prices[0];
+        for (int i = 2; i <= len; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
+              //0-prices[i]而非dp[i-1][1]-prices[i]是为了防止多次买卖,
+            dp[i][1] = Math.max(dp[i - 1][1], -prices[i - 1]);
+        }
+        return dp[len][0];
     }
-    return dp[len - 1][0];
-}
+          
 ```
 
 
 
-#### [309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+#### [@@@309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
 
 改进:动态规划类的题目:1.找状态和选择2.定好base_case 就这两点而已,详情看下面大神题解
     https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/solution/yi-ge-fang-fa-tuan-mie-6-dao-gu-piao-wen-ti-by-lab/
 
 ```java
-
-
+改进后: 
 public int maxProfit(int[] prices) {
-    if (prices == null || prices.length == 0) {
-        return 0;
-    }
-    int len = prices.length;
-    int[][] dp = new int[len][2];
-
-    for (int i = 0; i < len; i++) {
-        if (i == 0) {
-            dp[i][0] = 0;
-            dp[i][1] = -prices[0];
-        } else if (i == 1) {
-            dp[1][0] = Math.max(dp[0][0], dp[0][1] + prices[i]);
-            dp[1][1] = Math.max(dp[0][1], -prices[i]);
-        } else {
-            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
-            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i]);
+        if (prices == null || prices.length <= 1) {
+            return 0;
         }
+        int len = prices.length;
+        int[][] dp = new int[len + 1][2];
+        dp[1][0] = 0;
+        dp[1][1] = -prices[0];
+
+        for (int i = 2; i <= len; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
+            //i-2其实这里要对i=2 时候  dp[0][0]的边界关注一下,好处是dp[0][0]=0
+            //依然符合状态转移方程
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i - 1]);
+        }
+        return dp[len][0];
     }
-    return dp[len - 1][0];
-}
+
+
+
+改进前:
+
+ public int maxProfit(int[] prices) {
+        if (prices == null) {
+            return 0;
+        }
+        int len = prices.length;
+     
+        if (len <= 1) {
+            return 0;
+        }
+        int[][] dp = new int[len + 1][2];
+     	//第一天初始化	
+        dp[1][0] = 0;
+        dp[1][1] = -prices[0];
+		//第二天初始化,因为第二天不能用  dp[i - 2][0] - prices[i - 1]   (其实也可以用,因为用dp[0][0]=0)
+     	dp[2][0] = Math.max(dp[1][0], dp[1][1] + prices[1]);
+        dp[2][1] = Math.max(dp[1][1], dp[1][0] - prices[1]);
+     	//从第三天开始可以用状态转移方程
+        for (int i = 3; i <= len; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i - 1]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i - 1]);
+        }
+        return dp[len][0];
+    }
 ```
 
 
 
-#### [@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+#### [@@@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
 
 
@@ -1866,25 +1910,32 @@ dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k][0] - prices[i]);
 
 ```java
 public int maxProfit(int[] prices) {
-        if (prices == null || prices.length == 0) {
+        if (prices == null || prices.length <= 1) {
             return 0;
         }
         int len = prices.length;
-        int[][][] dp = new int[len][3][2];
-        for (int i = 0; i < len; i++) {
+        int[][][] dp = new int[len + 1][3][2];
+        dp[1][2][1] = Integer.MIN_VALUE;
+        dp[1][2][0] = 0;
+        dp[1][1][1] = -prices[0];
+        dp[1][1][0] = 0;
+        dp[1][0][1] = -prices[0];
+        dp[1][0][0] = 0;
+        //卖出时记录消耗一笔
+        for (int i = 2; i <= len; i++) {
             for (int k = 0; k <= 2; k++) {
-                if (i == 0) {
-                    dp[0][k][0] = 0;
-                    dp[0][k][1] = -prices[0];
-                    continue;
+                //dp[i][k][1]里面的k取值为 0 1   2是不行的,所以设为minvalue
+                //因为dp[i][k][0]会用到dp[i][2][1].所以先设置dp[i][2][1];在计算dp[i][k][0]
+                if (k == 2) {
+                    dp[i][2][1] = Integer.MIN_VALUE;
+                } else if (k <= 1) {
+                    dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k + 1][0] - prices[i - 1]);
                 }
-                if (k - 1 >= 0) {
-                    dp[i][k - 1][0] = Math.max(dp[i - 1][k - 1][0], dp[i - 1][k][1] + prices[i]);
-                }
-                dp[i][k][1] = Math.max(dp[i - 1][k][1], dp[i - 1][k][0] - prices[i]);
+                //dp[i][k][0]里面的k取值为 0 1 2
+                dp[i][k][0] = Math.max(dp[i - 1][k][0], dp[i - 1][k][1] + prices[i - 1]);
             }
         }
-        return dp[len - 1][0][0];
+        return dp[len][0][0];
     }
 ```
 
@@ -2118,9 +2169,9 @@ public int findTargetSumWays(int[] nums, int S) {
 }
 ```
 
-#### [@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+#### [@@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 
-
+@dp[i]要赋值为1
 
 @状态转移方程 想不到.
 
@@ -2130,26 +2181,25 @@ public int findTargetSumWays(int[] nums, int S) {
 
 ```java
 
-    
-
-public int lengthOfLIS(int[] nums) {
-    if (nums == null || nums.length == 0) {
-        return 0;
-    }
-    int len = nums.length;
-    int[] dp = new int[len];
-    int max = 0;
-    for (int i = 0; i < len; i++) {
-        dp[i] = 1;
-        for (int j = 0; j < i; j++) {
-            if (nums[i] > nums[j])
-                dp[i] = Math.max(dp[i], dp[j] + 1);
-
+  public int lengthOfLIS(int[] nums) {
+        if (nums == null || nums.length < 1) {
+            return 0;
         }
-        max = Math.max(dp[i], max);
+        int len = nums.length;
+        int[] dp = new int[len + 1];
+        dp[1] = 1;
+        int max = 1;
+        for (int i = 2; i <= len; i++) {
+            dp[i] = 1;
+            for (int j = 1; j < i; j++) {
+                if (nums[i - 1] > nums[j - 1]) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                    max = Math.max(dp[i], max);
+                }
+            }
+        }
+        return max;
     }
-    return max;
-}
 ```
 
 
@@ -2505,7 +2555,11 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 
 #### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 
-@好题  第一遍作对了
+@跟最长上升子序列一样,dp[i]要初始化成一个值,而非一开始的0.
+
+最长上升子序列,dp[i]初始为1
+
+这道题,如果dp[coins[j]]之前把赋值成1的话,则没有关系.如果之前没有赋值成1,则i的循环开始时,赋值成Integer.MAX_VALUE;代表这个amout无法被找零.
 
 
 
@@ -2580,9 +2634,9 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
-#### [@152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)
+#### [@@@152. 乘积最大子序列](https://leetcode-cn.com/problems/maximum-product-subarray/)
 
-@第一遍就做出来了,思路很好,后面再回来看一下
+
 
 ```java
 改进:1.状态转移方程
@@ -2769,48 +2823,11 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
     }
 ```
 
-
-
-#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
-
-```java
-改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
-    写代码:  先画出一个比较通用的情况,然后根据情况写代码; 然后再进行边界的处理(有的边界想不到会有致命bug,有的只是逻辑不健全,后者可以在代码通过一般情况后再考虑);然后空间,时间优化,逻辑结构优化
-        
-        
-    本题思路,对半查找,有一半递增,有一半增减.检测target和递增的部分首尾的关系,进而决定low或者high接下来的变化
-
-public int search(int[] nums, int target) {
-    int len = nums.length;
-    int low = 0, high = len - 1;
-    while (low <= high) {
-        int mid = low + (high - low) / 2;
-        if (nums[mid] == target) {
-            return mid;
-        }
-        if (nums[low] <= nums[mid]) {
-            if (nums[low] > target || nums[mid] < target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        } else {
-            if (nums[mid] > target || nums[high] < target) {
-                high = mid - 1;
-            } else {
-                low = mid + 1;
-            }
-        }
-    }
-    return -1;
-}
-```
-
-
-
 #### 背包问题的理解
 
-#### 01背包
+#### @@@@@01背包
+
+背包容量是m,一共有n件物品
 
 ```
 dp[i][j] = max(dp[i-1][j],dp[i-1][j-weight[i]]+value[i]);
@@ -2864,6 +2881,55 @@ for(int i = 1;i<n;i++){
 	}
 }
 ```
+
+
+
+#### 
+
+
+
+#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+
+```java
+改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
+    写代码:  先画出一个比较通用的情况,然后根据情况写代码; 然后再进行边界的处理(有的边界想不到会有致命bug,有的只是逻辑不健全,后者可以在代码通过一般情况后再考虑);然后空间,时间优化,逻辑结构优化
+        
+        
+    本题思路,对半查找,有一半递增,有一半增减.检测target和递增的部分首尾的关系,进而决定low或者high接下来的变化
+
+public int search(int[] nums, int target) {
+    int len = nums.length;
+    int low = 0, high = len - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        }
+        if (nums[low] <= nums[mid]) {
+            if (nums[low] > target || nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        } else {
+            if (nums[mid] > target || nums[high] < target) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+    }
+    return -1;
+}
+```
+
+
+
+
+
+
+
+
 
 #### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
@@ -3890,9 +3956,61 @@ public void mergeSort(int[] nums) {
 
 
 
+#### [@@662. 二叉树最大宽度](https://leetcode-cn.com/problems/maximum-width-of-binary-tree/)
 
+```java
+ public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(new Node(root, 1, 0));
+        Node node = null;
+        int maxBreadth = 0;
+        int rightPosition = 0;
+        int max = 1;
+        while (!queue.isEmpty()) {
+            node = queue.poll();
+            addNodeChild(node, queue);
+            int curLevel = node.level;
+            int leftPositon = node.position;
+            rightPosition = node.position;
+            while (!queue.isEmpty() && queue.peek().level == curLevel) {
+                node = queue.poll();
+                addNodeChild(node, queue);
+                rightPosition = node.position;
+            }
+            max = Math.max(max, rightPosition - leftPositon + 1);
+        }
+        return max;
+    }
 
+    private void addNodeChild(Node node, Queue<Node> queue) {
+        TreeNode tree = node.n;
+        int curLevel = node.level;
+        int curPosition = node.position;
 
+        if (tree.left != null) {
+            queue.add(new Node(tree.left, curLevel + 1, curPosition * 2));
+        }
+        if (tree.right != null) {
+            queue.add(new Node(tree.right, curLevel + 1, curPosition * 2 + 1));
+        }
+    }
+}
+
+class Node {
+    TreeNode n = null;
+    int level = 0;
+    int position = 0;
+
+    public Node(TreeNode n, int level, int position) {
+        this.n = n;
+        this.level = level;
+        this.position = position;
+    }
+}
+```
 
 
 
