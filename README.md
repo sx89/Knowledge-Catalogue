@@ -18,7 +18,7 @@
 
 - [剑指Offer](https://github.com/sx89/Java-notes/blob/master/notes/%E5%89%91%E6%8C%87offer.md)
 - [LeetCode01](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)
-- [LeetCode02](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode01.md)
+- [LeetCode02](https://github.com/sx89/Java-notes/blob/master/notes/LeetCode02.md)
 - [LeetCode03](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/LeetCode03.md)
 - [排序算法总结](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)
 
