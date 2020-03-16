@@ -1721,44 +1721,61 @@ public ListNode detectCycle(ListNode head) {
 ```java
 改进:代码太牛,记住就好
 public String decodeString(String s) {
-    if (s == null || s.length() == 0) {
-        return "";
-    }
-    StringBuilder res = new StringBuilder();
-    int num = 0;
-    Stack<Integer> stack_num = new Stack<Integer>();
-    Stack<String> stack_res = new Stack<String>();
-    
-    
-    for (char c : s.toCharArray()) {
-        if (c == '[') {
-            stack_res.push(res.toString());
-            stack_num.push(num);
-            res = new StringBuilder();
-            num = 0;
-        } else if (c == ']') {
-            StringBuilder temp = new StringBuilder();
-            int repeat = stack_num.pop();
-            for (int i = 0; i < repeat; i++) {
-                temp = temp.append(res);
-
+        StringBuilder curStr = new StringBuilder();
+        int curCount = 0;
+        Stack<StringBuilder> stack_str = new Stack<StringBuilder>();
+        Stack<Integer> stack_num = new Stack<Integer>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (ch == '[') {
+                stack_str.push(curStr);
+                stack_num.push(curCount);
+                curStr = new StringBuilder();
+                curCount = 0;
+            } else if (ch == ']') {
+                StringBuilder temp = new StringBuilder();
+                int count = stack_num.pop();
+                for (int j = 0; j < count; j++) {
+                    temp.append(curStr.toString());
+                }
+                curStr = stack_str.pop();
+                curStr.append(temp);
+            } else if (ch >= '0' && ch <= '9') {
+                curCount = curCount * 10 + ch - '0';
+            } else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+                curStr.append(ch);
             }
-            res = new StringBuilder(stack_res.pop() + temp);
-        } else if (c >= '0' && c <= '9') {
-            num = num * 10 + Integer.parseInt(c + "");
-        } else {//是字母
-            res.append(c);
         }
+        return curStr.toString();
     }
-    return res.toString();
-}
 ```
 
 
 
 
 
-#### [@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+#### @@@@@动态规划类题目的反思
+
+
+
+1. 明确末尾return的是boolean还是 int 这决定了dp里面存的是啥
+2. 然后确定dp是二维还是一维.最终状态由多少个维度决定
+    1. 比如目标和类的题目.因为`dp[i][S]中S`可能由多种前状态得出,所以需要第二维来记录值.
+    2. 比如最大子序列,只需要len一个状态
+    3. 交易次数的股票: i天数  k 交易次数  0 1 是否持有股票
+3. 然后明确状态转移方程 
+    1. 如果是必须要加减nums[i].则
+        `dp[i][j] = dp[i-1][j-nums[i]] || dp[i-1][j+nums[i]];`
+    2. 如果是可以抛弃当前nums[i]
+        `dp[i][j] = dp[i-1][j]||dp[i-1][j-nums[i]];`
+    3. 如果是涉及最大值问题(比如最大上升子序列)
+        dp[i]代表到i的时候,最长序列是啥
+        dp[i] = Math.max(dp[i],dp[j]+1)  
+4. **同时注意状态转移的条件和各种状态的初始化**比如最大上升子序列:初始化dp[i]= 1 和  nums[i]>=nums[j]的条件.比如兑换硬币类的题目,dp[i]最多可以被1兑换成i个,所以dp[i]初始化为i.
+
+
+
+#### [@@@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
 
@@ -2080,7 +2097,11 @@ class LRUCache {
 
 #### [@@@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 
-本质是背包类的动态规划. 选第i个物品的时候,目标重量或者最大重量由i-1决定.
+
+
+
+
+
 
 ```java
 改进:01背包问题
@@ -2128,45 +2149,34 @@ public boolean canPartition(int[] nums) {
 ```java
 改进:背包问题
     对于sum为负数的dp[i][sum],用dp[i][sum+1000]来解决负数
-public int findTargetSumWays(int[] nums, int S) {
-    int len = nums.length;
-    if (nums == null || nums.length == 0) {
-        return 0;
-    }
-    int[][] dp = new int[len][2001];
-    for (int i = 0; i < len; i++) {
-        for (int j = -1000; j < 1001; j++) {
-            if (i == 0) {
-                //原题为非负整数,不然要添加j==-nums[i]条件
-                if (j == nums[i]) {
-                    dp[i][1000 - nums[i]] = 1;
-                    //注意!!!!!!!!!!!!!! 下面之所以要用+= 是为了应对开头是0的case,
-                    //+0  和 -0 算两种情况
-                    dp[i][1000 + nums[i]] += 1;
-                } else {
-                    dp[i][j + 1000] = 0;
-                }
-                continue;
-            }
-            
-            if (j - nums[i] + 1000 >= 0) {
-                dp[i][j + 1000] += dp[i - 1][j - nums[i] + 1000];
-            }
-            if (j + nums[i] + 1000 < 2001) {
-                dp[i][j + 1000] += dp[i - 1][j + nums[i] + 1000];
-            }
-            
-            //上面的状态转移可以用下面来代替
-           /* if (dp[i - 1][j + 1000] > 0) {
-                    dp[i][j + 1000 - nums[i]] += dp[i - 1][j + 1000];
-                    dp[i][j + 1000 + nums[i]] += dp[i - 1][j + 1000];
-                }
-            */
+ public int findTargetSumWays(int[] nums, int S) {
+        if (nums == null || nums.length == 0) {
+            return 0;
         }
+        //在最底部的return的时候,考虑到数组越界的问题
+        if (S < -1000 || S > 1000) {
+            return 0;
+        }
+        int len = nums.length;
+        int deta = 1000;
+        //realsum + deta  = dp[][x]
+        // realSum 为-1000~1000
+        //realSum+deta 为 0~2000
+        int[][] dp = new int[len][2001];
+        //nums[0]=0时,用++ 比用 dp[0][deta - nums[0]]=1要好
+        dp[0][deta + nums[0]]++;
+        dp[0][deta - nums[0]]++;
+        for (int i = 1; i < len; i++) {
+            int temp = nums[i];
+            for (int j = 0; j <= 2000; j++) {
+                if (dp[i - 1][j] != 0) {
+                    dp[i][j - nums[i]] += dp[i - 1][j];
+                    dp[i][j + nums[i]] += dp[i - 1][j];
+                }
+            }
+        }
+        return dp[len - 1][S + deta];
     }
-    //题中说数组和不会超过1000所以要判断S>1000
-    return S > 1000 ? 0 : dp[len - 1][S + 1000];
-}
 ```
 
 #### [@@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
@@ -2207,6 +2217,8 @@ public int findTargetSumWays(int[] nums, int S) {
 #### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 @很容易想到梯度,但是没想到sum-k的形式.
+
+
 
 
 
@@ -2762,7 +2774,7 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 }
 ```
 
-#### [@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+#### [@@@@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
 
 @思路记住了.主要是边界条件要小心.
 
@@ -2888,7 +2900,7 @@ for(int i = 1;i<n;i++){
 
 
 
-#### [@@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+#### [@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 
 ```java
 改进:做题的一般步骤,理解题意,确认题型,梳理给出的条件
@@ -2931,7 +2943,11 @@ public int search(int[] nums, int target) {
 
 
 
-#### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+#### [@@3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+
+@子串类的题目,要注意可以用动规来做
+
+
 
 ```java
 

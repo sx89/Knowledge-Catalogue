@@ -57,6 +57,8 @@
 
 #### 测试用例
 
+while(left<right)的循环内部,记得left++,right--
+
 边界情况  
 
 非法输入

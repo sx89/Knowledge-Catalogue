@@ -1234,33 +1234,33 @@ k-1来除以factor        而不是   k/factor[index]    因为 1/1  =  1. 而�
 k =k - numIndex*factor  而不是  k = k%factor[index]   因为   1%1 = 0   而我这时候想要的是 k=1.方便下一步 (k-1)/1 =0.
 
 ```java
-String getPermutation(int n, int k) {
-        if (n == 0) {
-            return "";
-        }
-        StringBuffer strRet = new StringBuffer();
-        int[] factor = new int[n + 1];
-        factor[0] = 1;
-        ArrayList<Integer> list = new ArrayList<>();
+ public String getPermutation(int n, int k) {
+        int[] factor = new int[n];
+        StringBuilder ret = new StringBuilder();
+        ArrayList<Integer> numList = new ArrayList<Integer>();
+        //k以0为初始
+        k = k - 1;
+        //n=5,k=11
+        //factor为[0,1,2,0,0]
+        //位次是 0*4!+ 1*3!+2*2!+0*1!+0*0! = 10.
+        //  4   3   2   1   0
+        //  4!  3!  2!  1!  0!
 
+        //从后往前计算每一位的位次
+        for (int i = n - 1, weight = 1; i >= 0; i--, weight++) {
+            factor[i] = k % weight;
+            k = k / weight;
+        }
         for (int i = 1; i <= n; i++) {
-            factor[i] = factor[i - 1] * i;
-            list.add(i);
+            numList.add(i);
         }
-        int factorIndex = n - 1;
-        for (int strIndex = 0; strIndex < n; strIndex++) {
-
-            int numIndex = (k - 1) / factor[factorIndex];
-            k = k - numIndex * factor[factorIndex];
-
-            int num = list.get(numIndex);
-            strRet.append(num);
-
-            list.remove(numIndex);
-            factorIndex--;
-
+        //从前往后构造排列
+        for (int i = 0; i < n; i++) {
+            int num = numList.get(factor[i]);
+            ret.append(num);
+            numList.remove(factor[i]);
         }
-        return strRet.toString();
+        return ret.toString();
     }
 ```
 
