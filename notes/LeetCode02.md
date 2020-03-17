@@ -945,41 +945,59 @@ public int findUnsortedSubarray(int[] nums) {
 
 @StringBuilder用于回溯
 
-@ip的条件  cutCount = 4, index==len,Integer.parseInt(temp)<=255,若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
+@ip的条件 
+
+1. cutCount = 4, 
+
+2. index==len,
+
+3. Integer.parseInt(temp)<=255,
+
+4. 若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
 
 ```java
-  List<String> ret = new ArrayList<>();
+  L  List<String> ret = null;
     int len = 0;
 
     public List<String> restoreIpAddresses(String s) {
+        ret = new ArrayList<String>();
+        if (s == null || s.length() == 0) {
+            return ret;
+        }
         len = s.length();
-        backtracing(s, 0, 0, new StringBuilder());
+        backtracing(new StringBuilder(), s, 0, 1);
         return ret;
     }
 
-    private void backtracing(String s, int cutCount, int index, StringBuilder path) {
-        if (index > len || cutCount > 4) {
+    private void backtracing(StringBuilder path, String s, int index, int cutCount) {
+        if (index > len || cutCount > 5) {
             return;
         }
-        if (index == len && cutCount == 4) {
+        if (index == len && cutCount == 5) {
             path.delete(path.length() - 1, path.length());
             ret.add(path.toString());
             path.append(".");
             return;
         }
-        for (int j = index; j <= index + 3; j++) {
-            String temp = "";
-            if (j < len) {
-                temp = s.substring(index, j + 1);
-                if (s.charAt(index) == '0' && j == index) {
-                    path.append(temp).append(".");
-                    backtracing(s, cutCount + 1, j + 1, path);
-                    path.delete(path.length() - temp.length() - 1, path.length());
-                } else if (s.charAt(index) != '0' && Integer.parseInt(temp) <= 255) {
-                    path.append(temp).append(".");
-                    backtracing(s, cutCount + 1, j + 1, path);
-                    path.delete(path.length() - temp.length() - 1, path.length());
-                }
+        //不要忘记j<len
+        for (int j = index; j < len && j < index + 3; j++) {
+            String temp = s.substring(index, j + 1);
+            //index为0,同时j为初始的index
+            if (s.charAt(index) == '0' && j == index) {
+                path.append(temp);
+                path.append(".");
+                int addedLen = temp.length() + 1;
+                backtracing(path, s, j + 1, cutCount + 1);
+                int pathLen = path.length();
+                path.delete(pathLen - addedLen, pathLen);
+                //首位不为0,并且求值小于255
+            } else if (s.charAt(index) != '0' && Integer.parseInt(temp) <= 255) {
+                path.append(temp);
+                path.append(".");
+                int tempLen = temp.length() + 1;
+                backtracing(path, s, j + 1, cutCount + 1);
+                int pathLen = path.length();
+                path.delete(pathLen - tempLen, pathLen);
             }
         }
     }

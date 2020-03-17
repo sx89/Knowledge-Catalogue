@@ -1229,9 +1229,7 @@ class TreeNode {
 
 @@特别注意使用  
 
-k-1来除以factor        而不是   k/factor[index]    因为 1/1  =  1. 而我这时候想要的是0位上的数
 
-k =k - numIndex*factor  而不是  k = k%factor[index]   因为   1%1 = 0   而我这时候想要的是 k=1.方便下一步 (k-1)/1 =0.
 
 ```java
  public String getPermutation(int n, int k) {
@@ -1245,11 +1243,11 @@ k =k - numIndex*factor  而不是  k = k%factor[index]   因为   1%1 = 0   而�
         //位次是 0*4!+ 1*3!+2*2!+0*1!+0*0! = 10.
         //  4   3   2   1   0
         //  4!  3!  2!  1!  0!
-
-        //从后往前计算每一位的位次
-        for (int i = n - 1, weight = 1; i >= 0; i--, weight++) {
-            factor[i] = k % weight;
-            k = k / weight;
+     //从前往后构造factor,即每一位的顺序
+        for (int i = 0, j = n - 1; i < n; i++, j--) {
+            int weight = weight(j);
+            factor[i] = k / weight;
+            k = k % weight;
         }
         for (int i = 1; i <= n; i++) {
             numList.add(i);
@@ -1261,6 +1259,15 @@ k =k - numIndex*factor  而不是  k = k%factor[index]   因为   1%1 = 0   而�
             numList.remove(factor[i]);
         }
         return ret.toString();
+    }
+    //返回n的阶乘
+    private int weight(int n) {
+        int sum = 1;
+        while (n >= 1) {
+            sum = sum * n;
+            n--;
+        }
+        return sum;
     }
 ```
 

@@ -660,7 +660,6 @@ public boolean isPalindrome(ListNode head) {
 
 ```java
 
-
 Stack<Character> stack = new Stack<>();
     HashMap<Character, Character> map = new HashMap<>();
 
@@ -1131,7 +1130,36 @@ private void backtracing(int[] nums) {
     private void backtracing(int begin, int[] nums) {
         ret.add(new ArrayList(list));
         for (int i = begin; i < len; i++) {
-            list.add(nums[i]);
+            list.add(nums[i]);public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || nums.length < k) {
+            return new int[]{};
+        }
+        Comparator<Integer> c = new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return nums[i2] - nums[i1];
+            }
+        };
+        ArrayList<Integer> ret = new ArrayList<>();
+        PriorityQueue<Integer> heap = new PriorityQueue<Integer>(10, c);
+        int right = 0;
+        int len = nums.length;
+        for (right = 0; right <= len; right++) {
+            if (right < k) {
+                heap.add(right);
+                continue;
+            }
+            ret.add(nums[heap.peek()]);
+            heap.remove(right - k);
+            if (right < len) {
+                heap.add(right);
+            }
+        }
+        int[] retArray = new int[ret.size()];
+        for (int i = 0; i < ret.size(); i++) {
+            retArray[i] = ret.get(i);
+        }
+        return retArray;
+    }
             backtracing(i + 1,nums);
             list.remove(list.size()-1);
         }
@@ -1143,7 +1171,6 @@ private void backtracing(int[] nums) {
 @思路没想到
 
 ```java
-
 改进 动态规划的方法
     0 可以得出 1               2^0
     0 和 1 能得出  2 和 3       2^1
@@ -1668,7 +1695,6 @@ public int numSquares(int n) {
 #### [142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 ```java
-
 改进:公式  x + y+ z + y = 2(x+y)推出  x = z 所以这个时候把快指针放到phead处,走x;慢指针走z;两个指针就会在
     环入口处相遇
     
@@ -1782,7 +1808,6 @@ public String decodeString(String s) {
 改进:树的后续遍历+动态规划
 
 ```java
-
 
 HashMap<TreeNode, Integer> memo = new HashMap<TreeNode, Integer>();
 
@@ -2140,7 +2165,7 @@ public boolean canPartition(int[] nums) {
 
 
 
-#### [@@@494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+4. 若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
 
 背包类的动态规划,跟  分割等和子集 是一类题目.  i处选不选物品 由i-1处决定.
 
@@ -2190,7 +2215,6 @@ public boolean canPartition(int[] nums) {
 
 
 ```java
-
   public int lengthOfLIS(int[] nums) {
         if (nums == null || nums.length < 1) {
             return 0;
@@ -2539,7 +2563,6 @@ boolean[][] visited;
 #### [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 
 ```java
-
 改进:方法很巧妙,有四点值得学
 //1.删除节点的题,可以添加一个头结点来用
 //2.pre前进N+1步
@@ -2950,7 +2973,6 @@ public int search(int[] nums, int target) {
 
 
 ```java
-
 改进:思路滑动窗口
 public int lengthOfLongestSubstring(String s) {
     if (s == null || s.length() == 0) {
@@ -2982,93 +3004,9 @@ public int lengthOfLongestSubstring(String s) {
 
 
 
-#### [@15. 三数之和](https://leetcode-cn.com/problems/3sum/)
 
-@这个题对于重复数据的处理很难,题目的难度是困难而非中等.
 
-@@对于三数求和,可以用排序+左右指针,注意对于每个nums[i]只需要从其右边的数里面选nums[left]和 nums[right]
 
-@回溯法对结果去重比较麻烦,本题专有法来做.
-
-```java
-改进:1.数组排序
-    1. 以i为左起点,nums[i]大于0则可以剪枝,否则L++R--来寻找组合
-    3.num[i]可能会有重复,要用最左边的num[i],不然比如 -1  -1 0 1 2,用最右边的nums[i]会漏掉 -1 -1 2 这种情况
-    4.找到 num[i] nums[L] nums[R]的组合之后  L要一直++ R要一直--,直到nums[L]!=nums[L],为的是去除重复解
-    比如 -2 -1 -1 0 3 3
-
-public List<List<Integer>> threeSum(int[] nums) {
-        List<List<Integer>> ret = new ArrayList<>();
-        Arrays.sort(nums);
-        for (int i = 0; i < nums.length; i++) {
-
-            if (nums[i] > 0) {
-                return ret;
-            }
-            int left = i + 1;
-            int right = nums.length - 1;
-            while (left < right) {
-                int sum = nums[i] + nums[left] + nums[right];
-                if (sum == 0) {
-                    List<Integer> list = new ArrayList<>();
-                    list.add(nums[i]);
-                    list.add(nums[left]);
-                    list.add(nums[right]);
-                    ret.add(list);
-                    while (left + 1 < right && nums[left] == nums[left + 1]) {
-                        left++;
-                    }
-                    while (left < right - 1 && nums[right] == nums[right - 1]) {
-                        right--;
-                    }
-                    left++;
-                    right--;
-                } else if (sum > 0) {
-                    right--;
-                } else {
-                    left++;
-                }
-
-            }
-            while (i + 1 < nums.length && nums[i] == nums[i + 1]) {
-                i++;
-            }
-        }
-        return ret;
-    }
-@这个题很坑的是 回溯法不好去重,所以还是要用上面的排序法.
-测试用例:
-输入
-[-1,0,1,2,-1,-4]
-输出
-[[-1,0,1],[-1,2,-1],[0,1,-1]]
-预期结果
-[[-1,-1,2],[-1,0,1]]
-    
-    
-List<List<Integer>> ret = new ArrayList<>();
-    List<Integer> path = new ArrayList<>();
-
-    public List<List<Integer>> threeSum(int[] nums) {
-        backtracing(nums, new ArrayList<>(), 0, 0);
-        return ret;
-    }
-
-    private void backtracing(int[] nums, List<Integer> path, int sum, int index) {
-        if (path.size() > 3) {
-            return;
-        }
-        if (path.size() == 3 && sum == 0) {
-            ret.add(new ArrayList<>(path));
-            return;
-        }
-        for (int i = index; i < nums.length; i++) {
-            path.add(nums[i]);
-            backtracing(nums, path, sum + nums[i], i + 1);
-            path.remove(path.size() - 1);
-        }
-    }
-```
 
 
 
@@ -3082,60 +3020,71 @@ List<List<Integer>> ret = new ArrayList<>();
         4.创建ArrayList<int[]> ret; 转换的时候 ret.toArray(new int[0][]);
 
 public int[][] merge(int[][] intervals) {
-    Comparator<int[]> c = new Comparator<int[]>() {
-        public int compare(int[] a, int[] b) {
-            return a[0] - b[0];
+        if (intervals == null || intervals.length == 0) {
+            return new int[][]{};
         }
-    };
-    ArrayList<int[]> ret = new ArrayList<>();
-    if (intervals == null || intervals.length == 0) {
-        return ret.toArray(new int[0][]);
-    }
-    Arrays.sort(intervals, c);
-    for (int i = 0; i < intervals.length; i++) {
-        int right = intervals[i][1];
-        int left = intervals[i][0];
-        while (i + 1 < intervals.length && right >= intervals[i + 1][0]) {
-            i++;
-            right = Math.max(right, intervals[i][1]);
+        Comparator<int[]> c = new Comparator<int[]>() {
+            public int compare(int[] i1, int[] i2) {
+                return i1[0] - i2[0];
+            }
+        };
+        int len = intervals.length;
+        ArrayList<int[]> ret = new ArrayList<>();
+        Arrays.sort(intervals, c);
+        for (int i = 0; i < len; ) {
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            i = i + 1;
+            if (i < len && end >= intervals[i][0]) {
+                while (i < len && end >= intervals[i][0]) {
+                    end = Math.max(end, intervals[i][1]);
+                    i++;
+                }
+            }
+            ret.add(new int[]{start, end});
         }
-
-        ret.add(new int[]{left, right});
+        int[][] retArray = new int[ret.size()][2];
+        for (int i = 0; i < ret.size(); i++) {
+            retArray[i] = ret.get(i);
+        }
+        return retArray;
     }
-    return ret.toArray(new int[0][]);
-}
 ```
 
 
 
-#### [@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+#### [@@@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
 
-@思路忘了  明天再做一遍,两种思路
+@hashMap
+
+@@@注意只有当! map.containsKey(num-1)时,寻找最长连续序列的while循环才开始运行.
 
 
 
 ```java
 思路1:哈希表
-     public int longestConsecutive(int[] nums) {
+    private HashMap<Integer, Integer> map = new HashMap<>();
+
+    public int longestConsecutive(int[] nums) {
         if (nums == null || nums.length == 0) {
             return 0;
         }
-        HashSet<Integer> set = new HashSet<>();
         for (int temp : nums) {
-            set.add(temp);
+            map.put(temp, 1);
         }
-        int cnt = 0;
-        int max = 0;
-        for (int i = 0; i < nums.length; i++) {
-            int temp = nums[i];
-            cnt = 1;
-            while (set.contains(temp + 1)) {
-                cnt++;
-                temp++;
+        int maxLen = 0;
+        int curLen = 0;
+        for (int temp : nums) {
+            if (!map.containsKey(temp - 1)) {
+                curLen = 1;
+                while (map.containsKey(temp + 1)) {
+                    temp++;
+                    curLen++;
+                }
+                maxLen = Math.max(maxLen, curLen);
             }
-            max = Math.max(max, cnt);
         }
-        return max;
+        return maxLen;
     }
 
 
@@ -3349,12 +3298,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 #### [@@@239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 ```java
-改进思路  双端队列法:
-		注意:ArrayList<Integer> 转int[] 不能用ret.toArray(new int[]);会报错无法将Integer转成int
-        直接用循环赋值就好了
-            
-        不过像String这种,就可以用ArrayList<String> ret ;ret.toArray(new String[ret.size()])来
-        转换成数组
+思路1:双端队列法:
 
 public int[] maxSlidingWindow(int[] nums, int k) {
     ArrayList<Integer> ret = new ArrayList<Integer>();
@@ -3380,11 +3324,46 @@ public int[] maxSlidingWindow(int[] nums, int k) {
     }
     return retArray;
 }
+
+思路2:大顶堆法
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || nums.length < k) {
+            return new int[]{};
+        }
+        Comparator<Integer> c = new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return nums[i2] - nums[i1];
+            }
+        };
+        ArrayList<Integer> ret = new ArrayList<>();
+        PriorityQueue<Integer> heap = new PriorityQueue<Integer>(10, c);
+        int right = 0;
+        int len = nums.length;
+        for (right = 0; right <= len; right++) {
+            if (right < k) {
+                heap.add(right);
+                continue;
+            }
+            ret.add(nums[heap.peek()]);
+            heap.remove(right - k);
+            if (right < len) {
+                heap.add(right);
+            }
+        }
+        int[] retArray = new int[ret.size()];
+        for (int i = 0; i < ret.size(); i++) {
+            retArray[i] = ret.get(i);
+        }
+        return retArray;
+    }
+
+
+
 ```
 
 
 
-
+#### [@@@42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
 
 
 
@@ -3466,7 +3445,11 @@ public int largestRectangleArea(int[] heights) {
 }
 ```
 
-#### [76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+#### [@@@76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+@@map初始化的时候,把每种ch都记录一遍出现最大次数    存最大次数的操作要记住
+
+滑动窗口遇到就--.
 
 ```java
 思路:滑动窗口类的题目,都是left指针+right指针.
@@ -3798,6 +3781,29 @@ for(;index<len;index++){
 dp[j] = dp[j-len]
 比如  leetcode  与 leet code   dp[7] = dp[3]&&(s的code==wordDict里面的code)
 
+ public boolean wordBreak(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        int len = s.length();
+        boolean[] dp = new boolean[len + 1];
+        dp[0] = true;
+        for (int i = 1; i <= len; i++) {
+            for (int j = 0; j < wordDict.size(); j++) {
+                String str = wordDict.get(j);
+                int strLen = str.length();
+                if (i - strLen >= 0 && dp[i - strLen] == true) {
+                    if (str.equals(s.substring(i - strLen, i))) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return dp[len];
+    }
+    
+    
 
 public boolean wordBreak(String s, List<String> wordDict) {
     if (s == null || s.length() == 0) {
@@ -3875,6 +3881,173 @@ public boolean canJump(int[] nums) {
 
 
 
+
+
+#### [@@662. 二叉树最大宽度](https://leetcode-cn.com/problems/maximum-width-of-binary-tree/)
+
+@@遍历每一个node,当level相同时,就计算breadth
+
+如果level不相同,就更新cutlevel和left
+
+```java
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Queue<Node> queue = new LinkedList<Node>();
+        queue.add(new Node(root, 0, 0));
+        int left = 0;
+        int right = 0;
+        int curLevel = 0;
+        int maxB = 0;
+        int breadth = 0;
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            addNodeChild(queue, node);
+            int nodeLevel = node.level;
+            int nodePosition = node.position;
+            //当处在同一个level下实时计算breadth
+            if (curLevel == nodeLevel) {
+                right = nodePosition;
+                breadth = right - left + 1;
+                maxB = Math.max(maxB, breadth);
+                //当level变更时,更换curLevel和left
+            } else {
+                left = nodePosition;
+                curLevel = nodeLevel;
+            }
+        }
+        return maxB;
+    }
+
+
+    private void addNodeChild(Queue<Node> queue, Node node) {
+        TreeNode treeNode = node.treeNode;
+        int level = node.level;
+        int position = node.position;
+
+        TreeNode left = treeNode.left;
+        TreeNode right = treeNode.right;
+        if (left != null) {
+            queue.add(new Node(left, position * 2, level + 1));
+        }
+        if (right != null) {
+            queue.add(new Node(right, position * 2 + 1, level + 1));
+        }
+    }
+
+
+class Node {
+    TreeNode treeNode = null;
+    int position = 0;
+    int level = 0;
+
+    public Node(TreeNode treeNode, int position, int level) {
+        this.treeNode = treeNode;
+        this.position = position;
+        this.level = level;
+    }
+}
+```
+
+
+
+
+
+
+
+#### [@15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+@这个题对于重复数据的处理很难,题目的难度是困难而非中等.
+
+@@对于三数求和,可以用排序+左右指针,注意对于每个nums[i]只需要从其右边的数里面选nums[left]和 nums[right]
+
+@回溯法对结果去重比较麻烦,本题专有法来做.
+
+```java
+改进:1.数组排序
+    1. 以i为左起点,nums[i]大于0则可以剪枝,否则L++R--来寻找组合
+    3.num[i]可能会有重复,要用最左边的num[i],不然比如 -1  -1 0 1 2,用最右边的nums[i]会漏掉 -1 -1 2 这种情况
+    4.找到 num[i] nums[L] nums[R]的组合之后  L要一直++ R要一直--,直到nums[L]!=nums[L],为的是去除重复解
+    比如 -2 -1 -1 0 3 3
+
+public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> ret = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+
+            if (nums[i] > 0) {
+                return ret;
+            }
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    ret.add(list);
+                    while (left + 1 < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    while (left < right - 1 && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    left++;
+                    right--;
+                } else if (sum > 0) {
+                    right--;
+                } else {
+                    left++;
+                }
+
+            }
+            while (i + 1 < nums.length && nums[i] == nums[i + 1]) {
+                i++;
+            }
+        }
+        return ret;
+    }
+@这个题很坑的是 回溯法不好去重,所以还是要用上面的排序法.
+测试用例:
+输入
+[-1,0,1,2,-1,-4]
+输出
+[[-1,0,1],[-1,2,-1],[0,1,-1]]
+预期结果
+[[-1,-1,2],[-1,0,1]]
+    
+    
+List<List<Integer>> ret = new ArrayList<>();
+    List<Integer> path = new ArrayList<>();
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        backtracing(nums, new ArrayList<>(), 0, 0);
+        return ret;
+    }
+
+    private void backtracing(int[] nums, List<Integer> path, int sum, int index) {
+        if (path.size() > 3) {
+            return;
+        }
+        if (path.size() == 3 && sum == 0) {
+            ret.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < nums.length; i++) {
+            path.add(nums[i]);
+            backtracing(nums, path, sum + nums[i], i + 1);
+            path.remove(path.size() - 1);
+        }
+    }
+```
+
+
+
+
+
 #### @归并排序(mergeSort)
 
 结合128题.最长连续序列  里面的思路二,来验证排序
@@ -3946,15 +4119,20 @@ public void mergeSort(int[] nums) {
         }
         int temp = nums[left];
         while (left < right) {
+            //用left<right 而不是left<=right是为了防止left越过right,swap的时候越界
+            //left<right反而会让left和right最终重合
             while (left < right && nums[right] >= temp) {
                 right--;
             }
             swap(nums, left, right);
+            //nums[left]和 temp比较的时候用<=,而非< 为了让数组更快的总到尽头
             while (left < right && nums[left] <= temp) {
                 left++;
             }
             swap(nums, left, right);
         }
+        //返回left没有疑问,示例如下
+        // 1,2,3,4,5    3,1,2,4,5
         nums[left] = temp;
         return left;
     }
@@ -3972,79 +4150,55 @@ public void mergeSort(int[] nums) {
 
 
 
-#### [@@662. 二叉树最大宽度](https://leetcode-cn.com/problems/maximum-width-of-binary-tree/)
+
+
+#### [面试题42. 连续子数组的最大和](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
 
 ```java
- public int widthOfBinaryTree(TreeNode root) {
-        if (root == null) {
-            return 0;
-        }
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(root, 1, 0));
-        Node node = null;
-        int maxBreadth = 0;
-        int rightPosition = 0;
-        int max = 1;
-        while (!queue.isEmpty()) {
-            node = queue.poll();
-            addNodeChild(node, queue);
-            int curLevel = node.level;
-            int leftPositon = node.position;
-            rightPosition = node.position;
-            while (!queue.isEmpty() && queue.peek().level == curLevel) {
-                node = queue.poll();
-                addNodeChild(node, queue);
-                rightPosition = node.position;
-            }
-            max = Math.max(max, rightPosition - leftPositon + 1);
-        }
-        return max;
+public int maxSubArray(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return 0;
     }
+    int len = nums.length;
+    int[] dp = new int[len + 1];
+    dp[1] = nums[0];
 
-    private void addNodeChild(Node node, Queue<Node> queue) {
-        TreeNode tree = node.n;
-        int curLevel = node.level;
-        int curPosition = node.position;
-
-        if (tree.left != null) {
-            queue.add(new Node(tree.left, curLevel + 1, curPosition * 2));
-        }
-        if (tree.right != null) {
-            queue.add(new Node(tree.right, curLevel + 1, curPosition * 2 + 1));
-        }
+    int max = nums[0];
+    for (int i = 2; i <= len; i++) {
+        dp[i] = Math.max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+        max = Math.max(dp[i], max);
     }
-}
-
-class Node {
-    TreeNode n = null;
-    int level = 0;
-    int position = 0;
-
-    public Node(TreeNode n, int level, int position) {
-        this.n = n;
-        this.level = level;
-        this.position = position;
-    }
+    return max;
 }
 ```
 
 
 
+#### [面试题03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```java
+public int findRepeatNumber(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return 0;
+    }
+    int len = nums.length;
+    int index = 0;
+    while (index < len) {
+        int num = nums[index];
+        if (num != index) {
+            if (nums[num] == num) {
+                return num;
+            }
+            int temp = nums[num];
+            nums[num] = num;
+            nums[index] = temp;
+        } else {
+            index++;
+        }
+    }
+    return len;
+}
+```
 
 
 
