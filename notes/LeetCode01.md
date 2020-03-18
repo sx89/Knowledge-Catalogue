@@ -1981,7 +1981,7 @@ public int maxProfit(int[] prices) {
     }
 ```
 
-#### [@@@621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
+#### [@621. 任务调度器](https://leetcode-cn.com/problems/task-scheduler/)
 
 @优先队列,来确定执行顺序
 
@@ -1996,50 +1996,41 @@ public int maxProfit(int[] prices) {
     if (frequencyOfChar.isEmpty() && frequencyDcreByOneList.size() == 0)
                     break;
 
-
 public int leastInterval(char[] tasks, int n) {
-        HashMap<Character, Integer> map = new HashMap<>();
-        Comparator<Integer> com = new Comparator<Integer>() {
-            public int compare(Integer i1, Integer i2) {
-                return i2 - i1;
-            }
-        };
-        PriorityQueue<Integer> frequencyOfChar = new PriorityQueue<Integer>(26, com);
-        for (char c : tasks) {
-            if (map.get(c) == null) {
-                map.put(c, 1);
+        HashMap<Character, Integer> freqCount = new HashMap<>();
+        PriorityQueue<Integer> freqQueue = new PriorityQueue<Integer>(10, (o1, o2) -> (o2 - o1));
+        for (int i = 0; i < tasks.length; i++) {
+            char ch = tasks[i];
+            if (freqCount.containsKey(ch)) {
+                freqCount.put(ch, freqCount.get(ch) + 1);
             } else {
-                map.put(c, map.get(c) + 1);
+                freqCount.put(ch, 1);
             }
         }
-        for (Map.Entry<Character, Integer> temp : map.entrySet()) {
-            frequencyOfChar.add(temp.getValue());
+        Iterator<Map.Entry<Character, Integer>> it = freqCount.entrySet().iterator();
+        while (it.hasNext()) {
+            freqQueue.add(it.next().getValue());
         }
-        int taskTimeSum = 0;
-
-        while (!frequencyOfChar.isEmpty()) {
-            int i = 0;
-            LinkedList<Integer> frequencyDcreByOneList = new LinkedList<Integer>();
-            while (i <= n) {//小于等于是因为 每个任务的后续冷却是n,所以加上自身的时间,一个轮回是n+1次
-                if (!frequencyOfChar.isEmpty()) {
-                    if (frequencyOfChar.peek() > 1) {
-                        frequencyDcreByOneList.add(frequencyOfChar.poll() - 1);
-                    } else {
-                        frequencyOfChar.poll();
+        int timeCount = 0;
+        while (true) {
+            List<Integer> ready = new ArrayList<Integer>();
+            for (int i = 0; i <= n; i++) {
+                if (!freqQueue.isEmpty()) {
+                    int max = freqQueue.poll();
+                    max--;
+                    if (max >= 1) {
+                        ready.add(max);
                     }
                 }
-                taskTimeSum++;
-                i++;
-                if (frequencyOfChar.isEmpty() && frequencyDcreByOneList.size() == 0)
-                    break;
-
+                timeCount++;
+                if (freqQueue.isEmpty() && ready.size() == 0) {
+                    return timeCount;
+                }
             }
-            for (int temp : frequencyDcreByOneList) {
-                frequencyOfChar.add(temp);
+            for (int j = 0; j < ready.size(); j++) {
+                freqQueue.add(ready.get(j));
             }
-
         }
-        return taskTimeSum;
     }
 
 ```
@@ -2076,7 +2067,7 @@ public int leastInterval(char[] tasks, int n) {
     }
 
 
-思路2:  有个弊端,list.remove的时候复杂度是O(1)	另外注意list.remove((Object)key)  和 remove.(Index)
+思路2:  有个弊端,list.remove的时候复杂度是O(n)	另外注意list.remove((Object)key)  和 remove.(Index)
 class LRUCache {
         LinkedList<Integer> list = null;
         HashMap<Integer, Integer> map = null;
@@ -3406,13 +3397,51 @@ public int trap(int[] height) {
 
 
 
-#### [@84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+#### [@@@84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
 
 
 
-@思路不是很好理解.
+@@@最小栈法
+
+@width的边界的界定
+
+@哨兵
+
+@持续的pop()最小顶点
 
 ```java
+@@@最小栈法
+public int largestRectangleArea(int[] heights) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int maxArea = 0;
+
+        int[] newHeights = new int[heights.length + 2];
+        for (int i = 1; i < newHeights.length - 1; i++) {
+            newHeights[i] = heights[i - 1];
+        }
+        for (int i = 0; i < newHeights.length; i++) {
+            while (!stack.isEmpty() && newHeights[i] < newHeights[stack.peek()]) {
+                //为什么pop出来,为什么curWidth是i - (stack.peek() + 1)而不是 i-stack.peek()
+                // 举例  有数组2,1,2
+                //stack中的1成为rightIndex的时候,stack里面还有 0这一个index
+                //以newHeight[1]为高的矩形的最大宽度的左边界  不是1
+                // 而是i -(0+1),即 比newHeight[1]小的索引位+1 也就是0+1
+                int rightIndex = stack.pop();
+                int curHeight = newHeights[rightIndex];
+
+                int curWidth = i - (stack.peek() + 1);
+                int area = curWidth * curHeight;
+                maxArea = Math.max(maxArea, area);
+            }
+            stack.push(i);
+        }
+        return maxArea;
+    }
+
+
+
+
+
 分而治之法:
 先找到start 到end 范围内的minHeight;
 Area的最大值分三种情况:
@@ -4144,11 +4173,66 @@ public void mergeSort(int[] nums) {
     }
 ```
 
+
+
+#### @@@堆排序
+
+ @sort里面新建maxHeap,然后把最后一个元素移到末尾,adjust
+
+@maxHeap里面从最后一个非子节点(len/2-1)开始调整,一直到0.
+
+@调整函数里面,从index里面第一个子节点一直往下调整,最后temp放到应该在的位置上.
+
+```java
+public void sort(int[] nums) {
+    int[] ints = maxHeap(nums);
+    for (int endLen = nums.length; endLen > 0; endLen--) {
+        //把根元素和末尾元素交换位置
+        swap(nums, 0, endLen - 1);//endLen-1是index
+        //以根元素 到 len = endLen-1的堆进行调整  (忽略了最后的末尾元素)
+        adjustHeap(nums, 0, endLen - 1);//endLen-1是 len
+    }
+}
+
+public int[] maxHeap(int[] nums) {
+        //从第一个非叶子节点开始   len/2-1  到 根节点
+        for (int i = nums.length / 2 - 1; i >= 0; i--) {
+            adjustHeap(nums, i, nums.length);
+        }
+        return nums;
+}
+
+//在array里面,左子树为index*2+1,右子树为index*2+2
+//在每一层position那里
+private void adjustHeap(int[] nums, int index, int len) {
+    int temp = nums[index];
+
+    for (int childIndex = index * 2 + 1; childIndex < len; childIndex = childIndex * 2 + 1) {
+        if (childIndex + 1 < len && nums[childIndex] < nums[childIndex + 1]) {
+            childIndex++;
+        }
+        if (temp < nums[childIndex]) {
+            nums[index] = nums[childIndex];
+            index = childIndex;
+        } else {
+            break;
+        }
+    }
+    nums[index] = temp;
+}
+
+
+
+private void swap(int[] nums, int i, int j) {
+    int temp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = temp;
+}
+```
+
+
+
 #### @@但凡是有关left,right的函数,一般要判断left>right return
-
-
-
-
 
 
 
@@ -4202,7 +4286,43 @@ public int findRepeatNumber(int[] nums) {
 
 
 
+#### [@@@@32. 最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
 
+@stack初始push一个-1
+
+@  (   进栈
+
+@ )  出栈,如果stack空了,代表)多了,再把)的indexpush进去,作为分界线.
+
+@如果没空,代表匹配成功了  
+
+
+
+```java
+public int longestValidParentheses(String s) {
+    if (s == null || s.length() == 0) {
+        return 0;
+    }
+    int len = s.length();
+    int maxLen = 0;
+    Stack<Integer> stack = new Stack<Integer>();
+    stack.push(-1);
+    for (int i = 0; i < len; i++) {
+        char ch = s.charAt(i);
+        if (ch == '(') {
+            stack.push(i);
+        } else {
+            stack.pop();
+            if (stack.isEmpty()) {
+                stack.push(i);
+            } else {
+                maxLen = Math.max(maxLen, i - stack.peek());
+            }
+        }
+    }
+    return maxLen;
+}
+```
 
 
 
