@@ -81,7 +81,6 @@
 - [[@438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)](#438-找到字符串中所有字母异位词httpsleetcode-cncomproblemsfind-all-anagrams-in-a-string)
 - [[200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)](#200-岛屿数量httpsleetcode-cncomproblemsnumber-of-islands)
 - [[@@139. 单词拆分](https://leetcode-cn.com/problems/word-break/)](#139-单词拆分httpsleetcode-cncomproblemsword-break)
-- [](#)
 - [[55. 跳跃游戏](https://leetcode-cn.com/problems/jump-game/)](#55-跳跃游戏httpsleetcode-cncomproblemsjump-game)
 - [@归并排序(mergeSort)](#归并排序mergesort)
 - [@快速排序(quickSort)](#快速排序quicksort)
@@ -2910,8 +2909,6 @@ for(int i = 1;i<n;i++){
 
 
 
-#### 
-
 
 
 #### [@@33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
@@ -3878,11 +3875,7 @@ public boolean wordBreak(String s, List<String> wordDict) {
 }
 ```
 
-#### 
-
-
-
-
+ 
 
 #### [55. 跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
 
@@ -4326,6 +4319,101 @@ public int longestValidParentheses(String s) {
 
 
 
+#### [@935. 骑士拨号器](https://leetcode-cn.com/problems/knight-dialer/)
+
+
+
+```java
+public int knightDialer(int N) {
+    if (N < 0) {
+        return -1;
+    }
+    if (N == 1) {
+        return 10;
+    }
+    boolean[][] cannotUse = new boolean[5][4];
+    cannotUse[4][1] = true;
+    cannotUse[4][3] = true;
+    int[][][] dp = new int[5][4][N + 1];
+    int[][] loc = new int[][]{{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+    for (int i = 1; i <= 4; i++) {
+        for (int j = 1; j <= 3; j++) {
+            for (int locIndex = 0; locIndex < loc.length; locIndex++) {
+                int newI = i + loc[locIndex][0];
+                int newJ = j + loc[locIndex][1];
+                if (newI >= 1 && newI <= 4 && newJ >= 1 && newJ <= 3 && cannotUse[newI][newJ] == false) {
+                    dp[i][j][1]++;
+                }
+            }
+        }
+    }
+    int sum = 0;
+    for (int k = 2; k <= N - 1; k++) {
+        for (int i = 1; i <= 4; i++) {
+            for (int j = 1; j <= 3; j++) {
+                for (int locIndex = 0; locIndex < loc.length; locIndex++) {
+                    int newI = i + loc[locIndex][0];
+                    int newJ = j + loc[locIndex][1];
+                    if (newI >= 1 && newI <= 4 && newJ >= 1 && newJ <= 3 && cannotUse[newI][newJ] == false) {
+
+                        dp[i][j][k] += dp[newI][newJ][k - 1];
+                        dp[i][j][k] = dp[i][j][k] % 1000000007;
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 1; i <= 4; i++) {
+        for (int j = 1; j <= 3; j++) {
+            if (cannotUse[i][j] == false) {
+                sum += dp[i][j][N - 1];
+                sum = sum % (1000000007);
+            }
+        }
+    }
+    return sum;
+}
+```
+
+#### [@@1353. 最多可以参加的会议数目](https://leetcode-cn.com/problems/maximum-number-of-events-that-can-be-attended/)
+
+
+
+@把events 根据开始顺序排序,today逐渐增长,从优先队列里,选剩余时间最少的会议来开.
+
+```java
+public int maxEvents(int[][] events) {
+    int MAX_END = 100000;
+    if (events == null || events.length == 0) {
+        return 0;
+    }
+    Comparator<int[]> c = new Comparator<int[]>() {
+        public int compare(int[] i1, int[] i2) {
+            return i1[0] - i2[0];
+        }
+    };
+    Arrays.sort(events, c);
+
+    PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
+
+    int meetCount = 0;
+    int i = 0;
+    for (int today = 1; today <= MAX_END; today++) {
+        while (i < events.length && events[i][0] == today) {
+            queue.add(events[i][1]);
+            i++;
+        }
+        if (!queue.isEmpty() && queue.peek() >= today) {
+            meetCount++;
+            queue.poll();
+        }
+        while (!queue.isEmpty() && queue.peek() <= today) {
+            queue.poll();
+        }
+    }
+    return meetCount;
+}
+```
 
 
 
@@ -4343,6 +4431,57 @@ public int longestValidParentheses(String s) {
 
 
 
+#### [@25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+
+
+
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+    ListNode node = head;
+    ListNode retHead = new ListNode(-1);
+    ListNode retEnd = retHead;
+    while (true) {
+        int count = 0;
+        ListNode reverseHead = new ListNode(-1);
+        ListNode lastNode = null;
+        //注意记录lastNode,是count为0的时候
+        while (node != null && count < k) {
+            ListNode temp = node.next;
+            node.next = reverseHead.next;
+            reverseHead.next = node;
+            //注意记录lastNode,是count为0的时候
+            if (count == 0) {
+                lastNode = node;
+            }
+            node = temp;
+            count++;
+        }
+
+        if (count == k) {
+            retEnd.next = reverseHead.next;
+            retEnd = lastNode;
+        } else {
+            //如果最后的链表不足k个,就翻转回来原来的顺序
+            ListNode remainList = reverse(reverseHead);
+            retEnd.next = remainList;
+            break;
+        }
+    }
+    return retHead.next;
+}
+
+private ListNode reverse(ListNode head) {
+    ListNode pHead = new ListNode(-1);
+    ListNode node = head.next;
+    while (node != null) {
+        ListNode temp = node.next;
+        node.next = pHead.next;
+        pHead.next = node;
+        node = temp;
+    }
+    return pHead.next;
+}
+```
 
 
 
@@ -4354,23 +4493,64 @@ public int longestValidParentheses(String s) {
 
 
 
+#### [@@@721. 账户合并](https://leetcode-cn.com/problems/accounts-merge/)
 
+同一个邮箱代表是同一个用户。
 
+我们用输入账户的序号来代表账户。
 
+例如：
 
+[
+0 [“John”,”johnsmith@mail.com”,”john_newyork@mail.com”],
+1 [“John”,”johnsmith@mail.com”,”john00@mail.com”],
+2 [“Mary”,”mary@mail.com”],
+3 [“John”,”johnnybravo@mail.com”]
+]
 
+则有4个账户。
 
+用哈希表建立<邮箱,账户1,…,账户x>的关联。
 
+“johnsmith@mail.com” 0 1
+“john_newyork@mail.com” 0
+“john00@mail.com” 1
+“mary@mail.com” 2
+“johnnybravo@mail.com” 3
 
+对账户建立并查集。同一个邮箱的账户属于同一类。
 
+则分成三类：{0,1};{2};{3}。
 
+将同一类的账户和邮箱收集即可。
 
+[
+[“John”,”john00@mail.com”,”john_newyork@mail.com”,”johnsmith@mail.com”],
+[“Mary”,”mary@mail.com”],
+[“John”,”johnnybravo@mail.com”]
+]
 
+```
+整体思路：
 
-
-
-
-
+hash<邮箱,账户1,...,账户x>;
+P:并查集;
+P[i] = i;
+for([账户i,邮箱i1,...,邮箱it] in accounts){
+    for(邮箱ij in [邮箱i1,...,邮箱it]){
+        hash[邮箱ij] = [...] + 账户i;
+    }
+}
+//合并同类
+for(<邮箱ij,账户i,...账户u] in hash){
+    for(账户x in [账户i,...账户u]){
+        p1 = find(P,账户x);
+        p2 = find(P,账户i);
+        P[p1] = P2;
+    }
+}
+将同一类账户的邮箱收集起来即可;
+```
 
 
 

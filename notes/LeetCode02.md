@@ -93,9 +93,11 @@ while(left<right)的循环内部,记得left++,right--
 
 各种**follow up**以及要你设计尽可能多的**测试用例**。
 
+#### 为什么算法题取模要用10^9+7
 
+<img src="pictures/LeetCode02/image-20200319100206442.png" alt="image-20200319100206442" style="zoom:50%;" />
 
-#### [@253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)
+#### [会议室2](https://leetcode-cn.com/problems/meeting-rooms-ii/)
 
 
 
