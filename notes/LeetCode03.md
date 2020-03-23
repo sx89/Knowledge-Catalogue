@@ -1,4 +1,3 @@
-
 <!-- TOC -->
 
 - [动态规划和贪心算法的区别](#动态规划和贪心算法的区别)
@@ -2046,6 +2045,67 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
 
 
 
+#### [@leetcode.298 二叉树的最长连续子序列](https://blog.csdn.net/jmspan/article/details/51171217)
+
+```java
+int maxLen = 0;
+
+public int longestConsecutive(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+    int len = 1;
+    maxLen = Math.max(len, maxLen);
+    TreeNode left = root.left;
+    TreeNode right = root.right;
+    if (left != null) {
+        inOrder(left, len, root.val);
+    }
+    if (right != null) {
+        inOrder(right, len, root.val);
+    }
+    return maxLen;
+}
+
+private void inOrder(TreeNode root, int len, int preVal) {
+    if (root == null) {
+        return;
+    }
+    if (root.val != preVal + 1) {
+        len = 1;
+    } else {
+        len = len + 1;
+    }
+    maxLen = Math.max(len, maxLen);
+    TreeNode left = root.left;
+    TreeNode right = root.right;
+    if (left != null) {
+        inOrder(left, len, root.val);
+    }
+    if (right != null) {
+        inOrder(right, len, root.val);
+    }
+}
+
+
+public static void main(String[] args) {
+    Solution solution = new Solution();
+    TreeNode t1 = new TreeNode(1);
+    TreeNode t2 = new TreeNode(-1);
+    TreeNode t3 = new TreeNode(2);
+    TreeNode t4 = new TreeNode(1);
+    TreeNode t5 = new TreeNode(4);
+    TreeNode t6 = new TreeNode(5);
+    t1.right = t2;
+    t2.left = t3;
+    t3.left = t4;
+    t2.right = t5;
+    t5.right = t6;
+    int i = solution.longestConsecutive(t1);
+    System.out.println(i);
+
+}
+```
 
 
 
@@ -2055,6 +2115,181 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
 
 
 
+#### [@@面试题51. 数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
+
+
+
+```
+@@@逆序对的个数 在 nums[leftIndex]>nums[rightIndex]的时候出发
+count+=mid-leftIndex+1;意思是,如果左半边的数 5  比右半边的 4  大,则5右边的 6 7 8 都比4大,都能组成逆序对
+```
+
+
+
+```java
+int count = 0;
+
+public int reversePairs(int[] nums) {
+    if (nums == null || nums.length == 0) {
+        return 0;
+    }
+    mergeSort(nums, 0, nums.length - 1);
+    return count;
+}
+
+private void mergeSort(int[] nums, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    mergeSort(nums, left, mid);
+    mergeSort(nums, mid + 1, right);
+    merge(nums, left, right);
+}
+
+private void merge(int[] nums, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    int len = right - left + 1;
+    int index = 0;
+    int[] tempNums = new int[len];
+    int leftIndex = left;
+    int rightIndex = mid + 1;
+    while (leftIndex <= mid && rightIndex <= right) {
+        if (nums[leftIndex] <= nums[rightIndex]) {
+            tempNums[index++] = nums[leftIndex++];
+        } else {
+            count += mid - leftIndex + 1;
+            tempNums[index++] = nums[rightIndex++];
+        }
+    }
+    while (leftIndex <= mid) {
+        tempNums[index++] = nums[leftIndex++];
+    }
+    while (rightIndex <= right) {
+        tempNums[index++] = nums[rightIndex++];
+    }
+    for (int i = 0, j = left; i < len; j++, i++) {
+        nums[j] = tempNums[i];
+    }
+    return;
+}
+```
+
+#### [@@63. 不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+
+
+
+```
+@@思路1.带cache的dfs.需要再写几遍熟练
+
+@@思路2.dp[i][j]代表到达这个位置有多少可能,取决于dp[i-1][j]+dp[i][j-1]  自底向上
+@@@@@@@当时还用了另一种搞笑的自底向上: dp[rowCount-1][colCount-1]定为了1,这种想法是错误的!!!!!!
+```
+
+
+
+```java
+//1. cache初始化为-1. 因为cache在等于0的时候依然可能是缓存数据
+//2. 不需要visited[][],因为只往右或者往下走
+int rowCount = 0;
+int colCount = 0;
+int[][] loc = new int[][]{{1, 0}, {0, 1}};
+int[][] cache = null;
+int[][] matrix = null;
+
+public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+    if (obstacleGrid == null) {
+        return 0;
+    }
+    matrix = obstacleGrid;
+    if (matrix[0][0] == 1) {
+        return 0;
+    }
+    rowCount = matrix.length;
+    colCount = matrix[0].length;
+    cache = new int[rowCount][colCount];
+    for (int i = 0; i < rowCount; i++) {
+        for (int j = 0; j < colCount; j++) {
+            cache[i][j] = -1;
+        }
+    }
+    return backtracing(0, 0);
+}
+
+private int backtracing(int x, int y) {
+    int retTemp = 0;
+    if (x == rowCount - 1 && y == colCount - 1) {
+        return 1;
+    }
+    if (cache[x][y] != -1) {
+        return cache[x][y];
+    }
+    for (int i = 0; i < loc.length; i++) {
+        int newX = x + loc[i][0];
+        int newY = y + loc[i][1];
+        if (newX >= 0 && newY >= 0 && newX <= rowCount - 1 && newY <= colCount - 1 && matrix[newX][newY] != 1) {
+            retTemp += backtracing(newX, newY);
+        }
+    }
+    cache[x][y] = retTemp;
+    return cache[x][y];
+}
+
+
+
+
+```
+
+
+
+```java
+int rowCount = 0;
+int colCount = 0;
+int[][] loc = new int[][]{{1, 0}, {0, 1}};
+int[][] dp = null;
+int[][] matrix = null;
+
+public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+    if (obstacleGrid == null) {
+        return 0;
+    }
+    matrix = obstacleGrid;
+    if (matrix[0][0] == 1) {
+        return 0;
+    }
+    rowCount = matrix.length;
+    colCount = matrix[0].length;
+    dp = new int[rowCount][colCount];
+    dp[0][0] = 1;
+    for (int i = 1; i < colCount; i++) {
+        if (matrix[0][i] == 1) {
+            dp[0][i] = 0;
+        } else {
+            dp[0][i] += dp[0][i - 1];
+        }
+    }
+    for (int i = 1; i < rowCount; i++) {
+        if (matrix[i][0] == 1) {
+            dp[i][0] = 0;
+        } else {
+            dp[i][0] += dp[i - 1][0];
+        }
+    }
+    for (int i = 1; i < rowCount; i++) {
+        for (int j = 1; j < colCount; j++) {
+            if (matrix[i][j] == 1) {
+                dp[i][j] = 0;
+            } else {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+    }
+    return dp[rowCount - 1][colCount - 1];
+}
+```
 
 
 
@@ -2062,6 +2297,354 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
 
 
 
+#### [单位圆能框住的最多节点数](https://blog.csdn.net/Ramay7/article/details/51147778)
+
+题目：
+POJ 1981 Circle and Points
+HDU 1077 Catching Fish
+题意：
+给出n个点的二维点坐标，问单位圆最多能覆盖多少点？
+分析：
+①：
+最优的情况一定是有两个点在圆弧上。先枚举两个点，计算两点在圆弧上的单位圆（一般会有两个）
+但是可以统一取一个方向的（也就是AB取一个然后BA取另外一个）.然后枚举所有点,计算在这个单位圆内的点的个数。
+这样做的时间复杂度是O(n^3).
+②：
+对每个点以R为半径画圆，对N个圆两两求交。这一步O(N^2)。问题转化为求被覆盖次数最多的弧。
+因为如果最优圆覆盖A点那么最优圆一定在以A点为圆心的圆弧上。那么圆弧倍覆盖多少次也就意味着
+以这条圆弧为上任意一点为圆心花园能覆盖多少点。
+对每一个圆，求其上的每段弧重叠次数。假如A圆与B圆相交。A上[PI/3, PI/2]的区间被B覆盖(PI为圆周率)。
+那么对于A圆，我们在PI/3处做一个+1标记，在PI/2处做一个-1标记。
+对于[PI*5/3, PI*7/3]这样横跨0点的区间只要在0点处拆成两段即可。
+将一个圆上的所有标记排序，从头开始扫描。初始total=0，碰到+1标记给total++，碰到-1标记total–。
+扫描过程中total的最大值就是圆上被覆盖最多的弧。求所有圆的total的最大值就是答案。
+极角排序需要2*n*logn，总复杂度O(N^2 * logN)
+
+
+
+```python
+//1264K 1357MS
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <climits>
+#include <cmath>
+using namespace std;
+const int MAX_N=310;
+const double eps=1e-6;
+const double R=1.0;//定义覆盖圆半径为R
+
+int T,n;
+
+struct Point{
+    double x,y;
+}point[MAX_N];
+
+inline double dis(Point a,Point b)
+{
+    return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+}
+
+inline Point GetCenter(Point a,Point b)
+{//获取a,b两点在圆周上的单元圆圆心,单位圆圆心有两个
+    struct Point mid,res;
+    mid.x=(a.x+b.x)/2,mid.y=(a.y+b.y)/2;//mid是a,b中点坐标
+    double angle=atan2(b.y-a.y,b.x-a.x);//angle是直线ab的倾斜角
+    double tmp=dis(a,b)/2;//tmp是线段ab长度的一半
+    double d=sqrt(1.0-tmp*tmp);//d是ab中点到圆心的距离
+    res.x=mid.x-d*sin(angle);//res是直线ab左边的那个圆心
+    res.y=mid.y+d*cos(angle);
+    //下面的res是直线ab右边的那个圆心
+    //res.x=mid.x+d*sin(angle);
+    //res.y=mid.y-d*cos(angle);
+    return res;
+}
+
+int main()
+{
+    scanf("%d",&T);
+    while(T--){
+        scanf("%d",&n);
+        for(int i=0;i<n;i++){
+            scanf("%lf%lf",&point[i].x,&point[i].y);
+        }
+        int ans=1;//初始化至少能覆盖一个点！！！
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                if(i==j||dis(point[i],point[j])-2*R>eps) continue;
+                int cnt=0;
+                struct Point center=GetCenter(point[i],point[j]);
+                for(int k=0;k<n;k++){
+                    if(dis(point[k],center)-R<=eps) cnt++;
+                }
+                ans=max(ans,cnt);
+            }
+        }
+        printf("%d\n",ans);
+    }
+    return 0;
+}
+```
+
+
+
+#### [@@@四种操作求A的最大次数](https://blog.csdn.net/qq_40147449/article/details/93376889)
+
+```
+思路 
+@ i为2之前  dp[i]max  = i
+@ dp[i] 的状态过程有三类   一种是从j开始全选,复制 一直粘贴,二种是i-2开始打印两个,三种是i-1开始 打印一个
+dp[i] = Max(dp[i-1]+1,dp[i-2]+2,dp[j]*(i-j+1)); j从2到i-2;
+```
+
+
+
+```
+描述
+假设你有一个特殊的键盘，键盘上有如下键:
+
+键1: (A): 在屏幕上打印一个’A’。
+键2: (Ctrl-A): 选择整个屏幕。
+键3: (Ctrl-C): 复制选择到缓冲区。
+键4: (Ctrl-V): 在屏幕上已有的内容后面追加打印缓冲区的内容。
+现在，你只能按键盘上N次(使用以上四个键)，找出你可以在屏幕上打印的“A”的最大数量
+
+样例
+1
+输入: 3
+输出: 3
+解释: A, A, A
+
+2
+输入: 7
+输出: 9
+解释: A, A, A, Ctrl A, Ctrl C, Ctrl V, Ctrl V
+
+注意事项
+1 <= N <= 50
+答案将在32位有符号整数的范围内。
+
+思路
+动态规划
+dpi表示i个操作所能得到的最多的A的个数
+初始状态下 dpi=0，当i<=6的时候容易得到dpi=i
+对于任意dpi 可以省去j个操作
+j=1 dpi=1+dpi-1
+j=2 dpi=2+dpi-2
+当j>2的时候，可以全选 复制 粘贴，所以dpi = j * dp(i-1-j)
+取其中最大值即可
+```
+
+
+
+```java
+public int maxA(int n) {
+    if (n <= 0) {
+        return 0;
+    }
+    int[] dp = new int[n + 1];
+    for (int i = 0; i <= n; i++) {
+        if (i <= 2) {
+            dp[i] = i;
+            continue;
+        }
+        //全选,复制,粘贴至少从第二位开始
+        //最多提前两位操作   比如 i= 8  6全选,7复制,8粘贴
+        //j从第二位,开始.依次计算全选,复制,粘贴,粘贴...粘贴一共 (i-j-1)次 ,
+        // 粘贴量为dp[j]处A的个数
+        for (int j = 2; j <= i - 2; j++) {
+            dp[i] = Math.max(dp[i], (i - j - 1) * dp[j]);
+        }
+        int preTwoEasyAdd = Math.max(dp[i - 1] + 1, dp[i - 2] + 2);
+        dp[i] = Math.max(dp[i], preTwoEasyAdd);
+    }
+    System.out.println(dp[n]);
+    return dp[n];
+}
+```
+
+
+
+#### 点集旋转
+
+作者：Ire1ia
+链接：https://www.nowcoder.com/discuss/373413?type=post&order=time&pos=&page=2
+来源：牛客网
+
+二维平面上有一个点集P, 另外点集外有一个点P0, 现在令P中的所有点绕P0旋转，求旋转的角度为多少时, P中的所有点能与原位置重合. 我的答案是将P中的点按照与P0的距离划分成一些子集, 每个子集分别枚举可能的旋转角度, 判断是否与初始位置重合, 最后各个子集的答案求一个最小公倍数即可.
+
+比如正方形四个角为点集,中心点为P0
+
+
+
+#### [@@面试题 16.06. 最小差](https://leetcode-cn.com/problems/smallest-difference-lcci/)
+
+```
+@binarySearch返回的值  如果是0~len-1 则找到了target.如果是负数,则负数结果为  -insertPositon-1  可以用
+
+insetPostion = -(  -insertPositon-1 ) -1;还原.
+
+还原之后,因为insertPostion代表第一个大于tartget的数字的位置.所以,  
+如果是 0 则 只需要计算b[0]-target;
+如果结果是len,则只需要计算target - b[len -1].
+其他1~len-1,左右两边都需要计算.
+
+diff要判断是否大于0,是为了防止 
+[-2147483648,1]
+[0,2147483647]
+当target = -2147483648时,index = 0.
+但是b[index]-target 不是整数(2147483648会被淘汰),而是负数了,负数就会被取到,就不符合题意了.
+```
+
+
+
+```java
+public int smallestDifference(int[] a, int[] b) {
+    if (a == null || b == null) {
+        return 0;
+    }
+    int ret = Integer.MAX_VALUE;
+    Arrays.sort(a);
+    Arrays.sort(b);
+    for (int i = 0; i < a.length; i++) {
+        int target = a[i];
+        int index = Arrays.binarySearch(b, target);
+        int len = b.length;
+        if (index >= 0) {
+            return 0;
+        }
+        index = -index - 1;
+        if (index == 0) {
+            int diff = b[index] - target;
+            if (diff > 0) {
+                ret = Math.min(ret, diff);
+            }
+        } else if (index == len) {
+            int diff = target - b[index - 1];
+            if (diff > 0) {
+                ret = Math.min(ret, diff);
+            }
+        } else {
+            int diff = b[index] - target;
+            if (diff > 0) {
+                ret = Math.min(ret, diff);
+            }
+            diff = target - b[index - 1];
+            if (diff > 0) {
+                ret = Math.min(ret, diff);
+            }
+        }
+    }
+    return ret;
+}
+```
+
+
+
+#### [@670. 最大交换](https://leetcode-cn.com/problems/maximum-swap/)
+
+```java
+public int maximumSwap(int num) {
+    PriorityQueue<Integer> queue = new PriorityQueue<Integer>(10, (o1, o2) -> (o2 - o1));
+    int numLen = 0;
+    List<Integer> list = new ArrayList<Integer>();
+    while (num != 0) {
+        list.add(0, num % 10);
+        queue.add(num % 10);
+        num = num / 10;
+
+    }
+    for (int i = 0; i < list.size(); i++) {
+        if (list.get(i) == queue.peek()) {
+            queue.poll();
+        } else {
+            for (int j = list.size() - 1; j > i; j--) {
+                if (list.get(j) == queue.peek()) {
+                    int temp = list.get(j);
+                    list.set(j, list.get(i));
+                    list.set(i, temp);
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    num = 0;
+    for (int i = 0; i < list.size(); i++) {
+        num = num * 10 + list.get(i);
+    }
+    return num;
+}
+```
+
+
+
+
+
+#### [@@@@50. Pow(x, n)](https://leetcode-cn.com/problems/powx-n/)
+
+@@@看注释,此题细节非常多
+
+```java
+//指数:
+//  -1 -2 -3
+//   1  2  3
+
+
+//底数
+// 正  负  0
+
+//越界 n 的 负数越界问题
+
+//重复数字  用优先队列来解决
+
+//优化  对半计算
+
+public double myPow(double x, int n) {
+    //x 为正
+    //n为负数,就一定要去 分之一
+    //x为负 且n为奇数  考虑符号
+    boolean isNegative = false;
+    boolean oneDivid = false;
+    if (n == 0) {
+        return 1;
+    }
+
+    long N = n;
+    if (n < 0) {
+        oneDivid = true;
+        //负的Integer.MIN_VALUE依然为负,所以这里不可以用N = -n
+        N = -N;
+    }
+    if (x < 0) {
+        x = -x;
+        if (N % 2 == 1) {
+            isNegative = true;
+        }
+    }
+
+    double curRet = x;
+    double ret = 1;
+    //拿N= 7 举例
+    // ret 是 x的7次方
+    //i=7时,进入循环 可以把 x的7次方拆分成  一个x(放入ret) 和 3个 x*x
+    //i = 3. 此时可以把 3个x*x  拆分成  一个 x*x(放入ret)  和  1个 x*x*x*x
+    //此时i= 1.此时 把 1个 x*x*x*x放入ret. 
+    //i=0跳出循环
+    for (long i = N; i > 0; i /= 2) {
+        if ((i % 2) == 1) {
+            ret = ret * curRet;
+        }
+        curRet = curRet * curRet;
+    }
+
+
+    ret = isNegative ? -ret : ret;
+    ret = oneDivid ? 1 / ret : ret;
+    return ret;
+}
+```
 
 
 
@@ -2069,4 +2652,217 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
 
 
 
+#### [@@89. 格雷编码](https://leetcode-cn.com/problems/gray-code/)
+
+镜像  01
+
+00  01  |  在首位添1,同时镜像添加数据  11  10 
+
+00  01  11 10 |  110 111 101 100  
+
+```java
+public List<Integer> grayCode(int n) {
+    List<Integer> ret = new ArrayList<Integer>();
+    if (n <= 0) {
+        ret.add(0);
+        return ret;
+    }
+
+    int headAdd = 1;
+    ret.add(0);
+    ret.add(1);
+
+    for (int i = 2; i <= n; i++) {
+        headAdd = headAdd * 2;
+        for (int j = ret.size() - 1; j >= 0; j--) {
+            ret.add(ret.get(j) + headAdd);
+        }
+    }
+    return ret;
+}
+```
+
+
+
+
+
+#### [@@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+dp[i]表示以nums[i]结尾的和的最大值,而且前面丢不丢弃已经设置好了
+
+```java
+   public int maxSubArray(int[] nums) {
+        if(nums==null||nums.length==0){
+            return 0;
+        }
+        int len = nums.length;
+        int [] dp = new int[len];
+        dp[0] = nums[0];
+        int max = nums[0];
+        for(int i =1;i<len;i++){
+            dp[i] =Math.max(dp[i-1]+nums[i],nums[i]);
+            max = Math.max(dp[i],max);
+        }
+        return max;
+    }
+```
+
+
+
+#### 单例模式
+
+@构造器私有化
+
+@双重校验+一个类锁
+
+@内部遍历加volatile,static,private
+
+volatile是为了防止指令重排,导致内存分配了,但是没有初始化,就把单例返回了回去
+
+```java
+private static volatile Singleton uniqueSingleton;
+
+private Singleton() {
+}
+
+public static void main(String[] args) {
+    FileTypeMap defaultFileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
+    MimeType mimeType = new MimeType();
+    mimeType.getBaseType();
+}
+public static Singleton getUniqueSingleton() {
+    if (uniqueSingleton == null) {
+        synchronized (Singleton.class) {
+            if (uniqueSingleton == null) {
+                uniqueSingleton = new Singleton();
+            }
+        }
+    }
+    return uniqueSingleton;
+}
+```
+
+
+
+
+
+
+
+#### [@@@752. 打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)
+
+带条件的BFS
+
+用提前插入一个null来区分层次
+
+```java
+public int openLock(String[] deadends, String target) {
+
+        HashSet<String> used = new HashSet<>();
+        HashSet<String> dead = new HashSet<>();
+        Queue<String> queue = new LinkedList<String>();
+        for (int i = 0; i < deadends.length; i++) {
+            dead.add(deadends[i]);
+        }
+        if (dead.contains("0000") || dead.contains(target)) {
+            return -1;
+        }
+        int depth = 0;
+        queue.add("0000");
+        used.add("0000");
+    //添加null,分开层数
+        queue.add(null);
+        while (!queue.isEmpty()) {
+            String node = queue.poll();
+            //如果node为空
+            //加层数
+            //如果queue里面还有node,加一个null来区分
+            if (node == null) {
+                depth++;
+                if (!queue.isEmpty()) {
+                    queue.add(null);
+                } else {
+                    break;
+                }
+            } else if (node.equals(target)) {
+                return depth;
+            } else {
+                for (int i = 0; i < target.length(); i++) {
+                    for (int d = -1; d <= 1; d = d + 2) {
+                        int tempNum = node.charAt(i) - '0' + d;
+                        //+10  再 %10
+                        tempNum = (tempNum + 10) % 10;
+                        //substring(0,0)也可以
+                        String temp = node.substring(0, i) + tempNum + node.substring(i + 1);
+                        //如果used  dead都符合条件
+                        if (!used.contains(temp) && !dead.contains(temp)) {
+                            used.add(temp);
+                            queue.add(temp);
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+```
+
+
+
+
+
+#### [@@编程算法题—硬币游戏](https://blog.csdn.net/guangyacyb/article/details/80173509)
+
+```java
+题目：两个玩家（甲，乙）玩游戏，有一个长度为n的乱序数组（数组每个元素代表一个硬币，数值代表硬币面值），甲乙轮流拿硬币（可以拿走最左边的一个或者两个硬币，拿走不放回），问先玩的玩家是否一定能赢
+
+
+
+这种题目的思路一般是动态规划：
+
+假设存有硬币的数组为a，并且双方都会取当前情况下能取到的最多数值！！！
+
+为了方便，a[i]表示从末尾开始的第i枚硬币的数值
+
+用sum[i]表示从0开始到下标i的硬币数字和
+
+best[i]表示当取到剩下i枚硬币时最优的取法能取到的数值
+
+所以有：
+
+best[1]是第1枚硬币的数值
+
+best[2]是第1+2枚硬币的数值之和
+
+best[3]是第2+3枚硬币的数值之和
+
+best[4]有两种取法，一种是取a[4]，然后因为对方也不是吃素的，所以他会取best[3]，所以我能取到的只能是sum[3]-best[3]；另一种取法是取a[4]+a[3]，然后对方取best[2]，我取sum[2]-best[2]，这就基本是动态规划的情况了
+
+以上归纳为：
+
+best[k]（k>4）有两种取法:
+
+1：取a[k] +sum[k-1]-best[k-1]
+
+2： 取a[k] + a[k-1] + sum[k-2] + best[k-2]
+
+则best[k]等于这两个取法的较大值，最后求出best[n]，如果best[n] > sum[n] / 2的话，则先取的人赢了，否则会输。至于是否先取就能赢，还没想到，烦请路过的网友给点提示~\
+```
+
+
+
+#### [@@769. 最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/)
+
+```java
+class Solution {
+    public int maxChunksToSorted(int[] arr) {
+        int ans = 0, max = 0;
+        for (int i = 0; i < arr.length; ++i) {
+            max = Math.max(max, arr[i]);
+            if (max == i) ans++;
+        }
+        return ans;
+    }
+}
+
+```
 

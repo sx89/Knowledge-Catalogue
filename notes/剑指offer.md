@@ -4826,7 +4826,7 @@ public List<Map.Entry<Integer, Double>> dicesSum(int n) {
 
 ```
 
-# @62. 圆圈中最后剩下的数
+# @62. 圆圈中最后剩下的数(约瑟夫环)
 
 [NowCoder](https://www.nowcoder.com/practice/f78a359491e64a50bce2d89cff857eb6?tpId=13&tqId=11199&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking&from=cyc_github)
 
