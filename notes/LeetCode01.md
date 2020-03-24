@@ -2607,25 +2607,33 @@ public int coinChange(int[] coins, int amount) {
 	2.因为负负得正,所以维护最小值也是有必要的
 	3.因为只与前一个dp数据有关,dp数组可以被优化空间
         
- public int maxProduct(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
-        int max = nums[0];
-        int[][] dp = new int[nums.length][2];
-        for (int i = 0; i < nums.length; i++) {
-            if (i == 0) {
-                dp[i][0] = nums[0];
-                dp[i][1] = nums[0];
-                continue;
+  //首先 dp[i][0]代表以i结尾的数组的最大乘积
+    //dp[i][1]代表以i结尾的最小乘积
+    //dp[i][0] = Math.max ( dp i-1结尾*nums[i]的值  ,  nums[i])
+    //其中, dp i-1结尾*nums[i]的值  ,在nums[i]大于0的情况下  最大值为 dp[i-1][0]*nums[i]
+    //在nums[i]小于0的情况下,最大值为dp[i-1][1]*nums[i]
+    public int maxProduct(int[] nums) {
+        int len = nums.length;
+        int[][] dp = new int[len][2];
+        dp[0][0] = nums[0];
+        dp[0][1] = nums[0];
+        int maxRet = nums[0];
+        for (int i = 1; i < len; i++) {
+            int max = 0;
+            int min = 0;
+            if (nums[i] > 0) {
+                max = dp[i - 1][0] * nums[i];
+                min = dp[i - 1][1] * nums[i];
+            } else {
+                max = dp[i - 1][1] * nums[i];
+                min = dp[i - 1][0] * nums[i];
             }
-            int num1 = dp[i - 1][0] * nums[i];
-            int num2 = dp[i - 1][1] * nums[i];
-            dp[i][0] = Math.max(nums[i], Math.max(num1, num2));
-            dp[i][1] = Math.min(Math.min(num1, num2), nums[i]);
-            max = Math.max(dp[i][0], max);
+            dp[i][0] = Math.max(max, nums[i]);
+            dp[i][1] = Math.min(min, nums[i]);
+            maxRet = Math.max(dp[i][0], maxRet);
+
         }
-        return max;
+        return maxRet;
     }
 
 改进:优化空间
