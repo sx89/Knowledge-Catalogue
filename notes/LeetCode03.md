@@ -364,10 +364,6 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-@@@ 为什么是按照endTime从小到大排序:
-
-
-
 求无重叠区间cnt,然后用len-ret就是需要移除的最少区间数
 
 把区间按照endTime从小到大排序. 然后往后找,如果后面的区间的startTime<该endTime,则有重叠.
@@ -376,7 +372,55 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
+ @按照开始时间排序的贪心算法
+
+@@@  //按照开始时间排序,如果有交叉,则如果pre的end比较大,则删除掉pre, pre赋值为i
+        //如果pre的end比i的end小,pre还是原来的,删除掉i这个区间
+
 ```java
+public int eraseOverlapIntervals(int[][] intervals) {
+    if (intervals == null) {
+        return 0;
+    }
+    int len = intervals.length;
+    Comparator<int[]> c = new Comparator<int[]>() {
+        public int compare(int[] i1, int[] i2) {
+            return i1[0] - i2[0];
+        }
+    };
+    Arrays.sort(intervals, c);
+    int count = 0;
+    int pre = 0;
+    for (int i = 1; i < len; i++) {
+        //如果有交叉,则如果pre的end比较大,则删除掉pre, pre赋值为i
+        //如果pre的end比i的end小,pre还是原来的,删除掉i这个区间
+        if (intervals[pre][1] > intervals[i][0]) {
+            if (intervals[pre][1] > intervals[i][1]) {
+                count++;
+                pre = i;
+            } else {
+                count++;
+            }
+         //如果没交叉,就直接下一个
+        } else {
+            pre = i;
+        }
+    }
+    return count;
+}
+```
+
+
+
+
+
+```java
+@按照结束时间排序的  贪心算法
+从区间集合 intvs 中选择一个区间 x，这个 x 是在当前所有区间中结束最早的（end 最小）。
+把所有与 x 区间相交的区间从区间集合 intvs 中删除。
+重复步骤 1 和 2，直到 intvs 为空为止。之前选出的那些 x 就是最大不相交子集。
+
+    
 public int eraseOverlapIntervals(int[][] intervals) {
         if (intervals == null || intervals.length == 0) {
             return 0;
@@ -406,6 +450,43 @@ public int eraseOverlapIntervals(int[][] intervals) {
 
 
 
+
+#### [@@@@@452. 用最少数量的箭引爆气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+
+@@贪心算法
+
+@把区间按照startTime排序,
+
+先规定一个气球的end.然后找在这个end之内的气球.直到找不到了.
+
+就end改为下一个新气球的end.count++
+
+```java
+public int findMinArrowShots(int[][] intervals) {
+    if (intervals == null || intervals.length == 0) {
+        return 0;
+    }
+    int len = intervals.length;
+    Comparator<int[]> c = new Comparator<int[]>() {
+        public int compare(int[] i1, int[] i2) {
+            return i1[0] - i2[0];
+        }
+    };
+    Arrays.sort(intervals, c);
+    int count = 1;
+    int pre = 0;
+    int end = intervals[pre][1];
+    for (int i = 1; i < intervals.length; i++) {
+        if (end >= intervals[i][0]) {
+            end = Math.min(end, intervals[i][1]);
+        } else if (end < intervals[i][0]) {
+            end = intervals[i][1];
+            count++;
+        }
+    }
+    return count;
+}
+```
 
 #### [443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)
 
@@ -3089,8 +3170,6 @@ class Solution {
     }
 }
 ```
-
-
 
 
 
