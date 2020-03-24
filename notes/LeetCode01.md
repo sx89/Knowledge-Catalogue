@@ -1408,7 +1408,7 @@ public void rotate(int[][] matrix) {
     }
 ```
 
-#### [@@@49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+#### [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
 方法1:下面代码:
 
@@ -1546,33 +1546,6 @@ public int[][] reconstructQueue(int[][] people) {
 
 
 
-#### [@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
-
-
-
-@受制于短的,所以每次移动短的.
-
-```java
-改进:
-思路是双指针法,左右两边的指针往中间移动
-public int maxArea(int[] height) {
-    int left = 0;
-    int right = height.length - 1;
-    int maxArea = 0;
-    while (left < right) {
-        maxArea = Math.max(maxArea, Math.min(height[left], height[right]) * (right - left));
-        if (height[left] > height[right]) {
-            right--;
-        } else {
-            left++;
-        }
-    }
-    return maxArea;
-}
-```
-
-
-
 #### [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
 ```java
@@ -1606,7 +1579,7 @@ public int rob(int[] nums) {
 }
 ```
 
-#### [@@@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+#### [@279. 完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 一维的,从小到大,但是不相邻的动态规划
 
@@ -1733,7 +1706,7 @@ public ListNode detectCycle(ListNode head) {
 }
 ```
 
-#### [@@@@@@@394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+#### [@@394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
 
 
 
@@ -1800,7 +1773,7 @@ public String decodeString(String s) {
 
 
 
-#### [@@@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+#### [@@337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
 
@@ -1845,7 +1818,7 @@ private int lastOrder(TreeNode root) {
 }
 ```
 
-#### [@@@@@@121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+#### [@@121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 
 @/0-prices[i]而非dp[i-1][1]-prices[i]是为了防止多次买卖,
 
@@ -1870,7 +1843,7 @@ private int lastOrder(TreeNode root) {
 
 
 
-#### [@@@309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+#### [@@309. 最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
 
 改进:动态规划类的题目:1.找状态和选择2.定好base_case 就这两点而已,详情看下面大神题解
     https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/solution/yi-ge-fang-fa-tuan-mie-6-dao-gu-piao-wen-ti-by-lab/
@@ -1926,7 +1899,7 @@ public int maxProfit(int[] prices) {
 
 
 
-#### [@@@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+#### [@@123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
 
 
@@ -2034,7 +2007,7 @@ public int leastInterval(char[] tasks, int n) {
 
 ```
 
-#### [@@@146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+#### [@@146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)
 
 @双向链表的做法.
 
@@ -2112,12 +2085,6 @@ class LRUCache {
 
 #### [@@@416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 
-
-
-
-
-
-
 ```java
 改进:01背包问题
 public boolean canPartition(int[] nums) {
@@ -2194,37 +2161,9 @@ public boolean canPartition(int[] nums) {
     }
 ```
 
-#### [@@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
-
-@dp[i]要赋值为1
-
-@状态转移方程 想不到.
-
-比较好的解释:https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/man-hua-ti-jie-zai-ben-du-neng-kan-de-dong-de-dong/
 
 
 
-```java
-  public int lengthOfLIS(int[] nums) {
-        if (nums == null || nums.length < 1) {
-            return 0;
-        }
-        int len = nums.length;
-        int[] dp = new int[len + 1];
-        dp[1] = 1;
-        int max = 1;
-        for (int i = 2; i <= len; i++) {
-            dp[i] = 1;
-            for (int j = 1; j < i; j++) {
-                if (nums[i - 1] > nums[j - 1]) {
-                    dp[i] = Math.max(dp[j] + 1, dp[i]);
-                    max = Math.max(dp[i], max);
-                }
-            }
-        }
-        return max;
-    }
-```
 
 
 
@@ -2495,8 +2434,6 @@ public boolean searchMatrix(int[][] matrix, int target) {
 
 
 #### [@79. 单词搜索](https://leetcode-cn.com/problems/word-search/)
-
-@再做一遍  不熟练.典型回溯,但是因为字符边界问题老是出错
 
 本题只要求返回true,false;但是没法用动规来做
 
@@ -2787,9 +2724,11 @@ private void inOrder(TreeNode root, ArrayList<Integer> list) {
 }
 ```
 
-#### [@@@@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+#### [@@31. 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
 
-@思路记住了.主要是边界条件要小心.
+@思路1后往前找
+
+@思路2 剪枝回溯
 
 思路讲解:https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-by-leetcode/
 
@@ -2956,8 +2895,6 @@ public int search(int[] nums, int target) {
 
 #### [@@3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
-@子串类的题目,要注意可以用动规来做
-
 
 
 ```java
@@ -3041,7 +2978,57 @@ public int[][] merge(int[][] intervals) {
 
 
 
-#### [@@@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+
+#### [@@@300. 最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+@dp[i]要赋值为1
+
+@状态转移方程 想不到.
+
+比较好的解释:https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/man-hua-ti-jie-zai-ben-du-neng-kan-de-dong-de-dong/
+
+
+
+```java
+  public int lengthOfLIS(int[] nums) {
+        if (nums == null || nums.length < 1) {
+            return 0;
+        }
+        int len = nums.length;
+        int[] dp = new int[len + 1];
+        dp[1] = 1;
+        int max = 1;
+        for (int i = 2; i <= len; i++) {
+            dp[i] = 1;
+            for (int j = 1; j < i; j++) {
+                if (nums[i - 1] > nums[j - 1]) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                    max = Math.max(dp[i], max);
+                }
+            }
+        }
+        return max;
+    }
+```
+
+
+
+
+
+
+
+#### [@@@@@128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+给定一个未排序的整数数组，找出最长连续序列的长度。
+
+要求算法的时间复杂度为 O(n)。
+
+示例:
+
+输入: [100, 4, 200, 1, 3, 2]
+输出: 4
+解释: 最长连续序列是 [1, 2, 3, 4]。它的长度为 4。
 
 @hashMap
 
@@ -3351,7 +3338,42 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 
 
-#### [@@@42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+
+
+#### [@11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+
+
+@受制于短的,所以每次移动短的.
+
+```java
+改进:
+思路是双指针法,左右两边的指针往中间移动
+public int maxArea(int[] height) {
+    int left = 0;
+    int right = height.length - 1;
+    int maxArea = 0;
+    while (left < right) {
+        maxArea = Math.max(maxArea, Math.min(height[left], height[right]) * (right - left));
+        if (height[left] > height[right]) {
+            right--;
+        } else {
+            left++;
+        }
+    }
+    return maxArea;
+}
+```
+
+
+
+
+
+
+
+
+
+#### [@@42. 接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
 
 
 
@@ -3391,6 +3413,67 @@ public int trap(int[] height) {
     return sum;
 }
 ```
+
+
+
+
+
+#### [@@@407. 接雨水 II](https://leetcode-cn.com/problems/trapping-rain-water-ii/)
+
+@思路1 dfs找到流水的出口
+
+@思路2 围起来一圈,逐渐缩小范围
+
+```java
+class Solution {
+    public int trapRainWater(int[][] heights) {
+        if (heights == null || heights.length == 0) return 0;
+        int n = heights.length;
+        int m = heights[0].length;
+        // 用一个vis数组来标记这个位置有没有被访问过
+        boolean[][] vis = new boolean[n][m];
+        // 优先队列中存放三元组 [x,y,h] 坐标和高度
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[2] - o2[2]);
+
+        // 先把最外一圈放进去
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (i == 0 || i == n - 1 || j == 0 || j == m - 1) {
+                    pq.offer(new int[]{i, j, heights[i][j]});
+                    vis[i][j] = true;
+                }
+            }
+        }
+        int res = 0;
+        // 方向数组，把dx和dy压缩成一维来
+        int[] dirs = {-1, 0, 1, 0, -1};
+        while (!pq.isEmpty()) {
+            int[] poll = pq.poll();
+            // 看一下四个方向
+            for (int k = 0; k < 4; k++) {
+                int nx = poll[0] + dirs[k];
+                int ny = poll[1] + dirs[k + 1];
+                // 如果位置合法且没访问过
+                if (nx >= 0 && nx < n && ny >= 0 && ny < m && !vis[nx][ny]) {
+                    // 如果外围这一圈中最小的比当前这个还高，那就说明能往里面灌水啊
+                    if (poll[2] > heights[nx][ny]) {
+                        res += poll[2] - heights[nx][ny];
+                    }
+                    // 如果灌水高度得是你灌水后的高度了，如果没灌水也要取高的
+                    pq.offer(new int[]{nx, ny, Math.max(heights[nx][ny], poll[2])});
+                    vis[nx][ny] = true;
+                }
+            }
+        }
+        return res;
+    }
+}
+
+```
+
+
+
+
 
 
 
@@ -3471,7 +3554,15 @@ public int largestRectangleArea(int[] heights) {
 }
 ```
 
-#### [@@@76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+
+
+
+
+
+
+
+#### [@@76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
 
 @@map初始化的时候,把每种ch都记录一遍出现最大次数    存最大次数的操作要记住
 
@@ -4551,59 +4642,6 @@ for(<邮箱ij,账户i,...账户u] in hash){
 }
 将同一类账户的邮箱收集起来即可;
 ```
-
-
-
-#### [@@@407. 接雨水 II](https://leetcode-cn.com/problems/trapping-rain-water-ii/)
-
-```java
-class Solution {
-    public int trapRainWater(int[][] heights) {
-        if (heights == null || heights.length == 0) return 0;
-        int n = heights.length;
-        int m = heights[0].length;
-        // 用一个vis数组来标记这个位置有没有被访问过
-        boolean[][] vis = new boolean[n][m];
-        // 优先队列中存放三元组 [x,y,h] 坐标和高度
-        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[2] - o2[2]);
-
-        // 先把最外一圈放进去
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (i == 0 || i == n - 1 || j == 0 || j == m - 1) {
-                    pq.offer(new int[]{i, j, heights[i][j]});
-                    vis[i][j] = true;
-                }
-            }
-        }
-        int res = 0;
-        // 方向数组，把dx和dy压缩成一维来
-        int[] dirs = {-1, 0, 1, 0, -1};
-        while (!pq.isEmpty()) {
-            int[] poll = pq.poll();
-            // 看一下四个方向
-            for (int k = 0; k < 4; k++) {
-                int nx = poll[0] + dirs[k];
-                int ny = poll[1] + dirs[k + 1];
-                // 如果位置合法且没访问过
-                if (nx >= 0 && nx < n && ny >= 0 && ny < m && !vis[nx][ny]) {
-                    // 如果外围这一圈中最小的比当前这个还高，那就说明能往里面灌水啊
-                    if (poll[2] > heights[nx][ny]) {
-                        res += poll[2] - heights[nx][ny];
-                    }
-                    // 如果灌水高度得是你灌水后的高度了，如果没灌水也要取高的
-                    pq.offer(new int[]{nx, ny, Math.max(heights[nx][ny], poll[2])});
-                    vis[nx][ny] = true;
-                }
-            }
-        }
-        return res;
-    }
-}
-
-```
-
-
 
 
 

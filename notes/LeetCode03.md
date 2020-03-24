@@ -247,7 +247,7 @@ public int countSubstrings(String s) {
 
 
 
-#### [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)(长度)
+#### [@@5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)(长度)
 
 ```java
 改进:利用动规:dp[i][j] = dp[i-1][j+1] +1 (如果len>2的情况下,并且char[i] == char[j])
@@ -341,7 +341,7 @@ public int minMeetingRooms(int[][] intervals) {
 
 
 
-#### @[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+#### @@@[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
 
 求无重叠区间cnt,然后用len-ret就是需要移除的最少区间数
 
@@ -1248,7 +1248,7 @@ class TreeNode {
 
 
 
-#### [@@@209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+#### [@209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
 
 
 
@@ -1261,7 +1261,7 @@ class TreeNode {
 
 
 
-#### [@@@@60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
+#### [@@60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)
 
 @@特别注意使用  
 
@@ -1311,7 +1311,7 @@ class TreeNode {
 
 
 
-#### [@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+#### [@@@@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 
 迭代法:
 
@@ -2084,6 +2084,18 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
 
 #### [@leetcode.298 二叉树的最长连续子序列](https://blog.csdn.net/jmspan/article/details/51171217)
 
+
+
+  
+
+```
+这个题也许可以用动规的思路来做,对于二叉树 2 4 3 5 6 7 8
+如果4的左右子树里有节点值为 4+1 = 5,那么node.val为4的树的长度序列为 该子树序列长度+1.
+这个过程可以被记录进memo
+```
+
+
+
 ```java
 int maxLen = 0;
 
@@ -2433,6 +2445,8 @@ int main()
 @ i为2之前  dp[i]max  = i
 @ dp[i] 的状态过程有三类   一种是从j开始全选,复制 一直粘贴,二种是i-2开始打印两个,三种是i-1开始 打印一个
 dp[i] = Max(dp[i-1]+1,dp[i-2]+2,dp[j]*(i-j+1)); j从2到i-2;
+
+@@dp[i] 初始化为 i
 ```
 
 
@@ -2485,6 +2499,9 @@ public int maxA(int n) {
         if (i <= 2) {
             dp[i] = i;
             continue;
+        }else{
+            //初始化一个状态,dp[i]处的至少有这么多个字母
+            dp[i] = i;
         }
         //全选,复制,粘贴至少从第二位开始
         //最多提前两位操作   比如 i= 8  6全选,7复制,8粘贴
@@ -2723,7 +2740,7 @@ public List<Integer> grayCode(int n) {
 
 
 
-#### [@@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+#### [@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
 dp[i]表示以nums[i]结尾的和的最大值,而且前面丢不丢弃已经设置好了
 
@@ -2756,17 +2773,14 @@ dp[i]表示以nums[i]结尾的和的最大值,而且前面丢不丢弃已经设�
 
 volatile是为了防止指令重排,导致内存分配了,但是没有初始化,就把单例返回了回去
 
+@获取单例的函数式static的
+
 ```java
 private static volatile Singleton uniqueSingleton;
 
 private Singleton() {
 }
 
-public static void main(String[] args) {
-    FileTypeMap defaultFileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
-    MimeType mimeType = new MimeType();
-    mimeType.getBaseType();
-}
 public static Singleton getUniqueSingleton() {
     if (uniqueSingleton == null) {
         synchronized (Singleton.class) {
@@ -2777,6 +2791,13 @@ public static Singleton getUniqueSingleton() {
     }
     return uniqueSingleton;
 }
+
+public static void main(String[] args) {
+    FileTypeMap defaultFileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
+    MimeType mimeType = new MimeType();
+    mimeType.getBaseType();
+}
+
 ```
 
 
@@ -2785,7 +2806,11 @@ public static Singleton getUniqueSingleton() {
 
 
 
-#### [@@@752. 打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)
+#### [@@@@@752. 打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)
+
+@@@@@@这种不求全部路径,而是求最短路径长度类的题目,一般是BFS.
+
+因为找到最短路径的长度就可以退出了
 
 带条件的BFS
 
@@ -2946,11 +2971,37 @@ class Solution {
 
 
 
+#### [915. 分割数组](https://leetcode-cn.com/problems/partition-array-into-disjoint-intervals/)
 
 
 
+```java
+class Solution {
+    public int partitionDisjoint(int[] A) {
+        int N = A.length;
+        int[] maxleft = new int[N];
+        int[] minright = new int[N];
 
+        int m = A[0];
+        for (int i = 0; i < N; ++i) {
+            m = Math.max(m, A[i]);
+            maxleft[i] = m;
+        }
 
+        m = A[N-1];
+        for (int i = N-1; i >= 0; --i) {
+            m = Math.min(m, A[i]);
+            minright[i] = m;
+        }
+
+        for (int i = 1; i < N; ++i)
+            if (maxleft[i-1] <= minright[i])
+                return i;
+
+        throw null;
+    }
+}
+```
 
 
 

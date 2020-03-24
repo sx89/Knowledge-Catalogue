@@ -47,6 +47,8 @@
 
 #### 习惯问题:
 
+列出具体的数组,来演示思考过程
+
 先跟面试官沟通题目的意思
 
 表达思路
@@ -733,7 +735,7 @@ private int getCyc(int n, int m) {
 
 
 
-#### [419. 甲板上的战舰](https://leetcode-cn.com/problems/battleships-in-a-board/)
+#### [@419. 甲板上的战舰](https://leetcode-cn.com/problems/battleships-in-a-board/)
 
 ```java
 如果题设没有特殊规则和要求的话，常规做法就是使用BFS或者DFS扫描，计算连通图的个数。
@@ -769,7 +771,8 @@ public:
 
 
 
-@@蓄水池抽样问题
+#### @@蓄水池抽样问题
+
 首先从最简单的例子出发：数据流只有一个数据。我们接收数据，发现数据流结束了，直接返回该数据，该数据返回的概率为1。
 
 看来很简单，那么我们试试难一点的情况：假设数据流里有两个数据。我们读到了第一个数据，这次我们不能直接返回该数据，因为数据流没有结束。我们继续读取第二个数据，发现数据流结束了。因此我们只要保证以相同的概率返回第一个或者第二个数据就可以满足题目要求。因此我们生成一个0到1的随机数R,如果R小于0.5我们就返回第一个数据，如果R大于0.5，返回第二个数据。
@@ -939,15 +942,11 @@ public int findUnsortedSubarray(int[] nums) {
         }
         return start == end ? 0 : end - start + 1;
     }
-作者：LeetCode
-链接：https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
 
 
-#### [@@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+#### [@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 
 @StringBuilder用于回溯
 
