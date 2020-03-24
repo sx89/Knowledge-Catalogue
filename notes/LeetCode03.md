@@ -343,6 +343,12 @@ public int minMeetingRooms(int[][] intervals) {
 
 #### @@@[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
 
+
+
+@@@ 为什么是按照endTime从小到大排序:
+
+
+
 求无重叠区间cnt,然后用len-ret就是需要移除的最少区间数
 
 把区间按照endTime从小到大排序. 然后往后找,如果后面的区间的startTime<该endTime,则有重叠.
@@ -1031,26 +1037,75 @@ class UF {
 最后连通分量 num  和 空闲网线数作比较
 
 ```java
-public int makeConnected(int n, int[][] connections) {
-        initUF(n);
-        // 多余的线缆数量
-        int cnt = 0;
-        for (int[] c : connections) {
-            int f = c[0], t = c[1];
-            // 两个点已经连通，不需要这个线缆
-            if (find(f) == find(t)) {
-                cnt += 1;
-                continue;
+
+class Solution {
+    //count密封
+    public int makeConnected(int n, int[][] connections) {
+        Union u = new Union(n);
+        int remainLink = 0;
+
+        for (int i = 0; i < connections.length; i++) {
+            int from = connections[i][0];
+            int to = connections[i][1];
+            if (u.isConnected(from, to)) {
+                remainLink++;
             }
-            union(f, t);
+            u.union(from, to);
         }
-        // 所需要的线缆数量
-        int cnt2 = num - 1;
-        if (cnt < cnt2) {
-            return -1;
+        int groupCount = u.count;
+        if (groupCount - 1 <= remainLink) {
+            return groupCount - 1;
         }
-        return cnt2;
+        return -1;
     }
+
+}
+
+class Union {
+    int count = 0;
+    int[] size = null;
+    int[] parent = null;
+
+    public Union(int count) {
+        this.count = count;
+        size = new int[count];
+        parent = new int[count];
+        for (int i = 0; i < count; i++) {
+            size[i] = 1;
+            parent[i] = i;
+        }
+    }
+
+    public int getParent(int x) {
+        while (x != parent[x]) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+
+    public boolean isConnected(int x, int y) {
+        int xP = getParent(x);
+        int yP = getParent(y);
+        return xP == yP;
+    }
+
+    public void union(int x, int y) {
+        if (isConnected(x, y)) {
+            return;
+        }
+        int xP = getParent(x);
+        int yP = getParent(y);
+        if (size[xP] >= size[yP]) {
+            parent[yP] = xP;
+            size[xP] += size[yP];
+        } else {
+            parent[xP] = yP;
+            size[yP] += size[xP];
+        }
+        count--;
+    }
+}
 ```
 
 
@@ -1959,11 +2014,23 @@ public void inOrder(TreeNode root, double target) {
 }
 ```
 
+#### @@@**拓扑排序**
+
+拓扑排序有dfs和bfs(kahn)两种.
+
+bfs可以判断有环无环
+
+dfs麻烦一点
+
+
+
 
 
 #### [@@210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
+@@@
 
+<img src="pictures/LeetCode03/image-20200324175541265.png" alt="image-20200324175541265" style="zoom:50%;" />
 
 @思路1 拓扑排序(BFS)
 建立一个**入度表**  和 一个**邻接矩阵**.
@@ -2016,6 +2083,7 @@ public int[] findOrder(int numCourses, int[][] prerequisites) {
         }
     }
     System.out.println(retList);
+    //如果节点没有被全部遍历,则代表有环
     if (retList.size() == len) {
         for (int i = 0; i < len; i++) {
             ret[i] = retList.get(i);
