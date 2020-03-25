@@ -67,6 +67,8 @@
 
 while(left<right)的循环内部,记得left++,right--
 
+double类型
+
 边界情况  
 
 非法输入
