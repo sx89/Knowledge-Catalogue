@@ -1685,6 +1685,7 @@ private String handleStr(char[] chars) {
 @@@各种边界 非常麻烦
 
 ```java
+思路1:log(m+n)的算法
 public double findMedianSortedArrays(int[] nums1, int[] nums2) {
     int len1 = nums1.length;
     int len2 = nums2.length;
@@ -1716,6 +1717,8 @@ public int findKth(int[] nums1, int left1, int right1, int[] nums2, int left2, i
         return findKth(nums1, left1, right1, nums2, index2 + 1, right2, k - (index2 - left2 + 1));
     }
 }
+
+思路2:往优先队列里面添加元组,直到添加(m+n)/2个
 ```
 
 #### [@@@@@701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
