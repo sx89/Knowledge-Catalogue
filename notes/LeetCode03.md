@@ -3251,11 +3251,69 @@ private int res(char op, int a, int b) {
 
 
 
+#### [@@删除回文子序列](https://leetcode-cn.com/problems/remove-palindromic-subsequences/)
+
+```
+回文子序列而非回文子串,先删除aaaa... 如果还有b就删除b
+```
 
 
 
 
 
+#### @@@@[Leetcode 1246：删除回文子数组](https://coordinate.wang/index.php/archives/2737/)
+
+状态转移方程
+
+ a  ****  a  cde
+
+```
+
+
+dp[start][end] = Math.min(dp[start][end],dp[start+1][k-1]+dp[k+1][end])
+
+若start处的a等于k处的a.则删除k处的a和start处的a,可以被附加到子串start+1 ~k-1上,因为哪怕start+1~k-1
+一个回文串也没有,比如只有cdf 此时dp[start+1][k-1] =3.  两个a依然可以被附加到 cdf任意一个回文串上来
+删除.
+
+
+```
+
+
+
+```java
+class Solution {
+    private static int func(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            dp[i][i] = 1;
+        }
+        for (int l = 1; l <= n; l++) {
+            for (int start = 0, end = l - 1; end < n; start++, end++) {
+                for (int k = start; k <= end; k++) {
+                    if (k == start) {
+                        dp[start][end] = 1 + dp[start + 1][end];
+                        continue;
+                    } else if (k == start + 1 && nums[k] == nums[start]) {
+                        dp[start][end] = Math.min(dp[start][end], 1 + dp[k + 1][end]);
+                    } else if (k >= start + 2 && nums[k] == nums[start]) {
+                        dp[start][end] = Math.min(dp[start][end], dp[start + 1][k - 1] + dp[k + 1][end]);
+                    }
+                }
+            }
+
+        }
+        return dp[0][n - 1];
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int[] nums = new int[]{5, 9, 1, 3, 4, 1, 5};
+        System.out.println(func(nums));
+    }
+}
+```
 
 
 
