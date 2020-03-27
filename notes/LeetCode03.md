@@ -3265,10 +3265,10 @@ private int res(char op, int a, int b) {
 
 状态转移方程
 
- a  ****  a  cde
+
 
 ```
-
+ a  ****  a  cde
 
 dp[start][end] = Math.min(dp[start][end],dp[start+1][k-1]+dp[k+1][end])
 
@@ -3280,6 +3280,10 @@ dp[start][end] = Math.min(dp[start][end],dp[start+1][k-1]+dp[k+1][end])
 ```
 
 
+
+
+
+<img src="pictures/LeetCode03/image-20200327193550768.png" alt="image-20200327193550768" style="zoom:50%;" />
 
 ```java
 class Solution {
@@ -3317,25 +3321,42 @@ class Solution {
 
 
 
+#### [328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+
+<img src="pictures/LeetCode03/image-20200327193829378.png" alt="image-20200327193829378" style="zoom:50%;" />
 
 
 
 
 
+#### [@@179. 最大数](https://leetcode-cn.com/problems/largest-number/)
 
 
 
+```
+错误!!!
+public int compare(int n1,int n2){
+	String num1 = ""+n1;
+	String num2 = ""+n2;
+	return num2.compareTo(num1);
+}
+```
 
 
 
+**这样写是为了杜绝   50   和 5 的排序,**
 
+**上面的写法,因为 5 小于50   所以排序为 505** 
 
+**下面的写法,因为505 小于 550  所以排序为 550**
 
-
-
-
-
-
+```
+public int compare(int n1,int n2){
+	String order1 = ""+n1+n2;
+	String order2 = ""+n2+n1;
+	return order2.compareTo(order1);
+}
+```
 
 
 
