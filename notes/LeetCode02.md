@@ -965,7 +965,7 @@ public int findUnsortedSubarray(int[] nums) {
 4. 若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
 
 ```java
-  L  List<String> ret = null;
+ List<String> ret = null;
     int len = 0;
 
     public List<String> restoreIpAddresses(String s) {

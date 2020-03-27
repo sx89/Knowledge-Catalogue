@@ -1700,6 +1700,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 public int findKth(int[] nums1, int left1, int right1, int[] nums2, int left2, int right2, int k) {
     int len1 = right1 - left1 + 1;
     int len2 = right2 - left2 + 1;
+    //让len1始终保持最小
     if (len1 > len2) {
         return findKth(nums2, left2, right2, nums1, left1, right1, k);
     }
@@ -1709,6 +1710,7 @@ public int findKth(int[] nums1, int left1, int right1, int[] nums2, int left2, i
     if (k == 1) {
         return Math.min(nums1[left1], nums2[left2]);
     }
+    //找到left 加 k/2长度处的两个数组的值进行比较
     int index1 = left1 + Math.min(len1, k / 2) - 1;
     int index2 = left2 + Math.min(len2, k / 2) - 1;
     if (nums1[index1] < nums2[index2]) {
