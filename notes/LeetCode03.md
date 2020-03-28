@@ -3362,6 +3362,403 @@ public int compare(int n1,int n2){
 
 
 
+#### [@@@69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
+
+@@ long square =  int * int.得到的依然是溢出的int 
+
+所以需要 long square = (long) mid * (long) mid;
+
+
+
+ @@小于的时候,是mid本身
+ left = mid;
+
+
+
+@@二分法的思路
+
+```java
+public int mySqrt(int x) {
+        if (x == 0) {
+            return 0;
+        }
+        int left = 1;
+        int right = x / 2;
+        while (left < right) {
+            int mid = left + (right - left) / 2 + 1;
+            long square = (long) mid * (long) mid;
+            if (square == x) {
+                return mid;
+            } else if (square > x) {
+                right = mid - 1;
+            } else {
+                //小于的时候,是mid本身
+                left = mid;
+            }
+        }
+        return left;
+    }
+```
+
+
+
+#### @@@@@@从十亿数字中,求第k位数字,用快排.
+
+从十亿数字中,求第k位数字,用**快排**
+
+求前k位大的数字,用一个大小为k的**小顶堆**  或者 **快排**
+
+
+
+
+
+#### [@@973. 最接近原点的 K 个点](https://leetcode-cn.com/problems/k-closest-points-to-origin/)
+
+
+
+1.求平方和用long来存储.
+
+2.只求平方和就行,不需要sqrt
+
+3.总体思路: 求平方和,排序,求第k大的平方和,再扫一遍求出前k个.
+
+
+
+
+
+#### [1375. 灯泡开关 III](https://leetcode-cn.com/problems/bulb-switcher-iii/)
+
+```java
+思路1:模拟
+public int numTimesAllBlue(int[] light) {
+    int onCutIndex = 0;
+    int blueMomentCount = 0;
+    PriorityQueue<Integer> queue = new PriorityQueue<Integer>(10, (o1, o2) -> (o1 - o2));
+    for (int i = 0; i < light.length; i++) {
+        int curLight = light[i];
+        if (curLight == onCutIndex + 1) {
+            onCutIndex++;
+            while (!queue.isEmpty() && onCutIndex + 1 == queue.peek()) {
+                queue.poll();
+                onCutIndex++;
+            }
+            if (queue.isEmpty()) {
+                blueMomentCount++;
+            }
+        } else {
+            queue.add(curLight);
+        }
+    }
+    return blueMomentCount;
+}
+
+
+思路2: // 若点亮最远的灯的位置大于此时点亮灯的个数，则意味着在点亮最远的灯的位置之前存在着未点亮的灯。
+
+class Solution {
+    //这题关键是读懂题目含义，
+    // 让所有开着的灯都变成蓝色的时刻的性质是：此时点亮最远的灯的位置恰巧等于点亮灯的个数。
+    // 若点亮最远的灯的位置大于此时点亮灯的个数，则意味着在点亮最远的灯的位置之前存在着未点亮的灯。
+    public int numTimesAllBlue(int[] light) {
+        int size = light.length;
+        int count = 0, maxReachingPoint = 0;
+        for (int i = 0 ; i < size; i++){
+            maxReachingPoint = Math.max(maxReachingPoint, light[i]);
+            if ( i + 1 == maxReachingPoint){
+                count += 1;
+            }
+        }
+        return count;
+    }
+```
+
+
+
+
+
+#### [@@581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+
+```java
+public int findUnsortedSubarray(int[] nums) {
+    int len = nums.length;
+    int[] leftMax = new int[len];
+    int[] rightMin = new int[len];
+    int max = nums[0];
+    int min = nums[len - 1];
+    leftMax[0] = max;
+    rightMin[len - 1] = min;
+    for (int i = 0; i < len; i++) {
+        if (nums[i] > max) {
+            max = nums[i];
+
+        }
+        leftMax[i] = max;
+    }
+    for (int i = len - 1; i >= 0; i--) {
+        if (nums[i] < min) {
+            min = nums[i];
+        }
+        rightMin[i] = min;
+    }
+    int leftCut = 0;
+    int rightCut = len - 1;
+    for (int i = 0; i < len; i++) {
+        if (leftMax[i] > rightMin[i]) {
+            leftCut = i;
+            break;
+        }
+    }
+    for (int i = len - 1; i >= 0; i--) {
+        if (rightMin[i] < leftMax[i]) {
+            rightCut = i;
+            //应对 3  2  1
+            return rightCut - leftCut + 1;
+        }
+    }
+    //应对  1 2  3
+    return 0;
+}
+```
+
+
+
+#### 划分最多的最短无序连续子数组
+
+作者：Ire1ia
+链接：https://www.nowcoder.com/discuss/373413?type=post&order=create&pos=&page=2
+来源：牛客网
+
+算法题: 一个整数数组, 将这个数组划分为一些连续的子数组, 将各个子数组内部元素进行排序后，整个数组是有序的，问最多能切成多少个子数组. 这题确实没见过, 不知道是不是leetcode上的, 我先是用dp写了个O(n^2)的, 面试官在看我的代码, 我趁这个时间又思考了几分钟, 发现这题可以用O(n)的贪心解决(对于每个缝隙, 如果前缀的最大值小于等于后缀的最小值, 那么就可以在这里切), 
+
+
+
+```java
+ public int findUnsortedSubarray(int[] nums) {
+        int len = nums.length;
+        //len个数字,有len-1个缝隙,在每个缝隙处,如果左边的最大值小于右边的最小值,就可以从这里切分
+        //原因:缝隙两边的数字不会越过缝隙,
+        int[] leftMax = new int[len - 1];
+        int[] rightMin = new int[len - 1];
+        int max = nums[0];
+        int min = nums[len - 1];
+    
+        leftMax[0] = max;
+        for (int i = 1; i <= len - 2; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+            leftMax[i] = max;
+        }
+
+        //缝隙是0~len-2
+        // 缝隙为i的时候,缝隙右边的数字为i+1
+        rightMin[len - 2] = min;
+        for (int i = len - 3; i >= 0; i--) {
+            if (nums[i + 1] < min) {
+                min = nums[i + 1];
+            }
+            rightMin[i] = min;
+        }
+
+        List<Integer> list = new ArrayList<>();
+        int cnt = 0;
+        //如果缝隙处,如果左边的最大值 小于等于  右边的最小值,就可以从这里切分
+        //原因:缝隙两边的数字不会越过缝隙,
+        for (int i = 0; i <= len - 2; i++) {
+            if (leftMax[i] <= rightMin[i]) {
+                list.add(i);
+                cnt++;
+            }
+        }
+        //输出切分的缝隙
+        for (int temp : list) {
+            System.out.println(temp);
+        }
+        return cnt + 1;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Solution solution = new Solution();
+        int i = solution.findUnsortedSubarray(new int[]{3, 9, 9});
+        System.out.println(i);
+    }
+```
+
+
+
+
+
+#### [@@292. Nim 游戏](https://leetcode-cn.com/problems/nim-game/)
+
+```
+推理
+
+让我们考虑一些小例子。显而易见的是，如果石头堆中只有一块、两块、或是三块石头，那么在你的回合，你就可以把全部石子拿走，从而在游戏中取胜。而如果就像题目描述那样，堆中恰好有四块石头，你就会失败。因为在这种情况下不管你取走多少石头，总会为你的对手留下几块，使得他可以在游戏中打败你。因此，要想获胜，在你的回合中，必须避免石头堆中的石子数为 4 的情况。
+
+同样地，如果有五块、六块、或是七块石头，你可以控制自己拿取的石头数，总是恰好给你的对手留下四块石头，使他输掉这场比赛。但是如果石头堆里有八块石头，你就不可避免地会输掉，因为不管你从一堆石头中挑出一块、两块还是三块，你的对手都可以选择三块、两块或一块，以确保在再一次轮到你的时候，你会面对四块石头。
+
+显然，它以相同的模式不断重复 n=4,8,12,16,\dotsn=4,8,12,16,…，基本可以看出是 44 的倍数。
+
+作者：LeetCode
+链接：https://leetcode-cn.com/problems/nim-game/solution/nimyou-xi-by-leetcode/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
+
+#### [36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
+
+
+
+9个行map,9个列map,9个boxmap,
+
+```java
+HashMap<Integer, Integer> [] rows = new HashMap[9];
+    HashMap<Integer, Integer> [] columns = new HashMap[9];
+    HashMap<Integer, Integer> [] boxes = new HashMap[9];
+    for (int i = 0; i < 9; i++) {
+      rows[i] = new HashMap<Integer, Integer>();
+      columns[i] = new HashMap<Integer, Integer>();
+      boxes[i] = new HashMap<Integer, Integer>();
+    }
+
+```
+
+
+
+#### [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)
+
+```java
+挺简单的,主要注意 
+    乘法要考虑溢出问题
+    
+public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        Integer op1, op2;
+        for (String s : tokens) {
+            if (s.equals("+")) {
+                op2 = stack.pop();
+                op1 = stack.pop();
+                stack.push(op1 + op2);
+
+            } else if (s.equals("-")) {
+                op2 = stack.pop();
+                op1 = stack.pop();
+                stack.push(op1 - op2);
+            } else if (s.equals("*")) {
+                op2 = stack.pop();
+                op1 = stack.pop();
+                stack.push(op1 * op2);
+            } else if (s.equals("/")) {
+                op2 = stack.pop();
+                op1 = stack.pop();
+                stack.push(op1 / op2);
+            } else {
+                stack.push(Integer.valueOf(s));
+            }
+        }
+        return stack.pop();
+    }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
