@@ -3753,6 +3753,155 @@ class Counter extends HashMap<Integer, Integer> {
 
 
 
+#### [@@@@@@877. 石子游戏](https://leetcode-cn.com/problems/stone-game/)
+
+
+
+```java
+博弈题目
+
+  //  状态转移:先手:
+dp[i][j].fir = max(piles[i] + dp[i+1][j].sec, piles[j] + dp[i][j-1].sec)
+dp[i][j].fir = max(    选择最左边的石头堆     ,     选择最右边的石头堆     )
+# 解释：我作为先手，面对 piles[i...j] 时，有两种选择：
+# 要么我选择最左边的那一堆石头，然后面对 piles[i+1...j]
+# 但是此时轮到对方，相当于我变成了后手；
+# 要么我选择最右边的那一堆石头，然后面对 piles[i...j-1]
+# 但是此时轮到对方，相当于我变成了后手。
+
+  //  状态转义:后手:
+if 先手选择左边:
+    dp[i][j].sec = dp[i+1][j].fir
+if 先手选择右边:
+    dp[i][j].sec = dp[i][j-1].fir
+# 解释：我作为后手，要等先手先选择，有两种情况：
+# 如果先手选择了最左边那堆，给我剩下了 piles[i+1...j]
+# 此时轮到我，我变成了先手；
+# 如果先手选择了最右边那堆，给我剩下了 piles[i...j-1]
+# 此时轮到我，我变成了先手。
+
+ //base  case
+     
+dp[i][j].fir = piles[i]
+dp[i][j].sec = 0
+其中 0 <= i == j < n
+# 解释：i 和 j 相等就是说面前只有一堆石头 piles[i]
+# 那么显然先手的得分为 piles[i]
+# 后手没有石头拿了，得分为 0
+
+
+
+public boolean stoneGame(int[] piles) {
+        int n = piles.length;
+        int[][][] dp = new int[n][n][2];
+        //边界
+        for (int i = 0; i < n; i++) {
+            dp[i][i][0] = piles[i];
+            dp[i][i][1] = 0;
+        }
+        for (int l = 2; l <= n; l++) {
+            //n - l
+            for (int i = 0; i <= n - l; i++) {
+                int j = l + i - 1;
+                int left = piles[i] + dp[i + 1][j][1];
+                int right = piles[j] + dp[i][j - 1][1];
+                if (left > right) {
+                    dp[i][j][0] = left;
+                    dp[i][j][1] = dp[i + 1][j][0];
+                } else {
+                    dp[i][j][0] = right;
+                    dp[i][j][1] = dp[i][j - 1][0];
+                }
+            }
+        }
+        return (dp[0][n - 1][0] - dp[0][n - 1][1]) > 0 ? true : false;
+    }
+```
+
+
+
+
+
+#### [5369. 统计作战单位数](https://leetcode-cn.com/problems/count-number-of-teams/)
+
+```JAVA
+public int numTeams(int[] rating) {
+    int ret = 0;
+    for (int i = 1; i <= rating.length - 2; i++) {
+        int biggerLeft = 0;
+        int smallerLeft = 0;
+        int biggerRight = 0;
+        int smallerRight = 0;
+        int curRate = rating[i];
+        for (int j = 0; j < i; j++) {
+            if (rating[j] > curRate) {
+                biggerLeft++;
+            } else {
+                smallerLeft++;
+            }
+        }
+        for (int j = rating.length - 1; j > i; j--) {
+            if (rating[j] > curRate) {
+                biggerRight++;
+            } else {
+                smallerRight++;
+            }
+        }
+        ret += biggerLeft * smallerRight + smallerLeft * biggerRight;
+    }
+    return ret;
+}
+```
+
+
+
+#### [5370. 设计地铁系统](https://leetcode-cn.com/problems/design-underground-system/)
+
+
+
+```java
+class UndergroundSystem {
+    private HashMap<Integer, String> id_stationName = new HashMap<>();
+    private HashMap<Integer, Integer> id_t = new HashMap<>();
+    private HashMap<String, Double> trip_TimeSum = new HashMap<>();
+    private HashMap<String, Integer> trip_CountSum = new HashMap<>();
+
+    public UndergroundSystem() {
+
+    }
+
+    public void checkIn(int id, String stationName, int t) {
+        id_t.put(id, t);
+        id_stationName.put(id, stationName);
+    }
+
+    public void checkOut(int id, String stationName, int t) {
+        String startStation = id_stationName.get(id);
+        Integer startTime = id_t.get(id);
+
+        String tripName = startStation + "#" + stationName;
+        Integer tripTime = t - startTime;
+
+        if (trip_TimeSum.containsKey(tripName)) {
+            trip_TimeSum.put(tripName, trip_TimeSum.get(tripName) + (double) tripTime);
+            trip_CountSum.put(tripName, trip_CountSum.get(tripName) + 1);
+        } else {
+            trip_TimeSum.put(tripName, (double) tripTime);
+            trip_CountSum.put(tripName, 1);
+        }
+    }
+
+    public double getAverageTime(String startStation, String endStation) {
+        String tripName = startStation + "#" + endStation;
+        if (trip_TimeSum.containsKey(tripName)) {
+            Double tripTime = trip_TimeSum.get(tripName);
+            Integer count = trip_CountSum.get(tripName);
+            return tripTime / count;
+        }
+        return 0;
+    }
+}
+```
 
 
 
@@ -3760,28 +3909,38 @@ class Counter extends HashMap<Integer, Integer> {
 
 
 
+#### 海量数据的排序
 
+分成几份,每份快排
 
+8路合并  合成 5 路
 
+5路再做合并合成一路
 
+```
+1、外排序
+　　传统的排序算法一般指内排序算法，针对的是数据可以一次全部载入内存中的情况。但是面对海量数据，即数据不可能一次全部载入内存，需要用到外排序的方法。外排序采用分块的方法（分而治之），首先将数据分块，对块内数据按选择一种高效的内排序策略进行排序。然后采用归并排序的思想对于所有的块进行排序，得到所有数据的一个有序序列。
 
+　　例如，考虑一个1G文件，可用内存100M的排序方法。首先将文件分成10个100M，并依次载入内存中进行排序，最后结果存入硬盘。得到的是10个分别排序的文件。接着从每个文件载入9M的数据到输入缓存区，输出缓存区大小为10M。对输入缓存区的数据进行归并排序，输出缓存区写满之后写在硬盘上，缓存区清空继续写接下来的数据。对于输入缓存区，当一个块的9M数据全部使用完，载入该块接下来的9M数据，一直到所有的9个块的所有数据都已经被载入到内存中被处理过。最后我们得到的是一个1G的排序好的存在硬盘上的文件。
 
+2、1TB数据使用32GB内存如何排序
+　　①、把磁盘上的1TB数据分割为40块（chunks），每份25GB。（注意，要留一些系统空间！）
+　　②、顺序将每份25GB数据读入内存，使用quick sort算法排序。
+　　③、把排序好的数据（也是25GB）存放回磁盘。
+　　④、循环40次，现在，所有的40个块都已经各自排序了。（剩下的工作就是如何把它们合并排序！）
+　　⑤、从40个块中分别读取25G/40=0.625G入内存（40 input buffers）。
+　　⑥、执行40路合并，并将合并结果临时存储于2GB 基于内存的输出缓冲区中。当缓冲区写满2GB时，写入硬盘上最终文件，并清空输出缓冲区；当40个输入缓冲区中任何一个处理完毕时，写入该缓冲区所对应的块中的下一个0.625GB，直到全部处理完成。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+3、继续优化
+　　磁盘I/O通常是越少越好（最好完全没有），那么如何降低磁盘I/O操作呢？关键就在第5和第6步中的40路输入缓冲区，我们可以先做8路merge sort，把每8个块合并为1路，然后再做5-to-1的合并操作。
+　　再深入思考一下，如果有多余的硬件，如何继续优化呢？有三个方向可以考虑：
+　　使用并发：如多磁盘（并发I/O提高）、多线程、使用异步I/O、使用多台主机集群计算。
+　　提升硬件性能：如更大内存、更高RPM的磁盘、升级为SSD、Flash、使用更多核的CPU。
+　　提高软件性能：比如采用radix sort、压缩文件（提高I/O效率）等。
+————————————————
+版权声明：本文为CSDN博主「无鞋童鞋」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/FX677588/article/details/72471357
+```
 
 
 
