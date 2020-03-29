@@ -3522,7 +3522,15 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
-#### 划分最多的最短无序连续子数组
+
+
+#### @@元素的技巧(如果大于左边最大值,小于右边最小值,该元素排序后依然在该位置上)
+
+#### @@缝隙的技巧(如果大于前缀最大值,小于后缀最小值,则是分界元素)
+
+
+
+#### @@@@划分最多的最短无序连续子数组
 
 作者：Ire1ia
 链接：https://www.nowcoder.com/discuss/373413?type=post&order=create&pos=&page=2
@@ -3667,9 +3675,79 @@ public int evalRPN(String[] tokens) {
 
 
 
+#### [@@@@659. 分割数组为连续子序列](https://leetcode-cn.com/problems/split-array-into-consecutive-subsequences/)
 
 
 
+```java
+@@@@@注意要先从小数字开始!!!!!!!!!!
+思路:如果tail[cur-1]存在,则把cur接到后面,如果不存在,则观察 cur+1  cur+2 存在则 tain[cur+2]+1
+
+public boolean isPossible(int[] nums) {
+    HashMap<Integer, Integer> numCount = new HashMap<>();
+    HashMap<Integer, Integer> tailMemo = new HashMap<>();
+    for (int cur : nums) {
+        numCount.put(cur, numCount.getOrDefault(cur, 0) + 1);
+    }
+    for (int cur : nums) {
+        if (numCount.getOrDefault(cur, 0) == 0) {
+            continue;
+        } else if (tailMemo.getOrDefault(cur - 1, 0) > 0) {
+            numCount.put(cur, numCount.get(cur) - 1);
+
+            tailMemo.put(cur - 1, tailMemo.get(cur - 1) - 1);
+            tailMemo.put(cur, tailMemo.getOrDefault(cur, 0) + 1);
+        } else if (numCount.getOrDefault(cur + 1, 0) > 0 && numCount.getOrDefault(cur + 2, 0) > 0) {
+            numCount.put(cur, numCount.get(cur) - 1);
+            numCount.put(cur + 1, numCount.get(cur + 1) - 1);
+            numCount.put(cur + 2, numCount.get(cur + 2) - 1);
+
+            tailMemo.put(cur + 2, tailMemo.getOrDefault(cur + 2, 0) + 1);
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+比较清晰的写法
+    
+    class Solution {
+    public boolean isPossible(int[] nums) {
+        Counter count = new Counter();
+        Counter tails = new Counter();
+        for (int x: nums) count.add(x, 1);
+
+        for (int x: nums) {
+            if (count.get(x) == 0) {
+                continue;
+            } else if (tails.get(x) > 0) {
+                tails.add(x, -1);
+                tails.add(x+1, 1);
+            } else if (count.get(x+1) > 0 && count.get(x+2) > 0) {
+                count.add(x+1, -1);
+                count.add(x+2, -1);
+                tails.add(x+3, 1);
+            } else {
+                return false;
+            }
+            count.add(x, -1);
+        }
+        return true;
+    }
+}
+
+class Counter extends HashMap<Integer, Integer> {
+    public int get(int k) {
+        return containsKey(k) ? super.get(k) : 0;
+    }
+
+    public void add(int k, int v) {
+        put(k, get(k) + v);
+    }
+}
+```
 
 
 
