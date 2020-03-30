@@ -786,24 +786,41 @@ List<List<Integer>> ret = new ArrayList<>();
 String的回溯用String的拼接就比较好  temp+"sdf"; 因为String的删除比较麻烦,而StringBuilder的删除也很耗时,如果题目要求返回的是String而不是StringBuilder,那么不要用StringBuilder来做转化.
 
 
-List<String> ret = new ArrayList<String>();
-int max = 0;
-public List<String> generateParenthesis(int n) {
-    max = n;
-    backtracing(0, 0, "");
-    return ret;
-}
+ List<String> ret = new ArrayList<>();
+    char[] path;
+    int leftAll = 0;
+    int leftCount = 0;
+    int rightCount = 0;
+    int all = 0;
 
-private void backtracing(int left, int right, String temp) {
-    if (temp.length() == 2 * max && left == right) {
-        ret.add(temp);
-        return;
+    public List<String> generateParenthesis(int n) {
+        if (n == 0) {
+            return ret;
+        }
+        leftAll = n;
+        all = 2 * n;
+        path = new char[all];
+        backtracing(0, path, 0, 0);
+        return ret;
     }
-    if (left >= right && left <= max) { //只有左括号没有超出max;左括号大于等于左括号的个数的时候,才有必要尝试下去(剪枝)
-        backtracing(left + 1, right, temp + "(");
-        backtracing(left, right + 1, temp + ")");
+
+    private void backtracing(int begin, char[] path, int leftCount, int rightCount) {
+        if (rightCount > leftCount || leftCount > leftAll || begin > all) {
+            return;
+        }
+        if (begin == path.length && leftCount == leftAll) {
+            String temp = new String(path);
+            ret.add(temp);
+            return;
+        }
+
+        path[begin] = '(';
+        backtracing(begin + 1, path, leftCount + 1, rightCount);
+
+        path[begin] = ')';
+        backtracing(begin + 1, path, leftCount, rightCount + 1);
+
     }
-}
 ```
 
 
@@ -1591,7 +1608,7 @@ public int rob(int[] nums) {
 
 @思考 什么样的问题用动规解决比较好 (从小到大的累计过程用动规比较好)
 
-本题的动规方程为啥没想到.
+本题的动规方程为啥没想到
 
 ```java
 改进:状态转移方程 dp[i] = Math.min(dp[i],dp[i-1],dp[i-4],dp[i-16],dp[i-j*j])
@@ -2195,8 +2212,6 @@ public boolean canPartition(int[] nums) {
 #### [560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 @很容易想到梯度,但是没想到sum-k的形式.
-
-
 
 
 
@@ -3492,7 +3507,7 @@ class Solution {
                     if (poll[2] > heights[nx][ny]) {
                         res += poll[2] - heights[nx][ny];
                     }
-                    // 如果灌水高度得是你灌水后的高度了，如果没灌水也要取高的
+                    // 如果灌水,高度依然是围墙的最低高度，如果没灌水,最低高度被当前高度取代
                     pq.offer(new int[]{nx, ny, Math.max(heights[nx][ny], poll[2])});
                     vis[nx][ny] = true;
                 }

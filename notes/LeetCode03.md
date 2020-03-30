@@ -2239,7 +2239,7 @@ public int[] findOrder(int numCourses, int[][] prerequisites) {
 
 @思路1 
 
-
+BFS
 
 @思路2  DFS  这不是排序,而是用flags的0,-1,1代表三种状态,来判断是否有环,如果没有环的话,那一定能满足拓扑排序.
 
@@ -2294,7 +2294,9 @@ private boolean dfs(int[][] grid, int[] flags, int start) {
   
 
 ```
-这个题也许可以用动规的思路来做,对于二叉树 2 4 3 5 6 7 8
+@@@@这个题也许可以用动规的思路来做,对于二叉树 2 4 3 5 6 7 8
+dp[root] = dp[left] or dp[right]  + 1   ;   if root.val = left.val-1 || right.val-1   
+
 如果4的左右子树里有节点值为 4+1 = 5,那么node.val为4的树的长度序列为 该子树序列长度+1.
 这个过程可以被记录进memo
 ```
@@ -2845,6 +2847,8 @@ public int maximumSwap(int num) {
 
 @@@看注释,此题细节非常多
 
+//优化  @@对半计算  1 和 0 和 -1 可以优化  
+
 ```java
 //指数:
 //  -1 -2 -3
@@ -2858,7 +2862,7 @@ public int maximumSwap(int num) {
 
 //重复数字  用优先队列来解决
 
-//优化  对半计算
+//优化  @@对半计算  1 和 0 和 -1 可以优化  2也可以优化左移
 
 public double myPow(double x, int n) {
     //x 为正
@@ -3074,64 +3078,6 @@ public int openLock(String[] deadends, String target) {
 ```
 
 
-
-
-
-#### [@@编程算法题—硬币游戏](https://blog.csdn.net/guangyacyb/article/details/80173509)
-
-```java
-题目：两个玩家（甲，乙）玩游戏，有一个长度为n的乱序数组（数组每个元素代表一个硬币，数值代表硬币面值），甲乙轮流拿硬币（可以拿走最左边的一个或者两个硬币，拿走不放回），问先玩的玩家是否一定能赢
-
-
-
-这种题目的思路一般是动态规划：
-
-假设存有硬币的数组为a，并且双方都会取当前情况下能取到的最多数值！！！
-
-为了方便，a[i]表示从末尾开始的第i枚硬币的数值
-
-用sum[i]表示从0开始到下标i的硬币数字和
-
-best[i]表示当取到剩下i枚硬币时最优的取法能取到的数值
-
-所以有：
-
-best[1]是第1枚硬币的数值
-
-best[2]是第1+2枚硬币的数值之和
-
-best[3]是第2+3枚硬币的数值之和
-
-best[4]有两种取法，一种是取a[4]，然后因为对方也不是吃素的，所以他会取best[3]，所以我能取到的只能是sum[3]-best[3]；另一种取法是取a[4]+a[3]，然后对方取best[2]，我取sum[2]-best[2]，这就基本是动态规划的情况了
-
-以上归纳为：
-
-best[k]（k>4）有两种取法:
-
-1：取a[k] +sum[k-1]-best[k-1]
-
-2： 取a[k] + a[k-1] + sum[k-2] + best[k-2]
-
-则best[k]等于这两个取法的较大值，最后求出best[n]，如果best[n] > sum[n] / 2的话，则先取的人赢了，否则会输。至于是否先取就能赢，还没想到，烦请路过的网友给点提示~\
-```
-
-
-
-#### [@@769. 最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/)
-
-```java
-class Solution {
-    public int maxChunksToSorted(int[] arr) {
-        int ans = 0, max = 0;
-        for (int i = 0; i < arr.length; ++i) {
-            max = Math.max(max, arr[i]);
-            if (max == i) ans++;
-        }
-        return ans;
-    }
-}
-
-```
 
 
 
@@ -3554,6 +3500,26 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
+#### [@@@@@@769. 最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/)
+
+一个区间内最大的数字，不应该大于这个区间最右边的index。因此我们从左向右遍历，如果已经观测到的最大值小于等于这个区间的index，则可以划分区间。
+
+```java
+class Solution {
+    public int maxChunksToSorted(int[] arr) {
+        int ans = 0, max = 0;
+        for (int i = 0; i < arr.length; ++i) {
+            max = Math.max(max, arr[i]);
+            if (max == i) ans++;
+        }
+        return ans;
+    }
+}
+
+```
+
+
+
 
 
 #### @@元素的技巧(如果大于左边最大值,小于右边最小值,该元素排序后依然在该位置上)
@@ -3851,6 +3817,46 @@ public boolean stoneGame(int[] piles) {
 ```
 
 
+
+
+
+#### [@@编程算法题—硬币游戏](https://blog.csdn.net/guangyacyb/article/details/80173509)
+
+```java
+题目：两个玩家（甲，乙）玩游戏，有一个长度为n的乱序数组（数组每个元素代表一个硬币，数值代表硬币面值），甲乙轮流拿硬币（可以拿走最左边的一个或者两个硬币，拿走不放回），问先玩的玩家是否一定能赢
+
+
+
+这种题目的思路一般是动态规划：
+
+假设存有硬币的数组为a，并且双方都会取当前情况下能取到的最多数值！！！
+
+为了方便，a[i]表示从末尾开始的第i枚硬币的数值
+
+用sum[i]表示从0开始到下标i的硬币数字和
+
+best[i]表示当取到剩下i枚硬币时最优的取法能取到的数值
+
+所以有：
+
+best[1]是第1枚硬币的数值
+
+best[2]是第1+2枚硬币的数值之和
+
+best[3]是第2+3枚硬币的数值之和
+
+best[4]有两种取法，一种是取a[4]，然后因为对方也不是吃素的，所以他会取best[3]，所以我能取到的只能是sum[3]-best[3]；另一种取法是取a[4]+a[3]，然后对方取best[2]，我取sum[2]-best[2]，这就基本是动态规划的情况了
+
+以上归纳为：
+
+best[k]（k>4）有两种取法:
+
+1：取a[k] +sum[k-1]-best[k-1]
+
+2： 取a[k] + a[k-1] + sum[k-2] + best[k-2]
+
+则best[k]等于这两个取法的较大值，最后求出best[n]，如果best[n] > sum[n] / 2的话，则先取的人赢了，否则会输。至于是否先取就能赢，还没想到，烦请路过的网友给点提示~\
+```
 
 
 

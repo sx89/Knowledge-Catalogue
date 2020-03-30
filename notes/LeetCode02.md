@@ -454,8 +454,51 @@ public String reverseWords(String s) {
 
 @不需要先遍历k个一组是否满足k个,可以先翻转着,如果不满足k个,再翻转回来.
 
-```
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode node = head;
+        ListNode retHead = new ListNode(-1);
+        ListNode retEnd = retHead;
+        while (true) {
+            //翻转
+            int count = 0;
+            ListNode reverseHead = new ListNode(-1);
+            ListNode lastNode = null;
+            //注意记录lastNode,是count为0的时候
+            while (node != null && count < k) {
+                ListNode temp = node.next;
+                node.next = reverseHead.next;
+                reverseHead.next = node;
+                if (count == 0) {
+                    lastNode = node;
+                }
+                node = temp;
+                count++;
+            }
+            if (count == k) {
+                retEnd.next = reverseHead.next;
+                retEnd = lastNode;
+            } else {
+                ListNode remainList = reverse(reverseHead);
+                retEnd.next = remainList;
+                break;
+            }
+        }
+        return retHead.next;
 
+    }
+
+    private ListNode reverse(ListNode head) {
+        ListNode pHead = new ListNode(-1);
+        ListNode node = head.next;
+        while (node != null) {
+            ListNode temp = node.next;
+            node.next = pHead.next;
+            pHead.next = node;
+            node = temp;
+        }
+        return pHead.next;
+    }
 ```
 
 
@@ -725,13 +768,34 @@ private int getCyc(int n, int m) {
 
 
 
-```
+```java
 
 1.正负号另算,用大正数减去小正数 
 2. 比如9887 - 92
 3.  首位-1,   末位借10 ,  其他位都借9.
 也就是8887 加上   99(10) -92
 4.最后8887+ 908
+
+public String addStrings(String num1, String num2) {
+        int i = num1.length() - 1;
+        int j = num2.length() - 1;
+        int carry = 0;
+        StringBuilder ret = new StringBuilder();
+        while (i >= 0 || j >= 0) {
+            int a = i >= 0 ? num1.charAt(i) - '0' : 0;
+            int b = j >= 0 ? num2.charAt(j) - '0' : 0;
+            int sum = a + b + carry;
+            int add = sum % 10;
+            carry = sum / 10;
+            ret.append(add);
+            i--;
+            j--;
+        }
+        if (carry > 0) {
+            ret.append(carry);
+        }
+        return ret.reverse().toString();
+    }
 
 ```
 
@@ -900,9 +964,9 @@ public int[] divingBoard(int shorter, int longer, int k) {
 
 
 
-#### [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+#### [@@@@581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
 
-
+@@@@注意 求得是无序子数组中的**最小值 和最大值**
 
 @思想是无序子数组中最小元素的正确位置可以决定左边界，最大元素的正确位置可以决定右边界。
 
@@ -950,6 +1014,56 @@ public int findUnsortedSubarray(int[] nums) {
 
 
 
+
+
+```java
+方法二:如果左边的最大值大于右边的最小值,则最小值应该放在该位置上
+    	同理,如果右边的最小值小于左边的最大值,则最大值应该放在该位置上
+    	最后两个位置相减
+ public int findUnsortedSubarray(int[] nums) {
+        int len = nums.length;
+        int[] leftMax = new int[len];
+        int[] rightMin = new int[len];
+        int max = nums[0];
+        int min = nums[len - 1];
+        leftMax[0] = max;
+        rightMin[len - 1] = min;
+        for (int i = 0; i < len; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+
+            }
+            leftMax[i] = max;
+        }
+        for (int i = len - 1; i >= 0; i--) {
+            if (nums[i] < min) {
+                min = nums[i];
+            }
+            rightMin[i] = min;
+        }
+        int leftCut = 0;
+        int rightCut = len - 1;
+        for (int i = 0; i < len; i++) {
+            if (leftMax[i] > rightMin[i]) {
+                leftCut = i;
+                break;
+            }
+        }
+        for (int i = len - 1; i >= 0; i--) {
+            if (rightMin[i] < leftMax[i]) {
+                rightCut = i;
+                //应对 3  2  1
+                return rightCut - leftCut + 1;
+//                break;
+            }
+        }
+        //应对  1 2  3
+        return 0;
+    }
+```
+
+
+
 #### [@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 
 @StringBuilder用于回溯
@@ -960,7 +1074,7 @@ public int findUnsortedSubarray(int[] nums) {
 
 2. index==len,
 
-3. Integer.parseInt(temp)<=255,
+3. Integer.parseInt(temp)<=255
 
 4. 若temp.charAt(0)=='0'只能为一位0不能是001,012,08这种类型.
 
@@ -1256,43 +1370,18 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
         //需要提前把左右子树存储好
         TreeNode left = root.left;
         TreeNode right = root.right;
-        if (pre != null) {
+        if (pre == null) {
+            pre = root;
+        }else{
             pre.right = root;
-
+            pre = root;
         }
-        pre = root;
         root.left = null;
         preOrder(left);
         preOrder(right);
 
     }
 ```
-
-
-private TreeNode pre = null;
-
-    public void flatten(TreeNode root) {
-        preOrder(root);
-    }
-    
-    private void preOrder(TreeNode root) {
-    
-        if (root == null) {
-            return;
-        }
-        //需要提前把左右子树存储好
-        TreeNode left = root.left;
-        TreeNode right = root.right;
-        if (pre != null) {
-            pre.right = root;
-    
-        }
-        pre = root;
-        root.left = null;
-        preOrder(left);
-        preOrder(right);
-    
-    }
 
 
 
@@ -1406,9 +1495,7 @@ private TreeNode pre = null;
 
 
 
-#### 全排列
-
-https://leetcode.com/problems/permutations/
+#### [全排列](https://leetcode-cn.com/problems/permutations/)
 
 
 
@@ -1523,7 +1610,7 @@ List<List<Integer>> ret = new ArrayList<>();
 
 
 
-#### @@@链表环入口
+#### [@@@142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 
 https://leetcode.com/problems/linked-list-cycle-ii/submissions/
 
@@ -1590,7 +1677,6 @@ amicable number, 两个正整数中，彼此的全部正约数之和与另一方
  private int getSum(int num) {
         int sum = 0;
         for (int i = 1; i * i <= num; i++) {
-
             //i的三种特殊情况  假设num为100, i=10的时候只算一个10
             //i=1的时候  不加 100/1
             //其他时候 如果num%i==0   比如 i=2   则 2和50都加到sum里
@@ -1606,7 +1692,6 @@ amicable number, 两个正整数中，彼此的全部正约数之和与另一方
                 sum += num / i;
             }
         }
-
         return sum;
     }
 
