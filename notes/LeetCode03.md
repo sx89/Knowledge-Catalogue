@@ -155,6 +155,7 @@ public int longestCommonSubsequence(String text1, String text2) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
                 } else {
+                    //如果此处的字符不匹配,则考虑删除t1一个 或者 t2一个
                     dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j]);
                 }
             }
@@ -314,7 +315,7 @@ public String longestPalindrome(String s) {
 
 #### 用少来表示多
 
-
+​	
 
 给一串只包含0~9的数字串，每个数字出现的概率相同（比如32978417506），现在告诉你（1,3,5,7）这四个数字不可用，即只能用（0,2,4,6,8,9）这6个数，如何表示原数字串？
 
@@ -530,11 +531,13 @@ if (read == chars.length - 1 || chars[read] != chars[read + 1])  这两个条件
 
 #### @@@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
 
+ret的长度是len1+len2  ;  a*b放在的位置是 **i+j+1**
+
 
 
 @i 和 j长的数字 乘出来的最大长度是 i+j 所以创建数组 new int[i+j]
 
-@i和 j 都是从len1-1   len2-1 开始往小走, 乘出来的数据放在i+j+1的地方
+ @i和 j 都是从len1-1   len2-1 开始往小走, 乘出来的数据放在i+j+1的地方
 
 ```java
  public String multiply(String num1, String num2) {
@@ -651,6 +654,10 @@ public static String getResult(String str) {
 #### [295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
 
 @优先队列是log(n)的复杂度.
+
+@当两个优先队 列中都有数字的时候,新插入的数字无论是插在左边还是右边,都是导致整体无序的隐患,
+
+所以每次插入都需要判断和交换顶部的元素
 
 ```java
 
@@ -1048,7 +1055,7 @@ class Solution {
                 //为什么没有左和上的岛,i,j是按照从左上往右下的顺序移动
                 // 合并前会把grid[i][j]置为0,所以左上的岛永远是空的
                 if (grid[i][j] == '1') {
-                    grid[i][j] = '0';
+                    //不置零也行   grid[i][j] = '0';
                     if (j + 1 < col && grid[i][j + 1] == '1') {
                         uf.union(i * col + j, i * col + j + 1);
                     }
@@ -1149,8 +1156,9 @@ class Solution {
             int to = connections[i][1];
             if (u.isConnected(from, to)) {
                 remainLink++;
+            }else{
+                u.union(from, to);
             }
-            u.union(from, to);
         }
         int groupCount = u.count;
         if (groupCount - 1 <= remainLink) {
@@ -1538,7 +1546,7 @@ public int findPeakElement(int[] nums) {
 
 
 
-#### [@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)
+#### [@@@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)
 
 这个题不能用dfs来做,假设dict是100.那么dfs要遍历所有的路径,复杂度是100的100次方,大概就是1*10的200次方,复杂度是指数级别的
 
@@ -1864,7 +1872,31 @@ public TreeNode deleteNode(TreeNode root, int key) {
 
 
 
-#### [@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+#### [@@@@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+
+没办法用排序来做,本题不能破坏原来的左右子树的关系.如果可以破坏该关系的话,则
+
+```java
+int[] nums = null;
+
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        this.nums = nums;
+        Arrays.sort(nums);
+        TreeNode root = buildTree();
+        return root;
+    }
+
+    private TreeNode buildTree(int start, int end) {
+        if (start > end) {
+            return null;
+        }
+        TreeNode root = new TreeNode(nums[start]);
+        int mid = start + (end - start) / 2;
+        root.left = buildTree(...);
+        root.right = buildTree(..);
+        return root;
+    }
+```
 
 
 
