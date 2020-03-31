@@ -4661,6 +4661,10 @@ private ListNode reverse(ListNode head) {
 
 则分成三类：{0,1};{2};{3}。
 
+getParent()  为1  则在 hashmap  1,List<mail>上面添加邮箱
+
+最后把map<nameId 1 , list<mail>> 变成 list<list<String>>
+
 将同一类的账户和邮箱收集即可。
 
 [
