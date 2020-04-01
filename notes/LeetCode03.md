@@ -4123,6 +4123,62 @@ public class Solution {
 
 
 
+```java
+//思路
+
+ 
+//ssabxx
+
+left  pre 
+left left+1
+
+//case
+//12313
+//11123
+//23111
+//ssxx
+//空
+//xxxx
+//
+
+//优化
+stringbuilder ret 
+
+//left pre = left+1
+//sx11121
+//
+public String deleteDuplicateChar(String s){
+   if(s==null||s.length()==0){
+       return "";
+   }
+   if(s.length()==1){
+      return s;
+   }
+   StringBuilder ret = new StringBuilder();
+   char[] chs  = s.toCharArray();
+   
+   int left = 0;
+   int len = chs.length();
+    //ab
+   while(left<len){
+       if(left+1<len&&chs[left]==chs[left+1]){
+           char deadCh = chs[left];
+           while(chs[left]==deadCh&&left<len){
+               left++;
+           }
+       }else{
+           ret.append(chs[left]); 
+           left++;
+       }    
+   }
+   return ret.toString();
+}
+```
+
+
+
+
+
 
 
 
