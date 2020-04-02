@@ -1901,17 +1901,74 @@ public ListNode sortList(ListNode head) {
 
 
 
+#### [表达式求值](https://www.nowcoder.com/questionTerminal/3e483fe3c0bb447bb17ffb3eeeca78ba?f=discussion)
+
+
+
+```
+
+
+今天上课，老师教了小易怎么计算加法和乘法，乘法的优先级大于加法，但是如果一个运算加了括号，那么它的优先级是最高的。例如：
+1+2*3=7
+1*(2+3)=5
+1*2*3=6
+(1+2)*3=9
+现在小易希望你帮他计算给定3个数a，b，c，在它们中间添加"+"， "*"， "("， ")"符号，能够获得的最大值。
+
+输入描述:
+一行三个数a，b，c (1 <= a, b, c <= 10)
+
+
+输出描述:
+能够获得的最大值
+```
 
 
 
 
 
+```java
 
+class Solution {
+    private int getMax(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int len = nums.length;
+        int[][] dp = new int[len][len];
+        for (int l = 1; l <= len; l++) {
+            for (int i = 0; i < len; i++) {
+                int j = i + l - 1;
+                if (j >= len) {
+                    break;
+                }
+                if (i == j) {
+                    dp[i][j] = nums[i];
+                }
+                for (int k = i; k < j; k++) {
+                    int tempMax = Math.max(dp[i][k] + dp[k + 1][j], dp[i][k] * dp[k + 1][j]);
+                    dp[i][j] = Math.max(tempMax, dp[i][j]);
+                }
+            }
+        }
+        return dp[0][len - 1];
+    }
 
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = scanner.nextInt();
+        }
+        Solution solution = new Solution();
+        int max = solution.getMax(nums);
+        System.out.println(max);
 
+    }
 
-
-
+}
+```
 
 
 
