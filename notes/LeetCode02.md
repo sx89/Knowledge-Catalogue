@@ -1964,9 +1964,7 @@ class Solution {
         Solution solution = new Solution();
         int max = solution.getMax(nums);
         System.out.println(max);
-
     }
-
 }
 ```
 
