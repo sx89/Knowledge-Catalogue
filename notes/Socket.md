@@ -220,6 +220,14 @@ epoll是在2.6内核中提出的，是之前的select和poll的增强版本。�
 
 **2.epoll使用一个文件描述符管理多个描述符，将用户关系的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。**
 
+### 零拷贝技术
+
+类似于java的直接内存
+
+参考文章:https://zhuanlan.zhihu.com/p/83398714
+
+使用 mmap 的目的是将内核中读缓冲区（read buffer）的地址与用户空间的缓冲区（user buffer）进行映射，从而实现内核缓冲区与应用程序内存的共享，省去了将数据从内核读缓冲区（read buffer）拷贝到用户缓冲区（user buffer）的过程，然而内核读缓冲区（read buffer）仍需将数据到内核写缓冲区（socket buffer）.
+
 ### 一 epoll操作过程
 
 epoll操作过程需要三个接口，分别如下：
