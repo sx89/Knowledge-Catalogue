@@ -85,7 +85,7 @@
 
 @@@@@@@删除 插入 替换都是针对word1而言的
 
-```prolog
+```
 讲一下我自己对状态转移方程的理解,麻烦大家看看我说得对不对有没有道理:
 (一)、当word1[i]==word2[j]时,由于遍历到了i和j,说明word1的0~i-1和word2的0~j-1的匹配结果已经生成,
 由于当前两个字符相同,因此无需做任何操作,dp[i][j]=dp[i-1][j-1]
@@ -1434,8 +1434,7 @@ class TreeNode {
 
 思路一:滑动窗口  复杂度 O(n)
 
-@@@思路二:二分长度法   len = 8 先搜len=4,如果sum>s,搜len=2,如果sum<s,搜len=6.  在长度上用二分法.
-
+@@@思路二:二分长度法   len = 8 先搜len=4,如果sum>s,搜len=2,如果sum<s,搜len=6.  在长度上用二分法
 
 
 
@@ -1889,7 +1888,7 @@ public TreeNode deleteNode(TreeNode root, int key) {
 
 
 
-#### [@@@@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+#### [654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
 
 没办法用排序来做,本题不能破坏原来的左右子树的关系.如果可以破坏该关系的话,则
 
@@ -3206,42 +3205,50 @@ public int brokenCalc(int X, int Y) {
 #### [@@@@@227. 基本计算器 II](https://leetcode-cn.com/problems/basic-calculator-ii/)
 
 ```java
-public int calculate(String s) {
-    Stack<Integer> numStack = new Stack<>();
+ public int calculate(String s) {
+        int index = 0;
+        int num = 0;
+        char preCal = '+';
+        int len = s.length();
 
-    char lastOp = '+';
-    char[] arr = s.toCharArray();
-    for (int i = 0; i < arr.length; i++) {
-        if (arr[i] == ' ') continue;
-        if (Character.isDigit(arr[i])) {
-            int tempNum = arr[i] - '0';
-            while (++i < arr.length && Character.isDigit(arr[i])) {
-                tempNum = tempNum * 10 + (arr[i] - '0');
-            }
-            i--;
-            if (lastOp == '+') {
-                numStack.push(tempNum);
-            } else if (lastOp == '-') {
-                numStack.push(-tempNum);
-            } else {
-                numStack.push(res(lastOp, numStack.pop(), tempNum));
-            }
-        } else {
-            lastOp = arr[i];
+        if (s.charAt(0) == '-') {
+            index++;
+        } else if (s.charAt(0) == '+') {
+            index++;
         }
+        Stack<Integer> stack = new Stack<Integer>();
+        while (index <= len) {
+            if (index < len && s.charAt(index) == ' ') {
+                index++;
+                continue;
+            }
+            if (index < len && s.charAt(index) >= '0' && s.charAt(index) <= '9') {
+                num = num * 10 + s.charAt(index) - '0';
+            } else {
+                if (preCal == '-') {
+                    stack.push(-num);
+                } else if (preCal == '+') {
+                    stack.push(num);
+                } else if (preCal == '/') {
+                    int temp = stack.pop();
+                    stack.push(temp / num);
+                } else if (preCal == '*') {
+                    int temp = stack.pop();
+                    stack.push(temp * num);
+                }
+                if (index < len) {
+                    preCal = s.charAt(index);
+                }
+                num = 0;
+            }
+            index++;
+        }
+        int ret = 0;
+        while (!stack.isEmpty()) {
+            ret += stack.pop();
+        }
+        return ret;
     }
-
-    int ans = 0;
-    for (int num : numStack) ans += num;
-    return ans;
-}
-
-private int res(char op, int a, int b) {
-    if (op == '*') return a * b;
-    else if (op == '/') return a / b;
-    else if (op == '+') return a + b; //其实加减运算可以忽略
-    else return a - b;
-}
 ```
 
 
