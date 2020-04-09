@@ -2129,37 +2129,38 @@ class LRUCache {
 
 ```java
 改进:01背包问题
-public boolean canPartition(int[] nums) {
-    int sum = 0;
-    for (int temp : nums) {
-        sum += temp;
-    }
-    int target = sum / 2;
-    if (sum % 2 == 1) {
-        return false;
-    }
-    boolean[][] dp = new boolean[nums.length][target + 1];
-    if (nums[0] <= target) {
-        dp[0][nums[0]] = true;
-    }
-    for (int i = 1; i < nums.length; i++) {
-        for (int j = 0; j <= target; j++) {
-            //如果j为0,记得把选择(要还是不要)第i个物品后,恰好总和为0的情况设置为true
-            //只要一个都不选,则dp[i][0]永远为true
-            //设置成true是为了 nums[i]==j的时候用
-            if (j == 0) {
-                dp[i][j] = true;
-                continue;
-            }
-            //只有nums[i]<=j的时候,背包的总和才有可能刚好等于j
-            if (nums[i] <= j) {
-                //状态转移方程
-                dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i]];
-            }
+ public boolean canPartition(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return false;
         }
+        int len = nums.length;
+        int sum = 0;
+        for (int temp : nums) {
+            sum += temp;
+        }
+        if (sum % 2 == 1) {
+            return false;
+        }
+        int target = sum / 2;
+        boolean[][] dp = new boolean[len][target + 1];
+        //不选nums[0]
+        dp[0][0] = true;
+        //选nums[0]
+        if (target >= nums[0])
+            dp[0][nums[0]] = true;
+        for (int i = 1; i < len; i++) {
+            for (int j = 0; j <= target; j++) {
+                //不选nums[j]
+                dp[i][j] = dp[i - 1][j];
+                //选nums[j]
+                if (j - nums[i] >= 0) {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j - nums[i]];
+                }
+            }
+
+        }
+        return dp[len - 1][target];
     }
-    return dp[nums.length - 1][target];
-}
 ```
 
 
@@ -3620,7 +3621,6 @@ public int largestRectangleArea(int[] heights) {
 思路:滑动窗口类的题目,都是left指针+right指针.
     然后先right往右走找到可行解,left往左走,把解优化到最小值.
     重点就在于窗口内的匹配.本题目由于字符串的匹配是无序的,所以用map<Character,Integer> 和 一个mathCount
-    
 
 public String minWindow(String s, String t) {
     //我先不判空,居然通过了
@@ -3672,7 +3672,9 @@ public String minWindow(String s, String t) {
 
 
 
-#### [@438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+#### [@@@438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+@因为异位词的串的长度跟原字符串大小相同,所以left要跟着right一起走.这样可以避免不必要的讨论.比如abcecba.中间有个e,left如果调到第二个c处,代码会变得复杂
 
 @一开始忘了cnt + map<char,int> 的方法,再做一遍熟练起来
 
@@ -3681,55 +3683,37 @@ public String minWindow(String s, String t) {
     left和right逐渐往右移动,并寻找匹配的字符串.
     注意,此题需要1. s判空,2. 判p的长度要小于s. 有的题会考这种细节,有的不会考
     
-     public List<Integer> findAnagrams(String s, String p) {
-        HashMap<Character, Integer> map = new HashMap<>();
-        List<Integer> ret = new ArrayList<>();
-        int cnt = p.length();
-        int left = 0;
-        int right = 0;
-    	//初始化map
+   public static List<Integer> findAnagrams(String s, String p) {
+        HashMap<Character, Integer> pCount = new HashMap<>();
         for (int i = 0; i < p.length(); i++) {
             char ch = p.charAt(i);
-            if (map.containsKey(ch)) {
-                map.put(ch, map.get(ch) + 1);
-            } else {
-                map.put(ch, 1);
-            }
+            pCount.put(ch, pCount.getOrDefault(ch, 0) + 1);
         }
-    	//right右移
-        for (right = 0; right < s.length(); right++) {
+        int pSum = p.length();
+        int len = s.length();
+        int len2 = p.length();
+        int right = 0;
+        int left = 0;
+        List<Integer> ret = new ArrayList<>();
+        while (right < len) {
             char ch = s.charAt(right);
-            if (map.containsKey(ch)) {
-                if (map.get(ch) > 0) {
-                    cnt--;
-                }
-                map.put(ch, map.get(ch) - 1);
-            } else {
-                //s中出现了map中没有的字符,则left的起点至少要设在这个字符之后
-                //其实没必要,因为上面这种情况发生的话,cnt不会为0.
-                int i = left;
-                left = right + 1;
-                for (; i < left; i++) {
-                    ch = s.charAt(i);
-                    if (map.containsKey(ch)) {
-                        map.put(ch, map.get(ch) + 1);
-                        if (map.get(ch) > 0) {
-                            cnt++;
-                        }
-                    }
+            if (pCount.containsKey(ch)) {
+                pCount.put(ch, pCount.get(ch) - 1);
+                if (pCount.get(ch) >= 0) {
+                    pSum--;
                 }
             }
-            //匹配了就ret.add
-            if (cnt == 0) {
+            if (pSum == 0) {
                 ret.add(left);
             }
-            //滑动窗口过大,就left++,并修改cnt和map
-            if (right - left + 1 >= p.length()) {
-                ch = s.charAt(left);
-                if (map.containsKey(ch)) {
-                    map.put(ch, map.get(ch) + 1);
-                    if (map.get(ch) > 0) {
-                        cnt++;
+            
+            right++;
+            if (right - left + 1 > len2) {
+                char temp = s.charAt(left);
+                if (pCount.containsKey(temp)) {
+                    pCount.put(temp, pCount.get(temp) + 1);
+                    if (pCount.get(temp) > 0) {
+                        pSum++;
                     }
                 }
                 left++;
@@ -3737,7 +3721,6 @@ public String minWindow(String s, String t) {
         }
         return ret;
     }
-    
     
 之前的提交:
     
