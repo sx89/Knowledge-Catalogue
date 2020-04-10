@@ -4191,7 +4191,83 @@ public String deleteDuplicateChar(String s){
 
 
 
+#### 时光倒流
 
+给出周时分,和要倒流的分钟数k,
+
+求倒流之后的时间是多少
+
+举例:
+
+输入 
+
+2 09:50  60
+
+输出
+
+2 08:50
+
+解释
+
+周二九点五十,倒流60分钟,是周二八点五十
+
+
+
+```java
+public static void main(String[] args) {
+    int[] pre = new int[3];
+    int[] now = new int[3];
+    int[] deta = new int[3];
+    Scanner scanner = new Scanner(System.in);
+    int week = scanner.nextInt();
+    String str = scanner.next();
+    int minDeta = scanner.nextInt();
+    int hour = Integer.parseInt(str.substring(0, 2));
+    int min = Integer.parseInt(str.substring(3, 5));
+    now[0] = week;
+    now[1] = hour;
+    now[2] = min;
+    deta[2] = minDeta % 60;
+    deta[1] = minDeta / 60 % 24;
+    deta[0] = minDeta / (60 * 24) % 7;
+
+    if (now[2] >= deta[2]) {
+        pre[2] = now[2] - deta[2];
+    } else {
+        pre[2] = (now[2] + 60 - deta[2]);
+        now[1]--;
+    }
+    if (now[1] >= deta[1]) {
+        pre[1] = now[1] - deta[1];
+    } else {
+        pre[1] = (now[1] + 24 - deta[1]);
+        now[0]--;
+        if (now[0] == 0) {
+            now[0] = 7;
+        }
+    }
+
+    if (now[0] >= deta[0]) {
+        pre[0] = now[0] - deta[0];
+    } else {
+        pre[0] = (now[0] + 7 - deta[0]);
+    }
+    System.out.println(pre[0]);
+    StringBuilder time = new StringBuilder();
+    if (pre[1] <= 9) {
+        time.append("0" + pre[1] + ":");
+    } else {
+        time.append(pre[1] + ":");
+    }
+    if (pre[2] <= 9) {
+        time.append("0" + pre[2]);
+    } else {
+        time.append(pre[2]);
+    }
+    System.out.println(time);
+
+}
+```
 
 
 
