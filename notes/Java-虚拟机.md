@@ -319,7 +319,172 @@ Class 文件中的常量池（编译器生成的字面量和符号引用）会�
 
     ## OOM的分类
 
-    
+    ## OOM for Heap  (java.lang.OutOfMemoryError: Java heap space)
+
+    分析
+    此OOM是由于JVM中heap的最大值不满足需要，将设置heap的最大值调高即可，参数样例为：-Xmx2G
+
+    JVM堆的设置是指java程序运行过程中JVM可以调配使用的内存空间的设置.JVM在启动的时候会自动设置Heap size的值，其初始空间(即-Xms)是物理内存的1/64，最大空间(-Xmx)是物理内存的1/4。可以利用JVM提供的-Xmn -Xms -Xmx等选项可进行设置。Heap size 的大小是Young Generation 和Tenured Generaion 之和。
+    提示：在JVM中如果98％的时间是用于GC且可用的Heap size 不足2％的时候将抛出此异常信息。
+    提示：Heap Size 最大不要超过可用物理内存的80％，一般的要将-Xms和-Xmx选项设置为相同，而-Xmn为1/4的-Xmx值。
+
+    解决参考
+    调高heap的最大值，即-Xmx的值调大。
+
+    ## OOM for StackOverflowError  (Exception in thread "main" java.lang.StackOverflowError)
+
+    分析
+
+    如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常。
+
+    如果虚拟机在扩展栈时无法申请到足够的内存空间，则抛出OutOfMemoryError异常。
+
+
+    一般在单线程程序情况下无法产生OutOfMemoryError异常，使用多线程方式也会出现OutOfMemeoryError，因为栈是线程私有的，线程多也会方法区溢出。
+
+    解决参考
+    检查程序是否有深度递归。
+
+    ## OOM for Perm  (java.lang.OutOfMemoryError: PermGen space)
+
+    分析
+    PermGen space的全称是Permanent Generation space,是指内存的永久保存区域,这块内存主要是被JVM存放Class和Meta信息的,Class在被Loader时就会被放到PermGen space中,它和存放类实例(Instance)的Heap区域不同,GC(Garbage Collection)不会在主程序运行期对PermGen space进行清理，所以如果你的应用中有很多CLASS的话,就很可能出现PermGen space错误,这种错误常见在web服务器对JSP进行pre compile的时候。如果你的WEB APP下都用了大量的第三方jar, 其大小超过了jvm默认的大小那么就会产生此错误信息了。由于JVM在默认的情况下，Perm默认为64M，而很多程序需要大量的Perm区内 存，尤其使用到像Spring等框架的时候，由于需要使用到动态生成类，而这些类不能被GC自动释放，所以导致OutOfMemoryError: PermGen space异常。解决方法很简单，增大JVM的 -XX:MaxPermSize 启动参数，就可以解决这个问题，如过使用的是默认变量通常是64M，改成128M就可以了，-XX:MaxPermSize=128m。如果已经是128m，就改成 256m。我一般在服务器上为安全起见，改成256m。
+
+    解决参考
+    调高Perm的最大值，即-XX:MaxPermSize的值调大。
+    另外，注意一点，Perm一般是在JVM启动时加载类进来，如果是JVM运行较长一段时间而不是刚启动后溢出的话，很有可能是由于运行时有类被动态加载进来，此时建议用CMS策略中的类卸载配置。
+    如：-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled
+
+    ## OOM for GC  (java.lang.OutOfMemoryError: GC overhead limit exceeded)
+
+    分析
+    此OOM是由于JVM在GC时，对象过多，导致内存溢出，建议调整GC的策略，在一定比例下开始GC而不要使用默认的策略，或者将新代和老代设置合适的大小，需要进行微调存活率。
+
+    解决参考
+    改变GC策略，在老代80%时就是开始GC，并且将-XX:SurvivorRatio（-XX:SurvivorRatio=8）和-XX:NewRatio（-XX:NewRatio=4）设置的更合理。
+
+    ## OOM for native thread created  (java.lang.OutOfMemoryError: unable to create new native thread)
+
+    分析
+    首先我们通过下面这个测试程序来认识这个问题：
+    运行的环境 （有必要说明一下，不同环境会有不同的结果）：32位 Windows XP，Sun JDK 1.6.0_18， eclipse 3.4
+    测试程序：
+
+    import java.util.concurrent.CountDownLatch;
+
+    public class TestNativeOutOfMemoryError {
+
+        public static void main(String[] args) {
+        
+            for (int i = 0;; i++) {
+        
+                System.out.println("i = " + i);
+        
+                new Thread(new HoldThread()).start();
+        
+            }
+        
+        }
+
+    }
+
+    class HoldThread extends Thread {
+
+        CountDownLatch cdl = new CountDownLatch(1);
+        
+        public HoldThread() {
+        
+            this.setDaemon(true);
+        
+        }
+        
+        public void run() {
+        
+            try {
+        
+                cdl.await();
+        
+            } catch (InterruptedException e) {
+        
+            }
+        
+        }
+
+    }
+
+    不指定任何JVM参数，eclipse中直接运行输出，输出：
+
+
+    i = 5602 
+    Exception in thread "main" java.lang.OutOfMemoryError: unable to create new native thread
+        at java.lang.Thread.start0(Native Method)
+        at java.lang.Thread.start(Thread.java:597)
+        at TestNativeOutOfMemoryError.main(TestNativeOutOfMemoryError.java:20)
+
+    这个异常问题本质原因是我们创建了太多的线程，而能创建的线程数是有限制的，导致了异常的发生。能创建的线程数的具体计算公式如下： 
+    (MaxProcessMemory - JVMMemory - ReservedOsMemory) / (ThreadStackSize) = Number of threads
+    MaxProcessMemory 指的是一个进程的最大内存
+    JVMMemory             JVM内存
+    ReservedOsMemory  保留的操作系统内存
+    ThreadStackSize      线程栈的大小
+
+    在java语言里， 当你创建一个线程的时候，虚拟机会在JVM内存创建一个Thread对象同时创建一个操作系统线程，而这个系统线程的内存用的不是JVMMemory，而是系统中剩下的内存(MaxProcessMemory - JVMMemory - ReservedOsMemory)。 
+
+    结合公式和例子进行说明： 
+    MaxProcessMemory 在32位的 windows下是 2G
+    JVMMemory   eclipse默认启动的程序内存是64M
+    ReservedOsMemory  一般是130M左右
+    ThreadStackSize 32位  JDK 1.6默认的stacksize 325K左右
+    公式如下：
+    (2*1024*1024-64*1024-130*1024)/325 = 5841 
+    公式计算所得5841，和实践5602基本一致（有偏差是因为ReservedOsMemory不能很精确）
+
+    依旧使用上面的测试程序，加上下面的JVM参数，测试结果如下：
+
+
+    ThreadStackSize              JVMMemory              能创建的线程数
+    默认的325K             -Xms1024m -Xmx1024m       i = 2655
+    默认的325K             -Xms1224m -Xmx1224m       i = 2072
+    默认的325K             -Xms1324m -Xmx1324m       i = 1753
+    默认的325K             -Xms1424m -Xmx1424m       i = 1435
+    -Xss1024k               -Xms1424m -Xmx1424m       i = 452 
+
+    解决参考
+    如果JVM内存调的过大或者可利用率小于20%，可以建议将heap及perm的最大值下调，并将线程栈调小，即-Xss调小，如：-Xss128k。
+
+    在JVM内存不能调小的前提下，将-Xss设置较小，如：-Xss:128k。
+
+    ## OOM for allocate huge array  (Exception in thread "main": java.lang.OutOfMemoryError: Requested array size exceeds VM limit)
+
+    分析
+    此类信息表明应用程序试图分配一个大于堆大小的数组。例如，如果应用程序new一个数组对象，大小为512M，但是最大堆大小为256M，因此OutOfMemoryError会抛出，因为数组的大小超过虚拟机的限制。
+
+    解决参考
+    （1）、首先检查heap的-Xmx是不是设置的过小
+    （2）、如果heap的-Xmx已经足够大，那么请检查应用程序是不是存在bug，例如：应用程序可能在计算数组的大小时，存在算法错误，导致数组的size很大，从而导致巨大的数组被分配。
+
+    ## OOM for small swap (Exception in thread "main": java.lang.OutOfMemoryError: request <size> bytes for <reason>. Out of swap space? )
+
+    分析
+     抛出这类错误，是由于从native堆中分配内存失败，并且堆内存可能接近耗尽。这类错误可能跟应用程序没有关系，例如下面两种原因也会导致错误的发生：
+    （1）操作系统配置了较小的交换区
+    （2）系统的另外一个进程正在消耗所有的内存
+
+    解决参考
+    （1）、检查os的swap是不是没有设置或者设置的过小
+    （2）、检查是否有其他进程在消耗大量的内存，从而导致当前的JVM内存不够分配。
+    注意：虽然有时<reason>部分显示导致OOM的原因，但大多数情况下，<reason>显示的是提示分配失败的源模块的名称，所以有必要查看日志文件，如crash时的hs文件。
+
+    ## OOM for exhausted native memory  (java.lang.OutOfMemoryErr java.io.FileInputStream.readBytes(Native Method))
+
+    分析
+    从错误日志来看，在OOM后面没有提示引起OOM的原因，进一步查看stack trace发现，导致OOM的原因是由Native Method的调用引起的，另外检查Java heap，发现heap的使用正常，因而需要考虑问题的发生是由于Native memory被耗尽导致的。
+
+    解决参考
+    从根本上来说，解决此问题的方法应该通过检测发生问题时的环境下，native memory为什么被占用或者说为什么native memory越来越小，从而去解决引起Native memory减小的问题。但是如果此问题不容易分析时，可以通过以下方法或者结合起来处理。
+    （1）、cpu和os保证是64位的，并且jdk也换为64位的。
+    （2）、将java heap的-Xmx尽量调小，但是保证在不影响应用使用的前提下。
+    （3）、限制对native memory的消耗，比如：将thread的-Xss调小，并且限制产生大量的线程；限制文件的io操作次数和数量；限制网络的使用等等。
 
 
 # 垃圾收集
