@@ -9,6 +9,7 @@
 - [用少来表示多](#用少来表示多)
 - [@[253. 会议室 II](https://leetcode-cn.com/problems/meeting-rooms-ii/)](#253-会议室-iihttpsleetcode-cncomproblemsmeeting-rooms-ii)
 - [@@@[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)](#435-无重叠区间httpsleetcode-cncomproblemsnon-overlapping-intervals)
+- [[@@@@@452. 用最少数量的箭引爆气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)](#452-用最少数量的箭引爆气球httpsleetcode-cncomproblemsminimum-number-of-arrows-to-burst-balloons)
 - [[443. 压缩字符串](https://leetcode-cn.com/problems/string-compression/)](#443-压缩字符串httpsleetcode-cncomproblemsstring-compression)
 - [@@@[43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)](#43-字符串相乘httpsleetcode-cncomproblemsmultiply-strings)
 - [字符移位](#字符移位)
@@ -16,6 +17,9 @@
 - [@@@@图的m着色问题(dfs)](#图的m着色问题dfs)
 - [](#)
 - [100亿数字排序,求中位数,平均数,求和](#100亿数字排序求中位数平均数求和)
+    - [方法1](#方法1)
+    - [方法2:](#方法2)
+    - [思维拓展](#思维拓展)
 - [[113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)](#113-路径总和-iihttpsleetcode-cncomproblemspath-sum-ii)
 - [[@@@547. 朋友圈](https://leetcode-cn.com/problems/friend-circles/)](#547-朋友圈httpsleetcode-cncomproblemsfriend-circles)
 - [[@@@200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)](#200-岛屿数量httpsleetcode-cncomproblemsnumber-of-islands)
@@ -29,13 +33,13 @@
 - [[@209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)](#209-长度最小的子数组httpsleetcode-cncomproblemsminimum-size-subarray-sum)
 - [[@@60. 第k个排列](https://leetcode-cn.com/problems/permutation-sequence/)](#60-第k个排列httpsleetcode-cncomproblemspermutation-sequence)
 - [[@@@@162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)](#162-寻找峰值httpsleetcode-cncomproblemsfind-peak-element)
-- [[@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)](#127-单词接龙httpsleetcode-cncomproblemsword-ladder)
+- [[@@@@127. 单词接龙](https://leetcode-cn.com/problems/word-ladder/)](#127-单词接龙httpsleetcode-cncomproblemsword-ladder)
 - [IP重复攻击](#ip重复攻击)
 - [ab替换成c,b替换成ef](#ab替换成cb替换成ef)
 - [[@@@4. 寻找两个有序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)](#4-寻找两个有序数组的中位数httpsleetcode-cncomproblemsmedian-of-two-sorted-arrays)
 - [[@@@@@701. 二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)](#701-二叉搜索树中的插入操作httpsleetcode-cncomproblemsinsert-into-a-binary-search-tree)
 - [[@@@@@@@@@@450. 删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)](#450-删除二叉搜索树中的节点httpsleetcode-cncomproblemsdelete-node-in-a-bst)
-- [[@654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)](#654-最大二叉树httpsleetcode-cncomproblemsmaximum-binary-tree)
+- [[654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)](#654-最大二叉树httpsleetcode-cncomproblemsmaximum-binary-tree)
 - [[@@@273. 整数转换英文表示](https://leetcode-cn.com/problems/integer-to-english-words/)](#273-整数转换英文表示httpsleetcode-cncomproblemsinteger-to-english-words)
 - [[272. 最接近的二叉搜索树值 II](https://leetcode-cn.com/problems/closest-binary-search-tree-value-ii/)](#272-最接近的二叉搜索树值-iihttpsleetcode-cncomproblemsclosest-binary-search-tree-value-ii)
 - [@@@**拓扑排序**](#拓扑排序)
@@ -54,10 +58,37 @@
 - [[@53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)](#53-最大子序和httpsleetcode-cncomproblemsmaximum-subarray)
 - [单例模式](#单例模式)
 - [[@@@@@752. 打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)](#752-打开转盘锁httpsleetcode-cncomproblemsopen-the-lock)
-- [[@@编程算法题—硬币游戏](https://blog.csdn.net/guangyacyb/article/details/80173509)](#编程算法题硬币游戏httpsblogcsdnnetguangyacybarticledetails80173509)
-- [[@@769. 最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/)](#769-最多能完成排序的块httpsleetcode-cncomproblemsmax-chunks-to-make-sorted)
 - [[掷骰子的数学期望](https://www.zhihu.com/question/30470526)](#掷骰子的数学期望httpswwwzhihucomquestion30470526)
 - [[915. 分割数组](https://leetcode-cn.com/problems/partition-array-into-disjoint-intervals/)](#915-分割数组httpsleetcode-cncomproblemspartition-array-into-disjoint-intervals)
+- [[@@@@991. 坏了的计算器](https://leetcode-cn.com/problems/broken-calculator/)](#991-坏了的计算器httpsleetcode-cncomproblemsbroken-calculator)
+- [[@@@@@227. 基本计算器 II](https://leetcode-cn.com/problems/basic-calculator-ii/)](#227-基本计算器-iihttpsleetcode-cncomproblemsbasic-calculator-ii)
+- [[@@删除回文子序列](https://leetcode-cn.com/problems/remove-palindromic-subsequences/)](#删除回文子序列httpsleetcode-cncomproblemsremove-palindromic-subsequences)
+- [@@@@[Leetcode 1246：删除回文子数组](https://coordinate.wang/index.php/archives/2737/)](#leetcode-1246删除回文子数组httpscoordinatewangindexphparchives2737)
+- [[328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)](#328-奇偶链表httpsleetcode-cncomproblemsodd-even-linked-list)
+- [[@@179. 最大数](https://leetcode-cn.com/problems/largest-number/)](#179-最大数httpsleetcode-cncomproblemslargest-number)
+- [[@@@69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)](#69-x-的平方根httpsleetcode-cncomproblemssqrtx)
+- [@@@@@@从十亿数字中,求第k位数字,用快排.](#从十亿数字中求第k位数字用快排)
+- [[@@973. 最接近原点的 K 个点](https://leetcode-cn.com/problems/k-closest-points-to-origin/)](#973-最接近原点的-k-个点httpsleetcode-cncomproblemsk-closest-points-to-origin)
+- [[1375. 灯泡开关 III](https://leetcode-cn.com/problems/bulb-switcher-iii/)](#1375-灯泡开关-iiihttpsleetcode-cncomproblemsbulb-switcher-iii)
+- [[@@581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)](#581-最短无序连续子数组httpsleetcode-cncomproblemsshortest-unsorted-continuous-subarray)
+- [[@@@@@@769. 最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/)](#769-最多能完成排序的块httpsleetcode-cncomproblemsmax-chunks-to-make-sorted)
+- [@@元素的技巧(如果大于左边最大值,小于右边最小值,该元素排序后依然在该位置上)](#元素的技巧如果大于左边最大值小于右边最小值该元素排序后依然在该位置上)
+- [@@缝隙的技巧(如果大于前缀最大值,小于后缀最小值,则是分界元素)](#缝隙的技巧如果大于前缀最大值小于后缀最小值则是分界元素)
+- [@@@@划分最多的最短无序连续子数组](#划分最多的最短无序连续子数组)
+- [[@@292. Nim 游戏](https://leetcode-cn.com/problems/nim-game/)](#292-nim-游戏httpsleetcode-cncomproblemsnim-game)
+- [[36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)](#36-有效的数独httpsleetcode-cncomproblemsvalid-sudoku)
+- [[150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)](#150-逆波兰表达式求值httpsleetcode-cncomproblemsevaluate-reverse-polish-notation)
+- [[@@@@659. 分割数组为连续子序列](https://leetcode-cn.com/problems/split-array-into-consecutive-subsequences/)](#659-分割数组为连续子序列httpsleetcode-cncomproblemssplit-array-into-consecutive-subsequences)
+- [[@@@@@@877. 石子游戏](https://leetcode-cn.com/problems/stone-game/)](#877-石子游戏httpsleetcode-cncomproblemsstone-game)
+- [[@@编程算法题—硬币游戏](https://blog.csdn.net/guangyacyb/article/details/80173509)](#编程算法题硬币游戏httpsblogcsdnnetguangyacybarticledetails80173509)
+- [[5369. 统计作战单位数](https://leetcode-cn.com/problems/count-number-of-teams/)](#5369-统计作战单位数httpsleetcode-cncomproblemscount-number-of-teams)
+- [[5370. 设计地铁系统](https://leetcode-cn.com/problems/design-underground-system/)](#5370-设计地铁系统httpsleetcode-cncomproblemsdesign-underground-system)
+- [海量数据的排序](#海量数据的排序)
+- [[@@@146. LRU缓存机制](https://leetcode-cn.com/problems/lru-cache/)](#146-lru缓存机制httpsleetcode-cncomproblemslru-cache)
+- [[@@@@140. 单词拆分 II](https://leetcode-cn.com/problems/word-break-ii/)](#140-单词拆分-iihttpsleetcode-cncomproblemsword-break-ii)
+- [把字符串中重复的子串删除](#把字符串中重复的子串删除)
+- [时光倒流](#时光倒流)
+- [正四面体游走](#正四面体游走)
 
 <!-- /TOC -->
 
@@ -4271,11 +4302,57 @@ public static void main(String[] args) {
 
 
 
+#### 正四面体游走
+
+（四个顶点六条边）四个点为 ABCS，每条边可以走无数次,从顶点S出发K次能到达S点的可能性（K=1e6，对p=1e9+7取模）
+
+比如 k =3,路径可以有
+
+SBAS
+
+SABS
+
+SCBS
+
+SBCS
+
+SCAS
+
+SACS
 
 
 
 
 
+```java
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int k = scanner.nextInt();
+        if (k == 0) {
+            System.out.println(1);
+            return;
+        }
+        int mod = 1000000000 + 7;
+        //012 abc 3 s
+        int[][] dp = new int[k + 1][4];
+        dp[1][0] = 1;
+        dp[1][1] = 1;
+        dp[1][2] = 1;
+        dp[1][3] = 0;
+        for (int i = 2; i <= k; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int m = 0; m < 4; m++) {
+                    if (m != j) {
+                        dp[i][j] = (dp[i][j] % mod + dp[i - 1][m] % mod) % mod;
+                    }
+                }
+            }
+        }
+        System.out.println(dp[k][3]);
+
+    }
+```
 
 
 

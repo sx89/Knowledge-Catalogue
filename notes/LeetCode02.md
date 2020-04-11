@@ -23,7 +23,7 @@
 - [@@蓄水池抽样问题](#蓄水池抽样问题)
 - [@@随机数的生成](#随机数的生成)
 - [[面试题 16.11. 跳水板](https://leetcode-cn.com/problems/diving-board-lcci/)](#面试题-1611-跳水板httpsleetcode-cncomproblemsdiving-board-lcci)
-- [[581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)](#581-最短无序连续子数组httpsleetcode-cncomproblemsshortest-unsorted-continuous-subarray)
+- [[@@@@581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)](#581-最短无序连续子数组httpsleetcode-cncomproblemsshortest-unsorted-continuous-subarray)
 - [[@@93. 复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)](#93-复原ip地址httpsleetcode-cncomproblemsrestore-ip-addresses)
 - [[134. 加油站](https://leetcode-cn.com/problems/gas-station/)](#134-加油站httpsleetcode-cncomproblemsgas-station)
 - [[@@@116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)](#116-填充每个节点的下一个右侧节点指针httpsleetcode-cncomproblemspopulating-next-right-pointers-in-each-node)
@@ -35,15 +35,16 @@
 - [@连续子串=连续子序列!=子序列 ;](#连续子串连续子序列子序列-)
 - [@@和0为的连续最长子序列(子串,和为k)](#和0为的连续最长子序列子串和为k)
 - [@@最大长度的01连续子序列](#最大长度的01连续子序列)
-- [全排列](#全排列)
+- [[全排列](https://leetcode-cn.com/problems/permutations/)](#全排列httpsleetcode-cncomproblemspermutations)
 - [012组合数](#012组合数)
 - [求1到1000000的质数](#求1到1000000的质数)
 - [三角形](#三角形)
 - [链表相交的节点](#链表相交的节点)
-- [@@@链表环入口](#链表环入口)
+- [[@@@142. 环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)](#142-环形链表-iihttpsleetcode-cncomproblemslinked-list-cycle-ii)
 - [@@相亲数](#相亲数)
 - [@@@@@@@@链表快排.](#链表快排)
 - [[@@@@@148. 排序链表](https://leetcode-cn.com/problems/sort-list/)](#148-排序链表httpsleetcode-cncomproblemssort-list)
+- [[@@@表达式求值](https://www.nowcoder.com/questionTerminal/3e483fe3c0bb447bb17ffb3eeeca78ba?f=discussion)](#表达式求值httpswwwnowcodercomquestionterminal3e483fe3c0bb447bb17ffb3eeeca78bafdiscussion)
 
 <!-- /TOC -->
 
