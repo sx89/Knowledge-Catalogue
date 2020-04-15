@@ -238,3 +238,38 @@ FeignClient接口和spring mvc接口的格式一致，在调用方的方法中�
 | [session](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-session) | 一个`bean` 定义对应于单个`HTTP Session` 的生命周期，也就是说，每个`HTTP Session` 都有一个`bean`实例，且该实例仅在这个`HTTP Session` 的生命周期里有效。该作用域仅适用于`WebApplicationContext`环境。 |
 | [application](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-factory-scopes-application) | 一个`bean` 定义对应于单个`ServletContext` 的生命周期。该作用域仅适用于`WebApplicationContext`环境。 |
 | [websocket](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#websocket-stomp-websocket-scope) | 一个`bean` 定义对应于单个`websocket` 的生命周期。该作用域仅适用于`WebApplicationContext`环境。 |
+
+
+
+# 开箱即用,自动配置的原理
+
+Spring Boot 内部提供了很多自动化配置的类这些自动化配置的类会判断 classpath 中是否存在自己需要的那个类，如果存在则会自动配置相关的配置，否则就不会自动配置，因此，开发者在 Maven 的 pom 文件中添加相关依赖后，这些依赖就会下载很多 jar 包到 classpath 中，有了这些 lib 就会触发自动化配置。
+
+
+
+pring Boot提供了很多“开箱即用”的依赖模块，都是以spring-boot-starter-xx作为命名的。例如，之前提到的 spring-boot-starter-redis、spring-boot-starter-data-mongodb、spring-boot-starter-data-elasticsearch 等。
+
+Spring Boot 的开箱即用是一个很棒的设计，给开发者带来很大的便利。开发者只要在 Maven 的 pom 文件中添加相关依赖后，Spring Boot 就会针对这个应用自动创建和注入需要的 Spring  Bean 到上下文中。
+
+自动注入的核心在于 spring-boot-autoconfigure.jar 这个类库。在分析之前，我们先来看几个文件。
+
+```
+@Configuration
+@ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
+@EnableConfigurationProperties
+public class RedisAutoConfiguration {}
+```
+
+
+
+```
+@Configuration
+@ConditionalOnClass({ Client.class, TransportClientFactoryBean.class,
+    NodeClientFactoryBean.class })
+@EnableConfigurationProperties(ElasticsearchProperties.class)
+public class ElasticsearchAutoConfiguration implements DisposableBean {}
+```
+
+
+
+上面三个源码分别对应Redis、MongoDB、ElasticSearch。通过对比，我们会发现它们都有一个特点，都存在 @ConditionalOnClass 注解。这个注解就是问题的关键所在。
