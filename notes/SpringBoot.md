@@ -63,8 +63,24 @@ https://www.jianshu.com/p/8a20c547e245
 
 不过AOP的目的不是这样，这只是一个“副作用”，真正目的是，你写代码的时候，事先只需考虑主流程，而不用考虑那些不重要的流程.因为在主流程写好之后,可以用aop把不重要的代码加到主要流程的前后,不会影响源码,但会生成主流程前后都存在通用功能切面的机器码.
 
+
+
+## 
+
 ## AOP例子
 [参考博客](http://www.blogjava.net/javadragon/archive/2006/12/03/85115.html)
+
+参考视频教程:https://www.bilibili.com/video/BV1KT4y1G7hs?from=search&seid=16047420821874007149
+
+1.注解定义一个pointCut,
+
+2.在pointCut那里实现一个方法,该方法的的触发时间由时间注解决定:
+
+3.时间注解: @before @after @环绕  @return @Exception
+
+<img src="pictures/SpringBoot/image-20200417190728179.png" alt="image-20200417190728179" style="zoom:50%;" />
+
+
 
 # 依赖注入与控制反转
 ## 控制反转介绍
