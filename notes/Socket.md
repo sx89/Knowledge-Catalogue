@@ -139,12 +139,11 @@ select/poll/epoll 都是 I/O 多路复用的具体实现，select 出现的最�
 int select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 ```
 
-select 允许应用程序监视一组文件描述符，等待一个或者多个描述符成为就绪状态，从而完成 I/O 操作。
+**select 允许应用程序监视一组文件描述符，等待一个或者多个描述符成为就绪状态，从而完成 I/O 操作。**
 
-- fd_set 使用数组实现，数组大小使用 FD_SETSIZE 定义，所以只能监听少于 FD_SETSIZE 数量的描述符。有三种类型的描述符类型：readset、writeset、exceptset，分别对应读、写、异常条件的描述符集合。
-
+- fd_set 使用数组实现，数组大小使用 FD_SETSIZE 定义，所以只能监听少于 FD_SETSIZE 数量的描述符。有三种类型的描述符类型：readset、writeset、exceptset，分别对应读、写、异常条件的描述符集合
+- fd_in和fd_out是两个文件描述符数组.一旦有就绪,就让select返回
 - timeout 为超时参数，调用 select 会一直阻塞直到有描述符的事件到达或者等待的时间超过 timeout。
-
 - 成功调用返回结果大于 0，出错返回结果为 -1，超时返回结果为 0。
 
 ```c
@@ -186,13 +185,58 @@ else
 }
 ```
 
+多路复用IO是一种同步IO,
+
+第一步进程发送读操作,进程阻塞.
+
+第二步用select或者poll或者epoll在内核读取数据,当读取到数据之后, 
+
+第三步遍历文件描述符数组/链表, 把有数据的文件描述符的数据,从内核的数据拷贝到用户进程内存
+
+<img src="pictures/Socket/image-20200418112823764.png" alt="image-20200418112823764" style="zoom:50%;" />
+
+<img src="pictures/Socket/image-20200418091521057.png" alt="image-20200418091521057" style="zoom:50%;" />
+
+（1）使用copy_from_user从用户空间拷贝fd_set到内核空间
+
+（2）注册回调函数__pollwait
+
+（3）遍历所有fd，调用其对应的poll方法（对于socket，这个poll方法是sock_poll，sock_poll根据情况会调用到tcp_poll,udp_poll或者datagram_poll）
+
+（4）以tcp_poll为例，其核心实现就是__pollwait，也就是上面注册的回调函数。
+
+（5）__pollwait的主要工作就是把current（当前进程）挂到设备的等待队列中，不同的设备有不同的等待队列，对于tcp_poll来说，其等待队列是sk->sk_sleep（注意把进程挂到等待队列中并不代表进程已经睡眠了）。在设备收到一条消息（网络设备）或填写完文件数据（磁盘设备）后，会唤醒设备等待队列上睡眠的进程，这时current便被唤醒了。
+
+（6）poll方法返回时会返回一个描述读写操作是否就绪的mask掩码，根据这个mask掩码给fd_set赋值。
+
+（7）如果遍历完所有的fd，还没有返回一个可读写的mask掩码，则会调用schedule_timeout是调用select的进程（也就是current）进入睡眠。当设备驱动发生自身资源可读写后，会唤醒其等待队列上睡眠的进程。如果超过一定的超时时间（schedule_timeout指定），还是没人唤醒，则调用select的进程会重新被唤醒获得CPU，进而重新遍历fd，判断有没有就绪的fd。
+
+（8）把fd_set从内核空间拷贝到用户空间。
+
+**总结：**
+
+**select的几大缺点：**
+
+**（1）每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大**
+
+**（2）同时每次调用select都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大**
+
+**（3）select支持的文件描述符数量太小了，默认是1024**
+
+
+
 ## poll
 
 ```c
 int poll(struct pollfd *fds, unsigned int nfds, int timeout);
 ```
 
-poll 的功能与 select 类似，也是等待一组描述符中的一个成为就绪状态。
+poll 的功能与 select 类似，也是**等待一组描述符中的一个成为就绪状态。**
+
+**fds指向的是一个pollfd动态数组**
+
+**revents和 POLL_IN,POLL_OUT相&&,**决定输入输出
+**events里面存放数据**
 
 poll 中的描述符是 pollfd 类型的数组，pollfd 的定义如下：
 
@@ -202,6 +246,7 @@ struct pollfd {
                short events;     /* requested events */
                short revents;    /* returned events */
            };
+
 ```
 
 
@@ -250,23 +295,36 @@ select 和 poll 的功能基本相同，不过在一些实现细节上有所不�
 
 ### 2. 速度
 
-select 和 poll 速度都比较慢，每次调用都需要将全部描述符从应用进程缓冲区复制到内核缓冲区。
+**select 和 poll 速度都比较慢，**
 
-### 3. 可移植性
+**每次都会遍历  整个位图或者整个的poll_fd链表.**
 
-几乎所有的系统都支持 select，但是只有比较新的系统支持 poll。
+**包含大量文件描述符的数组被整体复制于用户态和内核的地址空间之间**，而不论这些文件描述符是否就绪，它的开销随着文件描述符数量的增加而线性增大
 
 ## epoll
 
 ```c
 int epoll_create(int size);
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
+//等待epfd上的io事件，最多返回maxevents个事件。
 int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
+
+epfd 是create的返回值,当调用epoll_create之后,返回epoll句柄后，它就会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。
+    
+fd   是要监听的文件描述符,把它放到epfd上
+    
+epfd存在于内核上,当有数据进入epfd的时候,也就是进入了events,wait会返回events里面的数据量
+
+struct epoll_event {
+  __uint32_t events;  /* Epoll events */决定是输入还是输出
+  epoll_data_t data;  /* User data variable */存储着数据
+};
+
 ```
 
 epoll_ctl() 用于向内核注册新的描述符或者是改变某个文件描述符的状态。已注册的描述符在内核中会被维护在一棵红黑树上，通过回调函数内核会将 I/O 准备好的描述符加入到一个链表中管理，进程调用 epoll_wait() 便可以得到事件完成的描述符。
 
-从上面的描述可以看出，epoll 只需要将描述符从进程缓冲区向内核缓冲区拷贝一次，并且进程不需要通过轮询来获得事件完成的描述符。
+从上面的描述可以看出，**epoll 只需要将描述符从进程缓冲区向内核缓冲区拷贝一次**，并且**进程不需要通过轮询来获得事件完成的描述符。**
 
 epoll 仅适用于 Linux OS。
 
@@ -336,27 +394,15 @@ epoll 的描述符事件有两种触发模式：LT（level trigger）和 ET（ed
 
 很大程度上减少了 epoll 事件被重复触发的次数，因此效率要比 LT 模式高。只支持 No-Blocking，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。
 
+### epoll为什么要有EPOLLET触发模式？
+
+如果采用EPOLLLT模式的话，**系统中一旦有大量你不需要读写的就绪文件描述符，它们每次调用epoll_wait都会返回**，这样会大大降低处理程序检索自己关心的就绪文件描述符的效率.。而采用EPOLLET这种边沿触发模式的话，当被监控的文件描述符上有可读写事件发生时，epoll_wait()会通知处理程序去读写。如果这次没有把数据全部读写完(如读写缓冲区太小)，那么下次调用epoll_wait()时，它不会通知你，也就是它只会通知你一次，直到该文件描述符上出现第二次可读写事件才会通知你！！！**这种模式比水平触发效率高，系统不会充斥大量你不关心的就绪文件描述符**
+
 ## 应用场景
 
 很容易产生一种错觉认为只要用 epoll 就可以了，select 和 poll 都已经过时了，其实它们都有各自的使用场景。
 
-### 1. select 应用场景
-
-select 的 timeout 参数精度为微秒，而 poll 和 epoll 为毫秒，因此 select 更加适用于实时性要求比较高的场景，比如核反应堆的控制。
-
-select 可移植性更好，几乎被所有主流平台所支持。
-
-### 2. poll 应用场景
-
-poll 没有最大描述符数量的限制，如果平台支持并且对实时性要求不高，应该使用 poll 而不是 select。
-
-### 3. epoll 应用场景
-
-只需要运行在 Linux 平台上，有大量的描述符需要同时轮询，并且这些连接最好是长连接。
-
-需要同时监控小于 1000 个描述符，就没有必要使用 epoll，因为这个应用场景下并不能体现 epoll 的优势。
-
-需要监控的描述符状态变化多，而且都是非常短暂的，也没有必要使用 epoll。因为 epoll 中的所有描述符都存储在内核中，造成每次需要对描述符的状态改变都需要通过 epoll_ctl() 进行系统调用，频繁系统调用降低效率。并且 epoll 的描述符存储在内核，不容易调试。
+**在连接数少并且连接都十分活跃的情况下，select和poll的性能可能比epoll好，毕竟epoll的通知机制需要很多函数回调。**
 
 
 
@@ -493,7 +539,7 @@ linux下的asynchronous IO其实用得很少。先看一下它的流程：
 
 select，poll，epoll都是IO多路复用的机制。I/O多路复用就是通过一种机制，一个进程可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。但**select，poll，epoll本质上都是同步I/O**，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。（这里啰嗦下）
 
-## select(1024限制,返回后遍历read,write,except位图)
+## select(1024限制,返回后遍历read,write,except位图,复杂度n)
 
 ```
 int select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
@@ -503,7 +549,7 @@ select 函数监视的文件描述符分3类，分别是writefds、readfds、和
 
 select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点。select的一 个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024，可以通过修改宏定义甚至重新编译内核的方式提升这一限制，但 是这样也会造成效率的降低。
 
-## poll(无限制,不使用位图,使用pollfd描述符)
+## poll(无限制,不使用位图,使用链表描述符,复杂度n)
 
 ```
 int poll (struct pollfd *fds, unsigned int nfds, int timeout);
@@ -527,13 +573,17 @@ pollfd结构包含了要监视的event和发生的event，不再使用select“�
 
 
 
-## epoll
+## epoll(零拷贝,无限制,O1)
 
 epoll是在2.6内核中提出的，是之前的select和poll的增强版本。相对于select和poll来说，epoll更加灵活，
 
 **1.没有描述符限制。**
 
 **2.epoll使用一个文件描述符管理多个描述符，将用户关系的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。**
+
+3.复杂度为O1,**epoll可以理解为event poll**，不同于忙轮询和无差别轮询，epoll会把哪个流发生了怎样的I/O事件通知我们。所以我们说epoll实际上是**事件驱动（每个事件关联上fd）**的，此时我们对这些流的操作都是有意义的。**（复杂度降低到了O(1)）**
+
+
 
 ### 零拷贝技术
 
