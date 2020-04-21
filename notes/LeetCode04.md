@@ -113,7 +113,98 @@ public int subarraysDivByK(int[] nums, int k) {
 
 
 
+#### @@完全二叉树的节点个数
 
+完全二叉树
+
+O
+
+|\
+OO
+
+|\ |\
+
+OO OO
+
+|\ |\ |\ |\
+
+OO Ox xx xx
+
+\----------
+
+求总的节点数？
+
+
+
+```java
+
+public class Main {
+    
+
+    private int func(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        TreeNode node = root;
+        int maxLevel = 0;
+        int sum = 0;
+        while (node != null) {
+            node = node.left;
+            maxLevel++;
+        }
+
+        Node rootNode = new Node(1, root, 1);
+        Node tempNode = null;
+        while (rootNode.level <= maxLevel - 1) {
+            tempNode = findMid(rootNode);
+            if (maxLevel > tempNode.level) {
+                rootNode = (rootNode.position * 2 - 1, rootNode.node.left, rootNode.level + 1,)
+            } else if (maxLevel == tempNode.level) {
+                rootNode = (rootNode.position * 2, rootNode.node.right, rootNode.level + 1,)
+            }
+        }
+        sum = (int) Math.pow(2, maxLevel - 1) - 1 + tempNode.position;
+        return sum;
+    }
+
+    private Node findMid(Node root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode treeNode = root.node.left;
+        int level = root.level;
+        int position = root.position;
+
+        if (treeNode == null) {
+            return root;
+        }
+        while (treeNode.right != null) {
+            treeNode = treeNode.right;
+            level++;
+            position = position * 2;
+        }
+        return new Node(position, treeNode, level);
+    }
+}
+
+class Node {
+    int position;
+    TreeNode node;
+    int level;
+
+    public Node(int positon, TreeNode node, int level) {
+        this.position = position;
+        this.node = node;
+        this.level = level;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+}
+```
 
 
 
