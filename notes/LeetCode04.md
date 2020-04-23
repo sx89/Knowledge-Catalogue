@@ -422,11 +422,56 @@ class Solution {
 
 
 
+#### @@@[移除子串](https://www.jianshu.com/p/067f2f150a49)
 
 
 
+描述
+
+> 给出一个字符串 s 以及 n 个子串。你可以从字符串 s 中移除 n 个子串中的任意一个，使得剩下来 s 的长度最小，输出这个最小长度。
+
+样例
+
+> 给出 s = ccdaabcdbb，子串为 ["ab","cd"]
+>  返回 2.
+
+解释
+
+> ccdaabcdbb -> ccdacdbb -> cabb -> cb (长度为 2)
 
 
+
+```java
+  public int minLength(String s, Set<String> dict) {
+        Queue<String> queue = new LinkedList<String>();
+        Set<String> visited = new HashSet<String>();
+        int min = s.length();
+        queue.add(s);
+        visited.add(s);
+
+        while (!queue.isEmpty()) {
+            String string = queue.poll();
+
+            for (String sub : dict) {
+                int found = string.indexOf(sub);
+
+                while (found != -1) {
+                    String tempStr = string.substring(0, found) + string.substring(found + sub.length(), string.length());
+                    if (!visited.contains(tempStr)) {
+                        if (tempStr.length() < min) {
+                            min = tempStr.length();
+                        }
+                        queue.add(tempStr);
+                        visited.add(tempStr);
+                    }
+                    found = string.indexOf(sub, found + 1);
+                }
+
+            }
+        }
+        return min;
+    }
+```
 
 
 
