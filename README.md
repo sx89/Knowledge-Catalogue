@@ -22,8 +22,8 @@
 - [排序算法总结](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)
 
 ## 大数据
-- [Hbase]()
-- [Hive]()
+- [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
+- [Hive](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hive.md)
 
 ##  MySQL数据库
 
