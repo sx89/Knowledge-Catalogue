@@ -24,7 +24,7 @@
 ## 大数据
 - [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
 - [Hive](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hive.md)
-
+- [Phoenix](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Phoenix.md)
 ##  MySQL数据库
 
 - [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)
