@@ -97,11 +97,11 @@ CREATE INDEX stu_index_name ON stu (name)
 
 但是,select name,sex from stu where name = "sx";是fullscan
 
-![image-20200425215333376](file:///Users/sunxu/mycode/Java-notes/notes/pictures/Phoenix/image-20200425215333376.png?lastModify=1587823670)
+![image-20200425232943288](pictures/Phoenix/image-20200425232943288.png)
 
 因为select还需要sex字段.解决的办法是创建多列索引:CREATE INDEX stu_index_name_sex ON stu  (name) INCLUDE (sex);
 
-![image-20200425215218812](file:///Users/sunxu/mycode/Java-notes/notes/pictures/Phoenix/image-20200425215218812.png?lastModify=1587823670)
+![image-20200425232958799](pictures/Phoenix/image-20200425232958799.png)
 
 此时,索引表里面的结构是:rowkey用name+rowId来表示  value里面存放性别.
 
