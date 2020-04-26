@@ -49,9 +49,13 @@ put ,insert,update,delete,create,select之类的,用到再查
 
 
 
-**Phoenix对表的操作**
+**Phoenix对表的操作,也支持复杂join,比如 grouped joins(或子查询)，以及derived-tables（派生表）的join操作。**
 
 ![image-20200425222441697](pictures/Phoenix/image-20200425222441697.png)
+
+![image-20200426090007632](pictures/Phoenix/image-20200426090007632.png)
+
+![image-20200426090309775](pictures/Phoenix/image-20200426090309775.png)
 
 
 
@@ -60,6 +64,10 @@ put ,insert,update,delete,create,select之类的,用到再查
 当hbase中不存在表的时候,用pheonix的命令创建的时候,会自动关联hbase和pheonix
 
 当hbase中存在表的时候,可以用创建视图的方式关联表,但视图只能查询,不能删改原来的数据表的信息.但视图可以删改.
+
+![image-20200426090353051](pictures/Phoenix/image-20200426090353051.png)
+
+
 
 # Pheonix二级索引
 
@@ -210,15 +218,33 @@ DROP INDEX my_index ON my_table
 
 
 
+### 二级索引的协处理器死循环的情况
+
+![image-20200426082233163](pictures/Phoenix/image-20200426082233163.png)
+
+在put进stu1之后触发,再往stu1里面插入一条数据.会导致死循环.解决办法是用一个flag来标记后一条put数据来自协处理器.
+
+**解决办法**
+
+Hbase需要重启,重启前把协处理器关掉,同时把stu1这张表删除掉.
+
+配置修改处1:
+
+![image-20200426083320666](pictures/Phoenix/image-20200426083320666.png)
 
 
 
+配置修改处2:
+
+![image-20200426083638912](pictures/Phoenix/image-20200426083638912.png)
 
 
 
+### truncate的坑
 
+trucate不只是会删除表里面的数据,还会删除表的元数据,比如原来分区3个,删除得只剩了默认一个分区.
 
+但无法删除协处理器.
 
-
-
+![image-20200426085011420](pictures/Phoenix/image-20200426085011420.png)
 
