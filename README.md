@@ -21,24 +21,12 @@
 - [LeetCode04](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/LeetCode04.md)
 - [排序算法总结](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)
 
-## 大数据
-
-- [Hadoop](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hadoop.md)
-- [Zookeeper](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Zookeeper.md)
-- [Spark](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Spark.md)
-- [Scala](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Scala.md)
-- [Hive](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hive.md)
-- [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
-- [Phoenix](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Phoenix.md)
-- [Flink](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flink.md)
-- [Flume](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flume.md)
-- [Kafka](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Kafka.md)
 ##  MySQL数据库
 
 - [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)
 - [SQL语句](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)
 
-##  分布式知识
+##  分布式框架
 
 - [分布式基础知识](https://github.com/sx89/Java-notes/blob/master/notes/%E5%88%86%E5%B8%83%E5%BC%8F.md)
 - [开发框架-SpringBoot](https://github.com/sx89/summary-of-all-my-repositories)
@@ -68,8 +56,21 @@
 ## Linux 
 
 - [Linux](https://github.com/sx89/Java-notes/blob/master/notes/Linux.md)
+- [Shell]()
 
 
+## 大数据（刚开始，笔记不全）
+
+- [Hadoop](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hadoop.md)
+- [Zookeeper](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Zookeeper.md)
+- [Spark](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Spark.md)
+- [Scala](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Scala.md)
+- [Hive](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hive.md)
+- [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
+- [Phoenix](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Phoenix.md)
+- [Flink](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flink.md)
+- [Flume](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flume.md)
+- [Kafka](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Kafka.md)
 
 
 
