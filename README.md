@@ -22,9 +22,17 @@
 - [排序算法总结](https://github.com/sx89/Java-notes/blob/master/notes/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F.md)
 
 ## 大数据
-- [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
+
+- [Hadoop](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hadoop.md)
+- [Zookeeper](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Zookeeper.md)
+- [Spark](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Spark.md)
+- [Scala](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Scala.md)
 - [Hive](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hive.md)
+- [Hbase](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Hbase.md)
 - [Phoenix](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Phoenix.md)
+- [Flink](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flink.md)
+- [Flume](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Flume.md)
+- [Kafka](https://github.com/sx89/Knowledge-Catalogue/blob/master/notes/Kafka.md)
 ##  MySQL数据库
 
 - [MySQL与数据库原理](https://github.com/sx89/Java-notes/blob/master/notes/MYSQL.md)
