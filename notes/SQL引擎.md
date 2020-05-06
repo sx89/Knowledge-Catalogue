@@ -180,7 +180,21 @@ MySQL使用基于成本的优化器，它尝试预测一个查询使用某种执
 
 <img src="pictures/SQL%E5%BC%95%E6%93%8E/image-20200505084221751.png" alt="image-20200505084221751" style="zoom:50%;" />
 
+从图中可以看到，当用户通过presto-cli或者jdbc接口提交了一个query请求到Presto的Coordinator节点，首先会被解析器(Parser)转换成一颗sql语法树，这一步只是通过预定的分词规则把一个词组结构(List)转换成了树结构(Tree)，但是这时候不能理解这颗树代表的含义是什么？所以被称作Unresovled AST，这时候需要再通过分析器(Analyzer)来绑定元数据(metaData)。
 
+​     数据结构和编译原理知识知道，Tree这种结构或者说AST这种结构有一个非常重要的特性就是可以等价变换，这个特性在其做分析元数据及优化查询时非常有用。在通过等价变换成Unresovled AST后，称为UnOptimized AST这时候通过这颗AST可以基本分析出提交了一个样的语句，其中关联了什么表，这些表的基本结构是怎样的，其中又使用了什么函数等等。绑定元数据的AST后还需针对具体的操作(主要是join)节点进行优化，使用优化器(Optimizer)进行优化转换成Optimized AST。最后把优化后AST进行逻辑分段，变成可供分布式分析的分段逻辑执行计划。
+
+​     下面以Presto为例具体实际分析怎么实施。
+
+## Parser
+
+Parser的过程实际是一个把sql语句根据分词规则及语法规则再组装成基本AST的过程。当前大部分都是使用的Antlr4工具。从源码的角度看：
+
+presto-main模块的execution包中SqlQueryManager的createQuery发起了Query操作，
+
+Antlr4工具具体分为lexer和parser，lexer叫做词法分析器，而parser叫做语法分析器。举个小例子，以下面这个定义chars sp =100来说，会先根据定义好的tokens进行分词，再语法分析成AST：
+
+而presto它的lexer是在presto-parser中定义，其中分词器:
 
 
 
