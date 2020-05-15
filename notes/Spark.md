@@ -50,6 +50,44 @@ Worker可以被yarn的NodeManager代替（资源管理可以被替代）但是�
 
 
 
+## Driver与Excetor
+
+todo
+
+![image-20200514214836700](pictures/Spark/image-20200514214836700.png)
+
+
+
+## WordCount思路
+
+<img src="pictures/Spark/image-20200515083032331.png" alt="image-20200515083032331" style="zoom:50%;" />
+
+
+
+<img src="pictures/Spark/image-20200515084905898.png" alt="image-20200515084905898" style="zoom:50%;" />
+
+<img src="pictures/Spark/image-20200515090029542.png" alt="image-20200515090029542" style="zoom:50%;" />
+
+## Spark在Yarn下运行
+
+## 使用yarn
+
+<img src="pictures/Spark/image-20200515105355707.png" alt="image-20200515105355707" style="zoom:50%;" />
+
+<img src="pictures/Spark/image-20200515105318425.png" alt="image-20200515105318425" style="zoom:50%;" />
+
+## 原理
+
+### Yarn的架构
+
+<img src="pictures/Spark/image-20200515160953190.png" alt="image-20200515160953190" style="zoom:50%;" />
+
+
+
+### Spark向Yarn提交任务的过程
+
+<img src="pictures/Spark/image-20200515161613951.png" alt="image-20200515161613951" style="zoom:50%;" />
+
 # RDD
 
 ## RDD介绍
