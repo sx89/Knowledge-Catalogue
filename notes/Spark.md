@@ -258,6 +258,54 @@ RDD整体上分为Value类型和Key-Value类型
 
 <img src="pictures/Spark/image-20200516164459237.png" alt="image-20200516164459237" style="zoom:50%;" />
 
+####  mapPartitions(func) 案例
+
+作用：类似于map，但独立地在RDD的每一个分片上运行，因此在类型为T的RDD上运行时，func的函数类型必须是Iterator[T] => Iterator[U]。假设有N个元素，有M个分区，那么map的函数的将被调用N次,而mapPartitions被调用M次,一个函数一次处理所有分区。
+
+#### mapPartitionsWithIndex(func) 案例
+
+作用：类似于mapPartitions，但func带有一个整数参数表示分片的索引值，因此在类型为T的RDD上运行时，func的函数类型必须是(Int, Interator[T]) => Iterator[U]；
+
+### Driver与Excetor之间数据的传递
+
+<img src="pictures/Spark/image-20200516221828499.png" alt="image-20200516221828499" style="zoom:50%;" />
+
+Driver和Executor分别执行不同的代码：
+
+<img src="pictures/Spark/image-20200516222040447.png" alt="image-20200516222040447" style="zoom:50%;" />
+
+这就会涉及到如果Driver和Executor不在同一台机器，i的传播问题，如果i不能被序列化，则i无法在不同机器间传播，则会报错。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## RDD 的持久化
 
 ### RDD 的 cache(持久化)
