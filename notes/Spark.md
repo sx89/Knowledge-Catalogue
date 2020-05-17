@@ -1714,6 +1714,76 @@ DAG(Directed Acyclic Graph)叫做有向无环图，原始的RDD通过一系列�
 
 
 
+### 任务划分（面试重点）
+
+RDD任务切分中间分为：Application、Job、Stage和Task
+
+1）Application：初始化一个SparkContext即生成一个Application
+
+2）Job：一个**Action算子**就会生成一个Job
+
+3）Stage：根据RDD之间的依赖关系的不同将Job划分成不同的Stage，遇到一个宽依赖则划分一个Stage。
+
+
+
+4）Task：Stage是一个TaskSet，将Stage划分的结果发送到不同的Executor执行即为一个Task。
+
+注意：Application->Job->Stage-> Task每一层都是1对n的关系。
+
+
+
+<img src="pictures/Spark/image-20200517202141570.png" alt="image-20200517202141570" style="zoom:50%;" />
+
+
+
+**分析**
+
+**比如该图，初始化了一个sc，则有一个application。**
+
+**每有一个action算子，就有一个job，上图有一个action算子，故有一个job**
+
+**一个job中，根据宽依赖和窄依赖（或者说shuffle出现的次数+1）划分成多个stage**
+
+**每个stage中，有多个partition，比如stage2，由于flatmap到map没有shuffle，所以该分区的flatmap和map是串行的，放在一个task里面就可以。**
+
+
+
+##  RDD缓存
+
+RDD通过persist方法或cache方法可以将前面的计算结果缓存，默认情况下 persist() 会把数据以序列化的形式缓存在 JVM 的堆空间中。 
+
+但是并不是这两个方法被调用时立即缓存，而是触发后面的action时，该RDD将会被缓存在计算节点的内存中，并供后面重用。
+
+通过查看源码发现cache最终也是调用了persist方法，默认的存储级别都是仅在内存存储一份，Spark的存储级别还有好多种，存储级别在object StorageLevel中定义的。
+
+<img src="pictures/Spark/image-20200517205139435.png" alt="image-20200517205139435" style="zoom:50%;" />
+
+缓存有可能丢失，或者存储存储于内存的数据由于内存不足而被删除，RDD的缓存容错机制保证了即使缓存丢失也能保证计算的正确执行。通过基于RDD的一系列转换，丢失的数据会被重算，由于RDD的各个Partition是相对独立的，因此只需要计算丢失的部分即可，并不需要重算全部Partition。
+
+**关于OFF_HEAP，指的是堆外内存（jvm外面的内存，属于用户向操作系统申请），因为堆内内存的gc是由垃圾收集器自动控制的，不能切换手动，如果在堆内存储数据，无法跟随用户心意马上gc。所以为了实现用户可以对存储数据有强控制，所以在堆外申请一块内存，当用户想清除该内存的数据时，操作系统便会立马清除数据。**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## RDD 的持久化
 
 ### RDD 的 cache(持久化)
