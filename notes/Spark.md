@@ -2227,7 +2227,7 @@ Class.forName ("com.mysql.jdbc.Driver").newInstance()
 
 
 
-### HBase数据库
+#### HBase数据库
 
 由于 org.apache.hadoop.hbase.mapreduce.TableInputFormat 类的实现，Spark 可以通过Hadoop输入格式访问HBase。这个输入格式会返回键值对数据，其中键的类型为org. apache.hadoop.hbase.io.ImmutableBytesWritable，而值的类型为org.apache.hadoop.hbase.client.
 
