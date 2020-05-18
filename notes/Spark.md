@@ -1822,17 +1822,416 @@ res58: Array[String] = Array(atguigu1538981860504)
 
 
 
+## 键值对RDD数据分区器
 
 
 
+Spark目前支持Hash分区和Range分区，用户也可以自定义分区，Hash分区为当前的默认分区，Spark中分区器直接决定了RDD中分区的个数、RDD中每条数据经过Shuffle过程属于哪个分区和Reduce的个数
+
+注意：
+
+**(1)只有Key-Value类型的RDD才有分区器的，非Key-Value类型的RDD分区器的值是None
+ (2)每个RDD的分区ID范围：0~numPartitions-1，决定这个值是属于那个分区的。**
+
+### Hash分区
+
+HashPartitioner分区的原理：对于给定的key，计算其hashCode，并除以分区的个数取余，如果余数小于0，则用余数+分区的个数（否则加0），最后返回的值就是这个key所属的分区ID。
+
+使用Hash分区的实操
+
+```
+scala> nopar.partitioner
+
+res20: Option[org.apache.spark.Partitioner] = None
+scala> val nopar = sc.parallelize(List((1,3),(1,2),(2,4),(2,3),(3,6),(3,8)),8)
+
+nopar: org.apache.spark.rdd.RDD[(Int, Int)] = ParallelCollectionRDD[10] at parallelize at <console>:24
+
+scala>nopar.mapPartitionsWithIndex((index,iter)=>{ Iterator(index.toString+" : "+iter.mkString("|")) }).collect
+
+res0: Array[String] = Array("0 : ", 1 : (1,3), 2 : (1,2), 3 : (2,4), "4 : ", 5 : (2,3), 6 : (3,6), 7 : (3,8)) 
+
+scala> val hashpar = nopar.partitionBy(new org.apache.spark.HashPartitioner(7))
+
+hashpar: org.apache.spark.rdd.RDD[(Int, Int)] = ShuffledRDD[12] at partitionBy at <console>:26
+
+scala> hashpar.count
+
+res18: Long = 6
+
+scala> hashpar.partitioner
+
+res21: Option[org.apache.spark.Partitioner] = Some(org.apache.spark.HashPartitioner@7)
+
+ 
+
+scala> hashpar.mapPartitions(iter => Iterator(iter.length)).collect()
+
+res19: Array[Int] = Array(0, 3, 1, 2, 0, 0, 0)
+```
 
 
 
+### Ranger分区
+
+HashPartitioner分区弊端：可能导致每个分区中数据量的不均匀，极端情况下会导致某些分区拥有RDD的全部数据。
+
+RangePartitioner作用：将一定范围内的数映射到某一个分区内，尽量保证每个分区中数据量的均匀，而且分区与分区之间是有序的，一个分区中的元素肯定都是比另一个分区内的元素小或者大，但是分区内的元素是不能保证顺序的。简单的说就是将一定范围内的数映射到某一个分区内。实现过程为：
+
+第一步：先重整个RDD中抽取出样本数据，将样本数据排序，计算出每个分区的最大key值，形成一个Array[KEY]类型的数组变量rangeBounds；
+
+第二步：判断key在rangeBounds中所处的范围，给出该key值在下一个RDD中的分区id下标；该分区器要求RDD中的KEY类型必须是可以排序的
+
+### 自定义分区
+
+要实现自定义的分区器，你需要继承 org.apache.spark.Partitioner 类并实现下面三个方法。 
+
+（1）numPartitions: Int:返回创建出来的分区数。
+
+（2）getPartition(key: Any): Int:返回给定键的分区编号(0到numPartitions-1)。 
+
+（3）equals():Java 判断相等性的标准方法。这个方法的实现非常重要，Spark 需要用这个方法来检查你的分区器对象是否和其他分区器实例相同，这样 Spark 才可以判断两个 RDD 的分区方式是否相同。
+
+需求：将相同后缀的数据写入相同的文件，通过将相同后缀的数据分区到相同的分区并保存输出来实现。
+
+## 数据读取与保存
+
+   Spark的数据读取及数据保存可以从两个维度来作区分：文件格式以及文件系统。
+
+文件格式分为：Text文件、Json文件、Csv文件、Sequence文件以及Object文件；
+
+文件系统分为：本地文件系统、HDFS、HBASE以及数据库
+
+### 文件类数据读取与保存
+
+#### Text文件
+
+```
+1）数据读取:textFile(String)
+
+scala> val hdfsFile = sc.textFile("hdfs://hadoop102:9000/fruit.txt")
+
+hdfsFile: org.apache.spark.rdd.RDD[String] = hdfs://hadoop102:9000/fruit.txt MapPartitionsRDD[21] at textFile at <console>:24
+
+2）数据保存: saveAsTextFile(String)
+
+scala> hdfsFile.saveAsTextFile("/fruitOut")
+```
+
+​                               
+
+#### Json文件
+
+如果JSON文件中每一行就是一个JSON记录，那么可以通过将JSON文件当做文本文件来读取，然后利用相关的JSON库对每一条数据进行JSON解析。
+
+注意：使用RDD读取JSON文件处理很复杂，同时SparkSQL集成了很好的处理JSON文件的方式，所以应用中多是采用SparkSQL处理JSON文件。
+
+```
+（1）导入解析json所需的包
+
+scala> import scala.util.parsing.json.JSON
+
+（2）上传json文件到HDFS
+
+[atguigu@hadoop102 spark]$ hadoop fs -put ./examples/src/main/resources/people.json /
+
+（3）读取文件
+
+scala> val json = sc.textFile("/people.json")
+
+json: org.apache.spark.rdd.RDD[String] = /people.json MapPartitionsRDD[8] at textFile at <console>:24
+
+（4）解析json数据
+
+scala> val result = json.map(JSON.parseFull)
+
+result: org.apache.spark.rdd.RDD[Option[Any]] = MapPartitionsRDD[10] at map at <console>:27
+
+（5）打印
+
+scala> result.collect
+
+res11: Array[Option[Any]] = Array(Some(Map(name -> Michael)), Some(Map(name -> Andy, age -> 30.0)), Some(Map(name -> Justin, age -> 19.0)))
+```
 
 
 
+#### 对象文件
+
+对象文件是将对象序列化后保存的文件，采用Java的序列化机制。可以通过objectFile[k,v](path) 函数接收一个路径，读取对象文件，返回对应的 RDD，也可以通过调用saveAsObjectFile() 实现对对象文件的输出。因为是序列化所以要指定类型。
+
+```
+（1）创建一个RDD
+
+scala> val rdd = sc.parallelize(Array(1,2,3,4))
+
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[19] at parallelize at <console>:24
+
+（2）将RDD保存为Object文件
+
+scala> rdd.saveAsObjectFile("file:///opt/module/spark/objectFile")
+
+（3）查看该文件
+
+[atguigu@hadoop102 objectFile]$ pwd
+
+/opt/module/spark/objectFile
+
+[atguigu@hadoop102 objectFile]$ ll
+
+总用量 8
+
+-rw-r--r-- 1 atguigu atguigu 142 10月 9 10:37 part-00000
+
+-rw-r--r-- 1 atguigu atguigu 142 10月 9 10:37 part-00001
+
+-rw-r--r-- 1 atguigu atguigu  0 10月 9 10:37 _SUCCESS
+
+[atguigu@hadoop102 objectFile]$ cat part-00000 
+
+SEQ!org.apache.hadoop.io.NullWritable"org.apache.hadoop.io.BytesWritableW@`l
+
+（4）读取Object文件
+
+scala> val objFile = sc.objectFile[Int]("file:///opt/module/spark/objectFile")
+
+objFile: org.apache.spark.rdd.RDD[Int] = MapPartitionsRDD[31] at objectFile at <console>:24
+
+（5）打印读取后的Sequence文件
+
+scala> objFile.collect
+
+res19: Array[Int] = Array(1, 2, 3, 4)
+```
 
 
+
+### 文件系统类数据读取与保存
+
+####  HDFS
+
+Spark的整个生态系统与Hadoop是完全兼容的,所以对于Hadoop所支持的文件类型或者数据库类型,Spark也同样支持.另外,由于Hadoop的API有新旧两个版本,所以Spark为了能够兼容Hadoop所有的版本,也提供了两套创建操作接口.对于外部存储创建操作而言,hadoopRDD和newHadoopRDD是最为抽象的两个函数接口,主要包含以下四个参数.
+
+1）输入格式(InputFormat): 制定数据输入的类型,如TextInputFormat等,新旧两个版本所引用的版本分别是org.apache.hadoop.mapred.InputFormat和org.apache.hadoop.mapreduce.InputFormat(NewInputFormat)
+
+2）键类型: 指定[K,V]键值对中K的类型
+
+3）值类型: 指定[K,V]键值对中V的类型
+
+4）分区值: 指定由外部存储生成的RDD的partition数量的最小值,如果没有指定,系统会使用默认值defaultMinSplits
+
+**注意:**其他创建操作的API接口都是为了方便最终的Spark程序开发者而设置的,是这两个接口的高效实现版本.例如,对于textFile而言,只有path这个指定文件路径的参数,其他参数在系统内部指定了默认值。
+
+1.在Hadoop中以压缩形式存储的数据,不需要指定解压方式就能够进行读取,因为Hadoop本身有一个解压器会根据压缩文件的后缀推断解压算法进行解压.
+
+2.如果用Spark从Hadoop中读取某种类型的数据不知道怎么读取的时候,上网查找一个使用map-reduce的时候是怎么读取这种这种数据的,然后再将对应的读取方式改写成上面的hadoopRDD和newAPIHadoopRDD两个类就行了
+
+#### MySQL数据库连接
+
+支持通过Java JDBC访问关系型数据库。需要通过JdbcRDD进行，示例如下:
+
+```scala
+（1）添加依赖
+<dependency>
+   <groupId>mysql</groupId>
+   <artifactId>mysql-connector-java</artifactId>
+   <version>5.1.27</version>
+ </dependency>
+
+（2）Mysql读取：
+package com.atguigu
+
+import java.sql.DriverManager
+
+import org.apache.spark.rdd.JdbcRDD
+
+import org.apache.spark.{SparkConf, SparkContext}
+
+object MysqlRDD {
+
+ def main(args: Array[String]): Unit = {
+  //1.创建spark配置信息
+  val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("JdbcRDD")
+
+  //2.创建SparkContext
+
+  val sc = new SparkContext(sparkConf)
+
+  //3.定义连接mysql的参数
+
+  val driver = "com.mysql.jdbc.Driver"
+
+  val url = "jdbc:mysql://hadoop102:3306/rdd"
+
+  val userName = "root"
+
+  val passWd = "000000"
+
+  //创建JdbcRDD
+
+  val rdd = new JdbcRDD(sc, () => {
+
+   Class.forName(driver)
+
+   DriverManager.getConnection(url, userName, passWd)
+
+  },
+
+   "select * from `rddtable` where `id`>=?;",
+   1,
+   10,
+   1,
+   r => (r.getInt(1), r.getString(2))
+
+  )
+
+  //打印最后结果
+  println(rdd.count())
+  rdd.foreach(println
+  sc.stop()
+
+ }
+}
+Mysql写入：
+
+def main(args: Array[String]) {
+  val sparkConf = new SparkConf().setMaster("local[2]").setAppName("HBaseApp")
+  val sc = new SparkContext(sparkConf)
+  val data = sc.parallelize(List("Female", "Male","Female"))
+ 
+  data.foreachPartition(insertData)
+ }
+ 
+ def insertData(iterator: Iterator[String]): Unit = {
+
+Class.forName ("com.mysql.jdbc.Driver").newInstance()
+  val conn = java.sql.DriverManager.getConnection("jdbc:mysql://hadoop102:3306/rdd", "root", "000000")
+  iterator.foreach(data => {
+   val ps = conn.prepareStatement("insert into rddtable(name) values (?)")
+   ps.setString(1, data) 
+   ps.executeUpdate()
+  })
+ }
+```
+
+
+
+### HBase数据库
+
+由于 org.apache.hadoop.hbase.mapreduce.TableInputFormat 类的实现，Spark 可以通过Hadoop输入格式访问HBase。这个输入格式会返回键值对数据，其中键的类型为org. apache.hadoop.hbase.io.ImmutableBytesWritable，而值的类型为org.apache.hadoop.hbase.client.
+
+Result。
+
+```scala
+（1）添加依赖
+<dependency>
+	<groupId>org.apache.hbase</groupId>
+	<artifactId>hbase-server</artifactId>
+	<version>1.3.1</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.hbase</groupId>
+	<artifactId>hbase-client</artifactId>
+	<version>1.3.1</version>
+</dependency>
+（2）从HBase读取数据
+package com.atguigu
+
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.hbase.HBaseConfiguration
+import org.apache.hadoop.hbase.client.Result
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.mapreduce.TableInputFormat
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.hadoop.hbase.util.Bytes
+
+object HBaseSpark {
+
+  def main(args: Array[String]): Unit = {
+
+    //创建spark配置信息
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("JdbcRDD")
+
+    //创建SparkContext
+    val sc = new SparkContext(sparkConf)
+
+    //构建HBase配置信息
+    val conf: Configuration = HBaseConfiguration.create()
+    conf.set("hbase.zookeeper.quorum", "hadoop102,hadoop103,hadoop104")
+    conf.set(TableInputFormat.INPUT_TABLE, "rddtable")
+
+    //从HBase读取数据形成RDD
+    val hbaseRDD: RDD[(ImmutableBytesWritable, Result)] = sc.newAPIHadoopRDD(
+      conf,
+      classOf[TableInputFormat],
+      classOf[ImmutableBytesWritable],
+      classOf[Result])
+
+    val count: Long = hbaseRDD.count()
+    println(count)
+
+    //对hbaseRDD进行处理
+    hbaseRDD.foreach {
+      case (_, result) =>
+        val key: String = Bytes.toString(result.getRow)
+        val name: String = Bytes.toString(result.getValue(Bytes.toBytes("info"), Bytes.toBytes("name")))
+        val color: String = Bytes.toString(result.getValue(Bytes.toBytes("info"), Bytes.toBytes("color")))
+        println("RowKey:" + key + ",Name:" + name + ",Color:" + color)
+    }
+
+    //关闭连接
+    sc.stop()
+  }
+
+}
+3）往HBase写入
+
+
+
+def main(args: Array[String]) {
+//获取Spark配置信息并创建与spark的连接
+  val sparkConf = new SparkConf().setMaster("local[*]").setAppName("HBaseApp")
+  val sc = new SparkContext(sparkConf)
+
+//创建HBaseConf
+  val conf = HBaseConfiguration.create()
+  val jobConf = new JobConf(conf)
+  jobConf.setOutputFormat(classOf[TableOutputFormat])
+  jobConf.set(TableOutputFormat.OUTPUT_TABLE, "fruit_spark")
+
+//构建Hbase表描述器
+  val fruitTable = TableName.valueOf("fruit_spark")
+  val tableDescr = new HTableDescriptor(fruitTable)
+  tableDescr.addFamily(new HColumnDescriptor("info".getBytes))
+
+//创建Hbase表
+  val admin = new HBaseAdmin(conf)
+  if (admin.tableExists(fruitTable)) {
+    admin.disableTable(fruitTable)
+    admin.deleteTable(fruitTable)
+  }
+  admin.createTable(tableDescr)
+
+//定义往Hbase插入数据的方法
+  def convert(triple: (Int, String, Int)) = {
+    val put = new Put(Bytes.toBytes(triple._1))
+    put.addImmutable(Bytes.toBytes("info"), Bytes.toBytes("name"), Bytes.toBytes(triple._2))
+    put.addImmutable(Bytes.toBytes("info"), Bytes.toBytes("price"), Bytes.toBytes(triple._3))
+    (new ImmutableBytesWritable, put)
+  }
+
+//创建一个RDD
+  val initialRDD = sc.parallelize(List((1,"apple",11), (2,"banana",12), (3,"pear",13)))
+
+//将RDD内容写到HBase
+  val localData = initialRDD.map(convert)
+
+  localData.saveAsHadoopDataset(jobConf)
+}
+
+```
 
 
 
