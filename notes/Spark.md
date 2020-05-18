@@ -163,11 +163,25 @@ Worker可以被yarn的NodeManager代替（资源管理可以被替代）但是�
 
 ## Driver与Excetor
 
-todo
+### Driver（驱动器）
 
-![image-20200514214836700](pictures/Spark/image-20200514214836700.png)
+Spark的驱动器是执行开发程序中的main方法的进程。它负责开发人员编写的用来创建SparkContext、创建RDD，以及进行RDD的转化操作和行动操作代码的执行。如果你是用spark shell，那么当你启动Spark shell的时候，系统后台自启了一个Spark驱动器程序，就是在Spark shell中预加载的一个叫作 sc的SparkContext对象。如果驱动器程序终止，那么Spark应用也就结束了。主要负责：
 
+1）把用户程序转为作业（JOB）
 
+2）跟踪Executor的运行状况
+
+3）为执行器节点调度任务
+
+4）UI展示应用运行状况
+
+### Executor（执行器）
+
+Spark Executor是一个工作进程，负责在 Spark 作业中运行任务，任务间相互独立。Spark 应用启动时，Executor节点被同时启动，并且始终伴随着整个 Spark 应用的生命周期而存在。如果有Executor节点发生了故障或崩溃，Spark 应用也可以继续执行，会将出错节点上的任务调度到其他Executor节点上继续运行。主要负责：
+
+1）负责运行组成 Spark 应用的任务，并将结果返回给驱动器进程；
+
+2）通过自身的块管理器（Block Manager）为用户程序中要求缓存的RDD提供内存式存储。RDD是直接缓存在Executor进程内的，因此任务可以在运行时充分利用缓存数据加速运算。
 
 ## WordCount思路
 
@@ -181,9 +195,30 @@ todo
 
 
 
-### 代码TODO
+```scala
+package com.atguigu
 
+import org.apache.spark.{SparkConf, SparkContext}
 
+object WordCount{
+
+  def main(args: Array[String]): Unit = {
+
+//1.创建SparkConf并设置App名称
+    val conf = new SparkConf().setAppName("WC")
+
+//2.创建SparkContext，该对象是提交Spark App的入口
+    val sc = new SparkContext(conf)
+
+    //3.使用sc创建RDD并执行相应的transformation和action
+    sc.textFile(args(0)).flatMap(_.split(" ")).map((_, 1)).reduceByKey(_+_, 1).sortBy(_._2, false).saveAsTextFile(args(1))
+
+//4.关闭连接
+    sc.stop()
+  }
+}
+
+```
 
 
 
