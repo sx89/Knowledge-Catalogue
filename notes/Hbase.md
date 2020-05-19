@@ -1,3 +1,47 @@
+
+<!-- TOC -->
+
+- [Hbase基础](#hbase基础)
+    - [分布式知识](#分布式知识)
+        - [负载均衡](#负载均衡)
+            - [负载均衡-客户端决定访问机器](#负载均衡-客户端决定访问机器)
+            - [负载均衡-去中心化](#负载均衡-去中心化)
+    - [Hbase的特点](#hbase的特点)
+    - [Hbase存储设计与mysql对比](#hbase存储设计与mysql对比)
+        - [mysql的水平垂直切分  与 列的动态扩展](#mysql的水平垂直切分--与-列的动态扩展)
+            - [一条查询语句,mysql是从左向右查,oracle是从右向左查.](#一条查询语句mysql是从左向右查oracle是从右向左查)
+            - [宽表与高表](#宽表与高表)
+            - [列的动态扩展](#列的动态扩展)
+            - [mysql的弊端](#mysql的弊端)
+        - [Hbase的解决方法](#hbase的解决方法)
+            - [列拆分:](#列拆分)
+            - [行拆分:](#行拆分)
+            - [加缓存:](#加缓存)
+            - [零拷贝:](#零拷贝)
+            - [Kafka的吞吐量高的原因:顺序写入+零拷贝+分段日志](#kafka的吞吐量高的原因顺序写入零拷贝分段日志)
+- [Hbase存储结构](#hbase存储结构)
+    - [逻辑结构](#逻辑结构)
+        - [Name Space](#name-space)
+        - [Row](#row)
+        - [Row Key](#row-key)
+        - [列族](#列族)
+            - [Region](#region)
+            - [Store](#store)
+    - [物理存储(store的实际存储方式)](#物理存储store的实际存储方式)
+        - [Type](#type)
+        - [时间戳](#时间戳)
+        - [Cell](#cell)
+    - [Hbase基本结构(不完整版)](#hbase基本结构不完整版)
+        - [1）Region Server(数据操作DML)](#1region-server数据操作dml)
+        - [2）Master(表操作DDL)](#2master表操作ddl)
+        - [3）Zookeeper](#3zookeeper)
+        - [4）HDFS](#4hdfs)
+    - [存储架构](#存储架构)
+        - [Table](#table)
+
+<!-- /TOC -->
+
+
 # Hbase基础
 
 ## 分布式知识
