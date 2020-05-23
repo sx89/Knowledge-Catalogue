@@ -148,7 +148,51 @@ Stream在operator之间传输数据的形式可以是one-to-one(forwarding)的�
 
 
 
+##  Flink中的数据类型和处理模型
 
+Flink中的数据类型有有界数据流和无界数据流，所谓有界数据流指的是有边界的数据，比如批次数据、流式数据中的窗口数据。无界数据流指的是没有边界的数据流，比如源源不断产生的流式数据。
+
+Flink中三种处理数据模型：
+
+l Flink批处理
+
+Flink批处理中处理的有界数据流
+
+l Flin流式处理
+
+Flink流式处理中处理的有有界数据流也有无界数据流
+
+l FlinSQL处理
+
+FlinkSQL中处理的有有界数据流也有无界数据流
+
+## Flink Source和Sink
+
+l 数据源Source
+
+Source 是Flink获取数据的地方。以下source中和批处理的source类似，但是以下源作为dataStream流处理时，是一条条处理，最终得到的不是一个总结果，而是每次处理后都会得到一个结果。
+
+1) socketTextStream – 读取Socket数据流
+
+2) readTextFile() -- 逐行读取文本文件获取数据流，每行都返回字符串。
+
+3) fromCollection() – 从集合中创建数据流。 
+
+4) fromElements – 从给定的数据对象创建数据流，所有数据类型要一致。
+
+5) addSource – 添加新的源函数,例如从kafka中读取数据，参见读取kafka数据案例。
+
+ 
+
+l 数据写出 Sink
+
+1) writeAsText() – 以字符串的形式逐行写入文件，调用每个元素的toString()得到写入的字符串。
+
+2) writeAsCsv() – 将元组写出以逗号分隔的csv文件。注意：只能作用到元组数据上。
+
+3) print() – 控制台直接输出结果，调用对象的toString()方法得到输出结果。
+
+addSink() – 自定义接收函数。例如将结果保存到kafka中，参见kafka案例。
 
 
 
