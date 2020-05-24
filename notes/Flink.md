@@ -196,17 +196,39 @@ addSink() – 自定义接收函数。例如将结果保存到kafka中，参见k
 
 
 
+## Flink术语
+
+ Dataflows:
+
+<img src="pictures/Flink/image-20200524125844685.png" alt="image-20200524125844685" style="zoom:50%;" />
 
 
 
+l parallel Dataflows:
+
+<img src="pictures/Flink/image-20200524125902648.png" alt="image-20200524125902648" style="zoom:50%;" />
 
 
 
+l Task 和算子链 :
+
+<img src="pictures/Flink/image-20200524125920823.png" alt="image-20200524125920823" style="zoom:50%;" />
 
 
 
+## Flink角色
 
+JobManager、TaskManager和clients:
 
+<img src="pictures/Flink/image-20200524125939046.png" alt="image-20200524125939046" style="zoom:50%;" />
 
+Flink运行时包含两种类型的进程：
 
+JobManger:也叫作masters,协调分布式执行，调度task,协调checkpoint，协调故障恢复。在Flink程序中至少有一个JobManager,高可用可以设置多个JobManager,其中一个是Leader,其他都是standby状态。
+
+TaskManager:也叫workers,执行dataflow生成的task,负责缓冲数据，及TaskManager之间的交换数据。Flink程序中必须有一个TaskManager.
+
+Flink程序可以运行在standalone集群，Yarn或者Mesos资源调度框架中。
+
+clients不是Flink程序运行时的一部分，作用是向JobManager准备和发送dataflow,之后，客户端可以断开连接或者保持连接。
 
