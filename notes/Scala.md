@@ -127,9 +127,6 @@ Scala `Option[T]`是由给定类型的零或一个元素的一种容器。`Optio
 
 ```scala
 def findPerson(key: Int): Option[Person]
-
-
-Scala
 ```
 
 如果找到记录，该方法将返回`Some [Person]`，如果没有找到该记录，则返回`None`。下面来看看看以下程序代码 - 
@@ -146,8 +143,6 @@ object Demo {
    }
 }
 
-
-Scala
 ```
 
 将上述程序保存在源文件：*Demo.scala*中，使用以下命令编译和执行此程序。
@@ -158,8 +153,6 @@ D:\>scala Demo
 capitals.get( "France" ) : Some(Paris)
 capitals.get( "India" ) : None
 
-
-Shell
 ```
 
 将可选值分开的最常见方法是通过模式匹配。例如尝试以下程序 - 
@@ -254,7 +247,62 @@ a.isEmpty: false
 b.isEmpty: true
 ```
 
-//原文出自【易百教程】，商业转载请联系作者获得授权，非商业转载请保留原文链接：https://www.yiibai.com/scala/scala_options.html 
+
+
+
+
+# 对象与类
+
+## object
+
+在scala中没有静态方法和静态字段，所以在scala中可以用object来实现这些功能，直接用对象名调用的方法都是采用这种实现方式，例如Array.toString。对象的构造器在第一次使用的时候会被调用，如果一个对象从未被使用，那么他的构造器也不会被执行；对象本质上拥有类（scala中）的所有特性，除此之外，object还可以一扩展类以及一个或者多个特质：例如，
+
+```
+abstract class ClassName（val parameter）{}
+
+object Test extends ClassName(val parameter){}
+
+
+
+trait TraitA{}
+trait TraitB{}
+trait TraitC{}
+object Test1 extends TraitA with TraitB with TraitC{}
+注意：object不能提供构造器参数，也就是说object必须是无参的
+```
+
+我们通常会定义和使用object的apply方法，有如下情形，apply方法就会被调用，Object（参数1 ，参数2 ，……）这样是隐含的调用apply方法，当然也可以显示的调用，如下Array（"Mary","tong"）,当然也可以这样来写Array.apply（"Mary","tong"）,一般我们提倡隐式的写法。
+
+所有的main方法都必须在object中被调用，来提供程序的主入口，十分简单，不举例说明，处理main方法以外，scala中还提供了扩展App特质，然后将程序代码放入都早起方法体内，如
+
+```
+object Hello extends App{
+
+   println（"Hello World ！！！"）
+
+}
+```
+
+这样的代码可以直接执行，输出
+
+如果需要命令行参数，可以直接调用args属性来得到，例如
+
+```
+def main(args: Array[String]) {
+  if (args.length > 0 )
+    println("Hello " + args(0))
+  else 
+    println("Hello World")
+}
+```
+
+## class
+
+在scala中，类名可以和对象名为同一个名字，该对象称为该类的伴生对象，类和伴生对象可以相互访问他们的私有属性，但是
+他们必须在同一个源文件内。类只会被编译，不能直接被执行，类的申明和主构造器在一起被申明，在一个类中，主构造器只有一个，
+所有必须在内部申明主构造器或者是其他申明主构造器的辅构造器，主构造器会执行类定义中的所有语句。scala对每个字段都会提供
+getter和setter方法，同时也可以显示的申明，但是针对val类型，只提供getter方法，默认情况下，字段为公有类型，可以在setter
+方法中增加限制条件来限定变量的变化范围，在scala中方法可以访问改类所有对象的私有字段
 
 
 
