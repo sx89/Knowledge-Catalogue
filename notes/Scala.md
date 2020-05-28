@@ -338,11 +338,126 @@ val myVal = "Hello, Scala!";
 
 
 
+# Scala Trait(特征)
+
+Scala Trait(特征) 相当于 Java 的接口，实际上它比接口还功能强大。
+
+与接口不同的是，它还可以定义属性和方法的实现。
+
+一般情况下Scala的类只能够继承单一父类，但是如果是 Trait(特征) 的话就可以继承多个，从结果来看就是实现了多重继承。
+
+Trait(特征) 定义的方式与类类似，但它使用的关键字是 **trait**，如下所示：
+
+```
+trait Equal {
+  def isEqual(x: Any): Boolean
+  def isNotEqual(x: Any): Boolean = !isEqual(x)
+}
+```
+
+以上Trait(特征)由两个方法组成：**isEqual** 和 **isNotEqual**。isEqual 方法没有定义方法的实现，isNotEqual定义了方法的实现。子类继承特征可以实现未被实现的方法。所以其实 Scala Trait(特征)更像 Java 的抽象类。
+
+以下演示了特征的完整实例：
+
+```
+/* 文件名：Test.scala
+ * author:菜鸟教程
+ * url:www.runoob.com
+ */
+trait Equal {
+  def isEqual(x: Any): Boolean
+  def isNotEqual(x: Any): Boolean = !isEqual(x)
+}
+
+class Point(xc: Int, yc: Int) extends Equal {
+  var x: Int = xc
+  var y: Int = yc
+  def isEqual(obj: Any) =
+    obj.isInstanceOf[Point] &&
+    obj.asInstanceOf[Point].x == x
+}
+
+object Test {
+   def main(args: Array[String]) {
+      val p1 = new Point(2, 3)
+      val p2 = new Point(2, 4)
+      val p3 = new Point(3, 3)
+
+      println(p1.isNotEqual(p2))
+      println(p1.isNotEqual(p3))
+      println(p1.isNotEqual(2))
+   }
+}
+```
+
+执行以上代码，输出结果为：
+
+```
+$ scalac Test.scala 
+$ scala Test
+false
+true
+true
+```
 
 
 
+# with关键字
 
+```
+class A extends B with C with D with E 1
+```
 
+解读方式：
+
+```
+class A extends (B with C with D with E)1
+```
+
+*(B with C with D with E)*首先是一个整体，再由 A 去继承。
+注：对于Java中的菱形继承问题；Scala的解决策略是：
+\1. 继承*class*混入*trait*：(*extends SuperClass with subClass|subTrait with …* ) 必须是一个继承链(左->右)
+\2. 继承无关的多*trait*：(*class extends T1 with T2 with …*), T1和T2中相同字段或方法时，会编译错误-inherits conflicting members…(继承成员冲突)。如：
+
+```
+trait T1 { val a = 1 }
+trait T2 { val b = 2 }
+class SubClass extends T1 with T2123
+```
+
+编译会报错：Error:(7, 7) class SubClass inherits conflicting members:
+
+------
+
+**复合类型**：
+
+```
+T1 with T2 with T3 ...1
+```
+
+这种形式的类型-**复合类型**(compound type)，或**交集类型**(intersection type)。
+
+- 在方法声明***参数类型\*** 时使用复合类型：
+
+```
+def func (x: T1 with T2) = { println("hello") }
+
+func(new T1 with T2)123
+```
+
+- ***type声明\*** 复合类型：
+
+```
+type T = X1 with X2
+
+def func (x: T) = { println("hello") }123
+```
+
+- 复合类型中使用***结构类型\***：
+
+```
+def func (x: X1 with X2 { def hello(): Unit }) = { println("hello") }
+```
 
 
 
