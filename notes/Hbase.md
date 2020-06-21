@@ -425,7 +425,13 @@ https://blog.csdn.net/nisjlvhudy/article/details/7889422
 
 
 
+# Spanner原理
 
+https://cloud.tencent.com/developer/article/1131036
+
+
+
+tablet，key-value-timestamp，directory（一个directory里面的key有一样的前缀）
 
 
 
